@@ -86,6 +86,7 @@ p { margin: 0; overflow-wrap: break-word; }
 /* --- Vorspann beim Laden ------------------------------------------------ */
 html:not(.js) .curtain { display: none; }
 .curtain {
+  pointer-events: none; /* Vorhang faengt keinen Tipp ab (Linse Runde 2: Tipp in den ersten Sekunden ging in den Vorhang) */
   position: fixed; inset: 0; z-index: 100;
   display: grid; place-items: center;
   background: var(--ink);
@@ -230,7 +231,12 @@ html:not(.js) .curtain { display: none; }
   display: flex; flex-direction: column;
   background: var(--ink);
 }
-.reel__view { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+/* clip statt hidden: hidden ist fuer den Browser ein Scrollkasten, und beim
+   Tabben schiebt er ihn selbst zur Seite, um den Fokus hereinzuholen - danach
+   stand der ganze Streifen versetzt (gemessen 06.09.2026: scrollLeft 880, dann
+   7364). clip schneidet genauso ab, ohne scrollbar zu sein; hidden bleibt als
+   Rueckfall fuer Browser ohne clip stehen. */
+.reel__view { position: relative; flex: 1; min-height: 0; overflow: hidden; overflow: clip; }
 
 /* Drei Tiefen: hinten langsamer als der Streifen, vorne schneller. */
 .depth { position: absolute; inset: 0 auto 0 0; pointer-events: none; will-change: transform; }

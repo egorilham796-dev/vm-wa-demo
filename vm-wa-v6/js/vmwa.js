@@ -131,6 +131,9 @@
   var depths = $$(".depth");
   var perfs  = $$("[data-perf]");
   var pan = null, bounds = [], active = -1, snaps = [0, 1];
+  /* Fuehrt der Fokus, ist sein Ziel zugleich der Rastpunkt: sonst zieht das
+     Raster die Fahrt sofort wieder vom fokussierten Kader weg. */
+  var focusSnap = null;
 
   var maxX = function () { return Math.max(1, track.scrollWidth - view.clientWidth); };
 
@@ -148,6 +151,7 @@
     return st.start + p * (st.end - st.start);
   }
   function goTo(el) {
+    focusSnap = null;
     var y = targetY(el);
     if (y === null || !track || !track.contains(el)) lenis.scrollTo(el, { offset: -navH() });
     else lenis.scrollTo(y);
@@ -228,6 +232,48 @@
   heroTl.fromTo(".hero__crystal", { x: 0, rotate: 0 },  { x: "10vw", rotate: 10 }, 0)
         .fromTo(".hero__glow",    { scale: 1, opacity: 1 }, { scale: 1.5, opacity: .3 }, 0);
 
+  /* Wie weit rechts steht die Schrift eines Kaders? Gemessen werden die
+     Zeilen selbst (Range), nicht ihre Kaesten: ein Kasten mit max-width ist
+     breiter als seine laengste Zeile, und der Kader galte sonst als
+     angeschnitten, obwohl kein Buchstabe die Kante beruehrt.                */
+  var TEXTSEL = "h2,h3,p,blockquote,.link,.btn,.svc__num,.case__meta,.voice__name,.voice__firm";
+  function textRight(frame) {
+    var fl = frame.getBoundingClientRect().left, max = 0;
+    $$(TEXTSEL, frame).forEach(function (el) {
+      var rg = document.createRange();
+      rg.selectNodeContents(el);
+      var list = rg.getClientRects();
+      for (var i = 0; i < list.length; i++) if (list[i].width) max = Math.max(max, list[i].right - fl);
+    });
+    return max;
+  }
+
+  /* Fenster des Auftritts eines Kaders waehrend der Fahrt.
+     Fertig ist der Auftritt, sobald die Schrift des Kaders ganz im Bild steht;
+     begonnen wird er erst hinter der letzten Rastlage, in der sie noch
+     angeschnitten waere. Damit traegt in jeder Ruhelage nur der Kader Schrift,
+     dessen Schrift auch ganz zu lesen ist (gemessen 06.09.2026 auf 1440: vorher
+     zeigten 14 von 34 Ruhelagen angeschnittene Schrift, sechs davon bei voller
+     Deckkraft - "SEO Optimierung f|ür" stand am rechten Rand).               */
+  function revealWindow(frame) {
+    var vw = (view && view.clientWidth) || 1;
+    if (frame._rw && frame._rwW === vw) return frame._rw;
+    var e = Math.max(0, Math.min(80, 100 - textRight(frame) / vw * 100));
+    var fs = $$(".frame", track), i = fs.indexOf(frame), rest = 200;
+    for (var j = i - 1; j >= 0; j--) {
+      var v = (frame.offsetLeft - fs[j].offsetLeft) / vw * 100;
+      if (v > e + 1) { rest = v; break; }    // erste Rastlage, in der die Schrift noch nicht hineinpasst
+    }
+    // Liegt diese Rastlage dicht am Ziel, passt der Weg des Auftritts nicht mehr
+    // darunter: dann wird das ganze Fenster ein Stueck weiter hineingeschoben.
+    // Die Schrift kommt spaeter, dafuer steht sie in der Rastlage sicher aus.
+    if (rest - e < 7.5) e = Math.max(0, rest - 7.5);
+    var s = Math.min(96, Math.max(e + 6, Math.min(rest - 1.5, e + 34)));
+    if (s - e < 4) s = e + 4;
+    frame._rwW = vw; frame._rw = { s: +s.toFixed(2), e: +e.toFixed(2) };
+    return frame._rw;
+  }
+
   /* ------------------------------------------------ Auftritt in den Kadern
      Der Auftritt haengt an der Stelle des Kaders, nicht an der Uhr: waagerecht
      am Lauf des Streifens (containerAnimation), senkrecht am Scrollstand,
@@ -255,21 +301,39 @@
     if (!bits.length && !rule && !cells.length && !plane) return;
     frame.dataset.revealed = "1";
 
-    // Der Weg des Auftritts waechst mit der Breite des Kaders: ein schmaler
-    // Titelkader ist schnell fertig, die Logowand deckt die halbe Anzeige.
-    var wvw  = parseFloat(frame.style.getPropertyValue("--w")) || 60;
-    var span = Math.min(52, Math.max(20, wvw * .5));
+    // Der Weg des Auftritts folgt der Schrift des Kaders (siehe revealWindow):
+    // fertig, sobald sie ganz im Bild steht, begonnen hinter der letzten
+    // Rastlage, in der sie noch angeschnitten waere. Als Funktionen uebergeben,
+    // damit eine neue Fensterbreite beim Refresh neu gerechnet wird.
     var cfg  = early
       ? { trigger: frame, start: "top 94%", end: "top 46%", scrub: true }
-      : { trigger: frame, containerAnimation: cont, start: "left 96%", end: "left " + (96 - span) + "%", scrub: true };
+      : { trigger: frame, containerAnimation: cont,
+          start: function () { return "left " + revealWindow(frame).s + "%"; },
+          end:   function () { return "left " + revealWindow(frame).e + "%"; } };
     if (early && cont && stage) cfg.pinnedContainer = stage;
 
-    var tl = gsap.timeline({ defaults: { ease: "none", duration: 1, delay: 0 }, scrollTrigger: cfg });
+    var tl = gsap.timeline({ paused: !early, defaults: { ease: "none", duration: 1, delay: 0 },
+                             scrollTrigger: early ? cfg : null });
+    /* Waagerecht wird der Auftritt selbst gestellt, statt ihn an scrub zu
+       haengen: ein Auftritt am containerAnimation mit scrub blieb auf seinem
+       Endwert stehen, wenn der Ausloeser danach wieder auf Fortschritt 0 kam -
+       der Kader trug seine Schrift schon, bevor er an der Reihe war, und legte
+       sie beim Zurueckfahren nie wieder ab (gemessen 06.09.2026 auf 1440:
+       Ausloeser 0, Schrift Deckkraft 1, vier Kader je Ruhelage). Jede Meldung
+       des Ausloesers - Lauf, Wechsel, Neurechnung - setzt den Stand jetzt
+       ausdruecklich; geglaettet ist er ohnehin, denn er kommt vom scrub der
+       Fahrt selbst.                                                          */
     if (plane)         tl.fromTo(plane, { scaleX: 0 }, { scaleX: 1, ease: "power2.out" }, 0);
     if (cardBits.length) tl.fromTo(cardBits, { opacity: 0, y: 26 }, { opacity: 1, y: 0, stagger: .3 }, plane ? .5 : 0);
     if (bits.length)   tl.fromTo(bits,  { opacity: 0, y: 26 }, { opacity: 1, y: 0, stagger: .18 }, 0);
     if (rule)          tl.fromTo(rule,  { scaleX: 0 }, { scaleX: 1, ease: "power2.out" }, .1);
     if (cells.length)  tl.fromTo(cells, { opacity: 0, y: 24 }, { opacity: 1, y: 0, stagger: .06 }, .1);
+    // Erst jetzt, mit fertigem Ablauf, bekommt er seinen Ausloeser.
+    if (!early) {
+      var sync = function (self) { tl.progress(self.progress); };
+      cfg.onUpdate = cfg.onRefresh = cfg.onToggle = cfg.onLeave = cfg.onLeaveBack = sync;
+      ScrollTrigger.create(cfg);
+    }
   }
 
   /* ------------------------------------------------------ Videos der Kader
@@ -320,6 +384,7 @@
        Bildschirmkanten zerschnitten, auf der Unterseite auch die Marken-
        flaeche samt Schaltflaeche (gesehen 05.09.2026).                       */
     function nearestSnap(value) {
+      if (focusSnap !== null) return focusSnap;   // der Fokus fuehrt, siehe focusin
       var best = snaps[0], dist = Infinity;
       for (var i = 0; i < snaps.length; i++) {
         var d = Math.abs(snaps[i] - value);
@@ -340,7 +405,6 @@
         // (gemessen 05.09.2026: Ziel 0,17 - Ruhelage 0,88). Gerastet wird auf den
         // naechstgelegenen Kader zur Stelle, an der das Rad stehenblieb.
         snap: { snapTo: nearestSnap, duration: { min: .2, max: .45 }, delay: .05, ease: "power1.inOut", directional: false, inertia: false },
-        onToggle: function (self) { document.documentElement.classList.toggle("reel-live", self.isActive); },
         onUpdate: function (self) {
           var p = self.progress, d = maxX(), off = p * d;
           depths.forEach(function (layer) { gsap.set(layer, { x: -off * parseFloat(layer.dataset.depth) }); });
@@ -352,6 +416,18 @@
           setActive(idx);
         }
       }
+    });
+
+    /* Kanten und Laufwerk gehoeren zur Fahrt, haengen aber nicht am Pin:
+       genau auf der Startlinie - der ersten Rastlage, Fortschritt 0 - meldet
+       ScrollTrigger isActive=false, und der Streifen stand ohne Perforation und
+       ohne Laufwerk da (gemessen 06.09.2026 auf 1440, beide Seiten: scrollY 900
+       = Pinbeginn, perf scaleY 0, rail visibility hidden). Ein eigener Ausloeser
+       faedelt die Kanten schon beim Anlauf ein und laesst sie bis zum Ende der
+       Fahrt stehen. */
+    ScrollTrigger.create({
+      trigger: reel, start: "top 70%", end: "bottom top",
+      onToggle: function (self) { document.documentElement.classList.toggle("reel-live", self.isActive); }
     });
 
     /* Springt der Scrollstand in einem Satz - Bild-ab-Taste, Sprungmarke, ein
@@ -388,23 +464,60 @@
     }
     measure();
     ScrollTrigger.addEventListener("refresh", measure);
+    // Neue Fensterbreite - neue Schriftmasse: die Fenster der Auftritte werden
+    // vor dem Neurechnen verworfen, nicht danach.
+    ScrollTrigger.addEventListener("refreshInit", function () { $$(".frame", track).forEach(function (f) { f._rwW = -1; }); });
 
     $$(".frame").forEach(function (f) { reveal(f, pan); });
     $$("[data-case]").forEach(function (s) { wireCase(s, pan); });
 
     /* Tastatur: der Fokus kann in einen Kader springen, der seitlich aus dem
-       Bild gefahren ist. Dann faehrt der Streifen ihm nach. */
+       Bild gefahren ist. Dann faehrt der Streifen ihm nach - so weit, dass der
+       Kader ganz im Bild steht; ist der Kader breiter als das Bild (Logowand,
+       Projektkader), zaehlt das fokussierte Element selbst.
+       Zwei Dinge standen dem im Weg (gemessen 06.09.2026 auf 1440 mit echten
+       Tabulator-Anschlaegen): der Browser verschiebt den Ausschnitt selbst, um
+       den Fokus hereinzuholen - overflow:hidden ist fuer ihn ein Scrollkasten -,
+       danach stand der ganze Streifen um 880 und weiter unten um 7364 Pixel
+       versetzt und die fokussierte Zeile bei x = -778; und das Raster zog die
+       Fahrt anschliessend wieder weg. Der Ausschnitt ist deshalb overflow:clip
+       (kein Scrollkasten mehr) und wird hier zusaetzlich zurueckgesetzt, und
+       solange der Fokus fuehrt, ist sein Ziel der Rastpunkt.                  */
+    function unscroll(el) {
+      if (!el) return;
+      el.addEventListener("scroll", function () {
+        if (el.scrollLeft) el.scrollLeft = 0;
+        if (el.scrollTop) el.scrollTop = 0;
+      }, { passive: true });
+    }
+    unscroll(view); unscroll(stage); unscroll(reel);
+
+    // Lage im Streifen, unabhaengig von der laufenden Verschiebung: beide
+    // Kaesten tragen dieselbe Fahrt, die Differenz ist die reine Stelle.
+    function inTrack(el) {
+      var a = el.getBoundingClientRect(), b = track.getBoundingClientRect();
+      return { left: a.left - b.left, width: a.width };
+    }
     track.addEventListener("focusin", function (e) {
-      var f = e.target.closest ? e.target.closest(".frame") : null;
-      if (!f) return;
-      // Ein Bild spaeter: der Browser holt den Fokus zuerst selbst heran, erst
-      // danach darf der Streifen an die richtige Stelle fahren.
-      requestAnimationFrame(function () {
-        var r = f.getBoundingClientRect();
-        if (r.left >= 0 && r.right <= window.innerWidth) return;
-        var y = targetY(f);
-        if (y !== null) lenis.scrollTo(y);
-      });
+      var el = e.target, f = el.closest ? el.closest(".frame") : null;
+      if (!f || !pan || !pan.scrollTrigger) return;
+      view.scrollLeft = 0; view.scrollTop = 0;
+      var vw = view.clientWidth, pad = 24;
+      var fr = inTrack(f), er = inTrack(el), off = fr.left;   // Wunsch: Kader buendig an der linken Kante
+      var lo = er.left + er.width - vw + pad;                 // weiter, sonst haengt das Element rechts heraus
+      var hi = er.left - pad;                                 // weniger, sonst links
+      if (off < lo) off = lo;
+      if (off > hi) off = hi;
+      var st = pan.scrollTrigger, p = Math.min(1, Math.max(0, off / maxX()));
+      focusSnap = p;
+      lenis.scrollTo(st.start + p * (st.end - st.start), { duration: .45, force: true });
+    });
+    // Rad, Finger oder eine Taste, die selbst scrollt: der Fokus fuehrt nicht mehr.
+    ["wheel", "touchstart", "pointerdown"].forEach(function (t) {
+      window.addEventListener(t, function () { focusSnap = null; }, { passive: true });
+    });
+    window.addEventListener("keydown", function (e) {
+      if (e.key !== "Tab" && e.key !== "Shift") focusSnap = null;
     });
 
   } else {

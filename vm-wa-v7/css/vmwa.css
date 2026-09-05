@@ -474,7 +474,7 @@ p { margin: 0; }
 .field[data-invalid="true"] input, .field[data-invalid="true"] textarea { border-color: #FF8A7A; }
 
 .consent { display: flex; gap: .7rem; align-items: start; margin-bottom: 1.25rem; font-size: var(--micro); color: var(--mute); }
-.consent input { width: 18px; height: 18px; accent-color: var(--acid); flex: none; margin-top: .2rem; }
+.consent input { width: 24px; height: 24px; accent-color: var(--acid); flex: none; margin-top: .1rem; }  /* 24 auf allen Breiten wie in V1-V6 (Linse Runde 2: 18 mit der Maus) */
 .form__note { margin-top: .9rem; font-size: var(--micro); min-height: 1.4em; }
 .form__note[data-state="ok"] { color: var(--acid); }
 .form__note[data-state="bad"] { color: #FF8A7A; }

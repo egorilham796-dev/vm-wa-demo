@@ -72,7 +72,9 @@ h1, h2, h3, h4 {
      die langen Komposita brauchen den Trennstrich ("Dienstlei-stungen" passt
      sonst nicht in 335px), kurze Woerter nicht - ohne diese Schwelle stand
      "UNSERE KUN-|DEN" in der Zeile, gemessen auf 375. */
-  overflow-wrap: normal; hyphens: auto; hyphenate-limit-chars: 10 4 4;
+  /* break-word bleibt als Notnagel: greift nur, wenn kein Trennpunkt existiert (Engine ohne
+     de-Woerterbuch) - mit Woerterbuch kommt die Silbentrennung immer zuerst (Linse Runde 2). */
+  overflow-wrap: break-word; hyphens: auto; hyphenate-limit-chars: 10 4 4;
 }
 /* Eigennamen werden nicht getrennt: Innova, Allerhand, BeFaMed */
 .np { hyphens: manual; }
@@ -912,4 +914,22 @@ html[data-tone="acid"] .hud__ticks li[data-on] { background: #101010; }
   .hero__crystal, .hero--sub .hero__crystal { width: 30vmin; right: 1vw; top: calc(var(--nav-h) + .4vh); }
   .hero__torus { width: 26vmin; opacity: .25; }
   .hero__sub { max-width: 42ch; }
+}
+
+/* ==========================================================================
+   Menue auf kurzen Bildschirmen (Telefon quer)
+   Sechs Zeilen zu 95px passen in 390px Hoehe nicht: gemessen auf 844x390 stand
+   "Leistungen" auf -131 und "Kontakt" begann bei 425 - vier von sechs Punkten
+   lagen ausserhalb des Bildschirms und waren nicht anzutippen. Die Liste steht
+   hier oben an, im kleineren Grad; die Tastflaeche bleibt 44px hoch.
+   ========================================================================== */
+@media (max-height: 560px) {
+  .menu {
+    justify-content: flex-start; gap: .25rem; overflow-y: auto;
+    padding-top: calc(var(--nav-h) + .5rem);
+  }
+  .menu a {
+    display: flex; align-items: center; min-height: 44px;
+    font-size: clamp(1.35rem, 6.4vh, 2rem);
+  }
 }

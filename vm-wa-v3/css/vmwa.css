@@ -103,6 +103,7 @@ main { position: relative; z-index: 1; }
    ========================================================================== */
 html:not(.js) .curtain { display: none; }
 .curtain {
+  pointer-events: none; /* Vorhang faengt keinen Tipp ab (Linse Runde 2: Tipp in den ersten Sekunden ging in den Vorhang) */
   position: fixed; inset: 0; z-index: 100;
   display: grid; place-items: center; background: var(--ink);
 }

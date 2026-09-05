@@ -127,10 +127,11 @@
      ihr erstes Bild, laufen aber nicht.                                     */
   if (reduce) {
     $$("video[data-src]").forEach(function (v) {
-      v.preload = "metadata";
-      // Der Zeitanker holt das erste Bild: ohne ihn bleibt die Flaeche leer,
-      // weil ohne Abspielen kein Einzelbild gezeichnet wird.
-      v.src = v.dataset.src + "#t=0.1";
+      // Ohne Bewegung zeigt die Kachel ihr Poster (helles Einzelbild aus dem Film):
+      // das erste Bild von case-innova ist eine flache Flaeche, ein Zeitanker
+      // braeuchte Bereichsanfragen des Servers. Kein src, kein Laden.
+      v.preload = "none";
+      v.removeAttribute("autoplay");
     });
     return;
   }

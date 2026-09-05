@@ -186,6 +186,12 @@ html:not(.js) .curtain { display: none; }
   display: flex; flex-wrap: wrap; align-items: end; gap: 2rem 3rem;
 }
 .hero__sub { max-width: 46ch; color: var(--mute); }
+/* Niedriger Querformat-Bildschirm (Telefon quer, 844x390): der Held war 788 px hoch, der Knopf lag
+   auf der Falz (388-391 px bei 390) - weniger Luft oben und unten, der Knopf steht im ersten Bild (Runde 3). */
+@media (max-height: 480px) and (orientation: landscape) {
+  .hero__stage { padding: calc(var(--nav-h) + 1.25rem) 0 2rem; }
+  .hero__foot { margin-top: 1.25rem; }
+}
 
 /* ==========================================================================
    2. Band: Leistungen als Laufschrift (einziges Marquee der Seite)
@@ -223,16 +229,16 @@ html:not(.js) .curtain { display: none; }
   padding: clamp(2rem, 4vw, 3.5rem);
   background: var(--ink-2); border: 1px solid var(--line-soft); border-radius: var(--r-panel);
 }
-.svc__body { display: grid; gap: 1.15rem; align-content: center; }
+.svc__body { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; gap: 1.15rem; align-content: center; }  /* auto-Spalte nahm min-content: "360-Grad-Marketinglösungen" (328 px) sprengte die Tafel auf 360/375 (Runde 3) */
 /* Gerade Tafeln drehen die Anordnung: sechs gleiche Tafeln waeren eintoenig.
    Spalten sind positionsgebunden: bei gedrehter Reihenfolge bekommt der Text sonst die schmale Spalte. */
-.svc:nth-child(even) { grid-template-columns: minmax(0, .42fr) minmax(0, 1fr); }
+@media (min-width: 901px) { .svc:nth-child(even) { grid-template-columns: minmax(0, .42fr) minmax(0, 1fr); } }  /* nur zweispaltig; auf dem Telefon (eine Spalte) lag das Rendering sonst auf dem Text (Linse Runde 2, 375, y=4819) */
 .svc:nth-child(even) .svc__obj { order: -1; }
 .svc__num {
   font-family: Syne, sans-serif; font-weight: 800; font-size: clamp(3rem, 7vw, 6.5rem);
   line-height: 1; color: transparent; -webkit-text-stroke: 1px rgba(215, 249, 8, .55);
 }
-.svc h3 { font-size: var(--d3); max-width: 26ch; hyphens: manual; }   /* 18ch рвало «360-Grad-Marketinglösungen» на пять строк */
+.svc h3 { font-size: var(--d3); max-width: 26ch; hyphens: auto; }   /* lang="de": Komposita trennen sich am Woerterbuch statt mitten im Wort (Runde 3); 18ch рвало на пять строк - осталось 26ch */
 .svc p { max-width: 58ch; color: var(--mute); }
 .svc__obj {
   width: 100%; max-width: 300px; justify-self: center; pointer-events: none;
@@ -345,7 +351,7 @@ html:not(.js) .curtain { display: none; }
 .post__shot img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; transition: transform .8s var(--ease); }
 .js .post__shot img { clip-path: inset(0 0 100% 0); }
 .post:hover .post__shot img { transform: scale(1.04); }
-.post h3 { font-size: var(--d3); max-width: 22ch; hyphens: manual; }
+.post h3 { font-size: var(--d3); max-width: 22ch; hyphens: auto; }  /* lang="de": "Behandlungsansaetze" brach sonst ohne Trennstrich (Linse Runde 2, 375) */
 .post p { color: var(--mute); max-width: 56ch; margin: 1rem 0 1.4rem; }
 
 @media (min-width: 900px) {

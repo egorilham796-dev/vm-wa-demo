@@ -44,6 +44,16 @@
      Startseite und die Unterseite, und die Unterseite hat weniger Szenen.  */
   var burger = $("#burger"), menu = $("#menu"), menuClose = $("#menuClose");
   var navPark = null;                      /* wird unten gesetzt: Kopfzeile zeigen/verstecken */
+  /* Nach einem Sprung aus dem Menue bleibt der Kopf im Bild. Die programmierte
+     Fahrt laeuft abwaerts, und die Regel "abwaerts lesen -> Kopf weg" nahm ihn
+     gleich mit: gemessen auf 375 stand der Burger danach auf -58px, das Menue
+     war erst nach Zurueckrollen wieder zu oeffnen. Der Halt endet mit der
+     ersten eigenen Bewegung - Rad, Finger oder Taste. */
+  var navHold = false;
+  function holdNav() { navHold = true; if (navPark) navPark(false); }
+  ["wheel", "touchmove", "keydown"].forEach(function (t) {
+    window.addEventListener(t, function () { navHold = false; }, { passive: true, capture: true });
+  });
   function setMenu(open) {
     if (!menu || !burger) return;
     menu.dataset.open = open ? "true" : "false";
@@ -123,6 +133,17 @@
   /* ------------------------------------------------------- Weicher Scroll */
   var lenis = new Lenis({ duration: 1.05, smoothWheel: true, touchMultiplier: 1.6 });
   lenis.on("scroll", ScrollTrigger.update);
+  /* Fahrtrichtung, gemessen an der Bewegung selbst. ScrollTrigger.direction
+     taugt hier nicht: am Ende einer Lenis-Fahrt steht dort das Vorzeichen des
+     letzten Rundungsschritts, gemessen kippte es genau verkehrt herum (Rad
+     abwaerts, direction -1). Ein Totgang von 4px haelt dieses Zittern raus. */
+  var lastY = 0, lastDir = 1;
+  lenis.on("scroll", function (inst) {
+    var y = inst && typeof inst.scroll === "number" ? inst.scroll : window.pageYOffset;
+    var d = y - lastY;
+    if (Math.abs(d) > 4) lastDir = d > 0 ? 1 : -1;
+    lastY = y;
+  });
   gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
   gsap.ticker.lagSmoothing(0);
 
@@ -151,7 +172,11 @@
       if (!el) return;
       e.preventDefault();
       var i = scenes.indexOf(el);
-      if (S.on && i >= 0) lenis.scrollTo(S.base + S.offs[i] + S.wipe * 0.92, { duration: 1.1 });
+      holdNav();
+      /* Ziel ist das Ende des Schnitts, nicht seine letzte Handbreit: dort ist
+         die Blende zu und die Szene ganz offen - dieselbe Stelle, auf die auch
+         der Rastpunkt weiter unten faehrt. */
+      if (S.on && i >= 0) lenis.scrollTo(S.base + S.offs[i] + (i ? S.wipe + 2 : 0), { duration: 1.1 });
       else lenis.scrollTo(el, { offset: -navH(), duration: 1.1 });
     });
   });
@@ -166,7 +191,8 @@
     if (!sc) return;
     var i = scenes.indexOf(sc);
     if (i < 0 || i === S.idx) return;
-    lenis.scrollTo(S.base + S.offs[i] + S.wipe * .92, { duration: .5 });
+    holdNav();
+    lenis.scrollTo(S.base + S.offs[i] + (i ? S.wipe + 2 : 0), { duration: .5 });
   });
 
   /* ------------------------------------------------ Zeilen in Woerter zerlegen */
@@ -258,6 +284,7 @@
       start: 0, end: "max",
       onUpdate: function (self) {
         if (menu && menu.dataset.open === "true") return navPark(false);
+        if (navHold) return navPark(false);          /* Sprung aus dem Menue */
         if (self.scroll() < navH() * 1.6) return navPark(false);
         navPark(self.direction === 1);
       }
@@ -319,6 +346,40 @@
                                  { x: function () { return to * vw(); }, ease: "none", duration: 1 }, 0)
           .fromTo(inner,         { x: function () { return -from * vw(); } },
                                  { x: function () { return -to * vw(); }, ease: "none", duration: 1 }, 0);
+      }
+    });
+
+    /* ---- Ruhe nur auf einer ganzen Szene --------------------------------
+       Der Schnitt ist Bewegung, kein Zustand. Blieb das Rad mittendrin stehen,
+       stand die Blende quer im Bild und zerteilte die Zeile darunter: auf 1440
+       lagen 64% des Bildes lindgruen ueber der Angebotszeile der Unterseite.
+       Haelt der Scroll innerhalb eines Schnittfensters an, faehrt die Buehne
+       darum in Fahrtrichtung an dessen Ende (rueckwaerts an dessen Anfang) -
+       beides Stellen, an denen die Blende zu und die Szene ganz offen ist.
+       Ausserhalb der Schnittfenster faengt nichts: innerhalb einer Szene
+       bleibt der Scroll frei, sonst stuenden Tafeln, Laufband und Ticker.  */
+    ScrollTrigger.create({
+      start: function () { return S.base; },
+      end:   function () { return S.base + S.total; },
+      invalidateOnRefresh: true,
+      snap: {
+        snapTo: function (p) {
+          if (!S.total) return p;
+          var y = p * S.total;
+          var back = lastDir === -1;
+          for (var i = 1; i < scenes.length; i++) {
+            if (!scenes[i].dataset.wipe) continue;
+            var a = S.offs[i], b = a + S.wipe;
+            if (y <= a + 2 || y >= b - 2) continue;
+            return gsap.utils.clamp(0, 1, (back ? a - 2 : b + 2) / S.total);
+          }
+          return p;                       /* schon auf einer ganzen Szene */
+        },
+        duration: { min: .2, max: .45 },
+        delay: .05,
+        ease: "power2.inOut",
+        inertia: false,
+        directional: false                /* die Richtung steht oben schon drin */
       }
     });
 
