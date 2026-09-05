@@ -1,0 +1,915 @@
+/* ==========================================================================
+   V&M Werbeagentur - Variante 4 "Blenden"
+   Marke: Farben, Schriften und Bildmaterial von vm-wa.de (Stand 04.09.2026).
+   Formsprache: Kinoschnitt. Jeder Abschnitt ist eine Szene im Vollbild,
+   der Uebergang ist eine lauffaehige Blende mit Markenkante.
+   Die Blende ist ein laufender Zuschnitt: die Szene steht, ihre Diagonale
+   wandert durchs Bild, davor die Markenkante. Szenen, Tafeln und die
+   senkrechte Blende des Telefons rechnen nach derselben Formel.
+   Radien-System: Buttons = Pille, Flaechen = 20px. Keine Ausnahmen.
+   ========================================================================== */
+
+@import url("../assets/fonts.css");
+
+/* --- Tokens ------------------------------------------------------------- */
+:root {
+  --ink:        #13110F;
+  --ink-2:      #1A1714;
+  --ink-3:      #221E1A;
+  --acid:       #D7F908;
+  --paper:      #F4F4F4;
+  --mute:       #9A968F;
+  --line:       rgba(255, 255, 255, .12);
+  --line-soft:  rgba(255, 255, 255, .06);
+
+  --d1: clamp(1.9rem, 4.9vw, 4.9rem);           /* Held: zwei Zeilen auf 1440, gemessen */
+  --d2: clamp(1.5rem, 3.4vw, 3rem);             /* Szenen-Ueberschrift */
+  --d3: clamp(1.35rem, 2.8vw, 2.5rem);          /* Projekttitel */
+  --body: clamp(.95rem, 1.02vw, 1.0625rem);
+  --micro: .8125rem;
+
+  --r-panel: 20px;
+  --r-pill: 999px;
+
+  --gut: clamp(1.25rem, 4vw, 4.5rem);
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  --nav-h: 72px;
+
+  /* Kopf- und Fusszone jeder Szene: haelt Inhalt frei von Navigation und Zaehler */
+  --scene-top: calc(var(--nav-h) + clamp(1rem, 3vh, 2.4rem));
+  --scene-bot: clamp(3rem, 8vh, 5.6rem);
+}
+
+/* Flache Buehne (Tablet quer, Laptop mit 768er Schirm): Kopf- und Fusszone
+   ruecken zusammen, damit die Szene ihren Inhalt in voller Hoehe zeigt.
+   Die Fusszone bleibt so hoch, dass der Szenenzaehler frei steht. */
+@media (min-width: 1024px) and (min-height: 740px) and (max-height: 830px) {
+  :root { --scene-top: calc(var(--nav-h) + .7rem); --scene-bot: 3.2rem; }
+}
+
+/* --- Reset -------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font: 400 var(--body)/1.7 Poppins, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+img, video, svg { display: block; max-width: 100%; }
+/* Jede Bilddatei traegt ihre echten Masse im Markup: ohne height:auto zoege
+   die Hoehenangabe das Bild in die Laenge, mit ihr haelt sie nur den Platz frei. */
+img { height: auto; }
+a { color: inherit; text-decoration: none; }
+button, input, textarea { font: inherit; color: inherit; }
+h1, h2, h3, h4 {
+  margin: 0; font-family: Syne, system-ui, sans-serif; font-weight: 800; line-height: 1.05;
+  /* Umbruch nur an der Wortfuge oder am Trennstrich des Woerterbuchs (lang="de").
+     Mit overflow-wrap: break-word riss die Zeile mitten im Wort und ohne
+     Trennstrich - gemessen: "Talentgewinnun|g", "PERSONALISIE|RTES".
+     Getrennt wird erst ab zehn Buchstaben und nie naeher als vier ans Wortende:
+     die langen Komposita brauchen den Trennstrich ("Dienstlei-stungen" passt
+     sonst nicht in 335px), kurze Woerter nicht - ohne diese Schwelle stand
+     "UNSERE KUN-|DEN" in der Zeile, gemessen auf 375. */
+  overflow-wrap: normal; hyphens: auto; hyphenate-limit-chars: 10 4 4;
+}
+/* Eigennamen werden nicht getrennt: Innova, Allerhand, BeFaMed */
+.np { hyphens: manual; }
+p { margin: 0; }
+:focus-visible { outline: 2px solid var(--acid); outline-offset: 3px; border-radius: 4px; }
+
+.wrap { width: min(100% - var(--gut) * 2, 1440px); margin-inline: auto; }
+
+/* --- Korn ueber allem --------------------------------------------------- */
+.grain {
+  position: fixed; inset: 0; z-index: 90; pointer-events: none;
+  opacity: .3; mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+
+/* --- Vorhang beim Laden: die erste Blende der Seite ---------------------- */
+html:not(.js) .curtain { display: none; }
+.curtain { position: fixed; inset: 0; z-index: 100; overflow: clip; pointer-events: none; }
+.curtain__plate {
+  position: absolute; inset: 0 auto 0 -80vw; width: 180vw; height: 100%;
+  display: grid; place-items: center;
+  background: var(--ink);
+  clip-path: polygon(0% 0%, 100% 0%, 77.778% 100%, 0% 100%);
+  transform: translate3d(44vw, 0, 0);
+}
+.curtain__mark { width: clamp(120px, 18vw, 210px); opacity: 0; margin-right: 8vw; }
+.curtain__edge {
+  position: absolute; inset: 0 auto 0 -80vw; width: 180vw; height: 100%;
+  background: var(--acid);
+  clip-path: polygon(92.222% 0%, 100% 0%, 77.778% 100%, 70% 100%);
+  transform: translate3d(44vw, 0, 0);
+}
+
+/* --- Navigation --------------------------------------------------------- */
+.nav {
+  position: fixed; inset: 0 0 auto 0; z-index: 80;
+  height: var(--nav-h); display: flex; align-items: center;
+  background: rgba(19, 17, 15, .55);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border-bottom: 1px solid var(--line-soft);
+}
+.nav__in { display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+.nav__logo img { height: 26px; width: auto; }
+.nav__links { display: flex; gap: clamp(1rem, 2vw, 2.25rem); align-items: center; }
+.nav__links a { font-size: var(--micro); letter-spacing: .04em; color: var(--mute); transition: color .3s var(--ease); }
+.nav__links a:hover { color: var(--paper); }
+.nav__burger { display: none; background: none; border: 0; padding: .5rem; min-width: 44px; min-height: 44px; cursor: pointer; color: var(--paper); }
+.nav__burger svg { width: 26px; height: 26px; }
+
+/* --- Buttons ------------------------------------------------------------ */
+.btn {
+  display: inline-flex; align-items: center; gap: .6rem; white-space: nowrap;
+  padding: .85rem 1.5rem; border-radius: var(--r-pill); border: 1px solid transparent;
+  font-size: .9375rem; font-weight: 500; cursor: pointer;
+  transition: transform .25s var(--ease), background-color .25s var(--ease);
+}
+.btn svg { width: 18px; height: 18px; flex: none; }
+.btn--acid { background: var(--acid); color: #101010; }   /* Kontrast 15.4:1 */
+.btn--acid:hover { background: #E4FF2E; }
+.btn:active { transform: translateY(1px) scale(.985); }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+.link {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-size: .9375rem; color: var(--acid);
+  border-bottom: 1px solid rgba(215, 249, 8, .35); padding-bottom: 2px;
+  transition: border-color .3s var(--ease), gap .3s var(--ease);
+}
+.link svg { width: 15px; height: 15px; }
+.link:hover { border-color: var(--acid); gap: .8rem; }
+
+/* --- Vollbild-Menue ----------------------------------------------------- */
+.menu {
+  position: fixed; inset: 0; z-index: 85;
+  display: none; flex-direction: column; justify-content: center; gap: 1rem;
+  padding: var(--gut); background: var(--ink);
+}
+.menu[data-open="true"] { display: flex; }
+.menu a { font-family: Syne, sans-serif; font-weight: 700; font-size: clamp(2rem, 9vw, 3.5rem); text-transform: uppercase; }
+.menu__close { position: absolute; top: 1.5rem; right: var(--gut); background: none; border: 0; color: var(--paper); cursor: pointer; }
+.menu__close svg { width: 30px; height: 30px; }
+
+/* ==========================================================================
+   Szenenzaehler (ihre Nummerierung) und Szenenleiste
+   ========================================================================== */
+.hud { position: fixed; inset: 0; z-index: 70; pointer-events: none; opacity: 0; }
+html:not(.js) .hud { display: none; }
+.hud__idx {
+  position: absolute; left: var(--gut); bottom: 14px;
+  perspective: 600px;
+}
+.hud__idx span {
+  display: block; font-family: Syne, sans-serif; font-weight: 800; line-height: .92;
+  font-size: clamp(2.2rem, 3.6vw, 3.4rem); letter-spacing: -.02em;
+  color: transparent; -webkit-text-stroke: 1.5px rgba(215, 249, 8, .8);
+  will-change: transform;
+}
+.hud__ticks {
+  position: absolute; right: max(14px, calc(var(--gut) * .34)); top: 50%; translate: 0 -50%;
+  list-style: none; margin: 0; padding: 0; display: grid; gap: 9px;
+}
+.hud__ticks li {
+  width: 14px; height: 2px; background: rgba(255, 255, 255, .22);
+  transform-origin: 100% 50%;
+  transition: transform .4s var(--ease), background-color .4s var(--ease);
+}
+.hud__ticks li[data-on] { background: var(--acid); transform: scaleX(2.1); }
+
+/* ==========================================================================
+   Buehne: acht Szenen liegen uebereinander, die Blende schneidet zwischen ihnen
+   ========================================================================== */
+.acts { position: relative; }
+.stage { position: relative; height: 100dvh; overflow: clip; }
+.scene { position: absolute; inset: 0; overflow: clip; isolation: isolate; }
+
+/* Grundzustand ohne JS: jede Szene steht offen und untereinander */
+html:not(.js) .acts { height: auto; }
+html:not(.js) .stage { position: static; height: auto; overflow: visible; }
+html:not(.js) .scene { position: relative; inset: auto; min-height: 100dvh; }
+html:not(.js) .scene__sheet, html:not(.js) .scene__in { position: relative; inset: auto; }
+html:not(.js) .scene__body { height: auto; padding-block: clamp(3.5rem, 9vh, 5rem); }
+html:not(.js) .svc__sheet, html:not(.js) .svc__in { position: relative; inset: auto; }
+html:not(.js) .voice { position: relative; inset: auto; }
+html:not(.js) .voices__reel { overflow: visible; }
+
+.scene__sheet { position: absolute; inset: 0; }
+.scene__in {
+  position: absolute; inset: 0;
+  background: var(--ink);          /* deckend: die weichende Szene scheint nie durch */
+  overflow: clip;
+}
+.scene__edge { display: none; }
+/* Den Zeiger nimmt nur, was auch zu sehen ist.
+   Auf der Buehne liegen alle acht Szenen deckungsgleich uebereinander; ihre
+   Blaetter sind randlos durchsichtig, standen aber trotzdem im Weg: gemessen
+   gab elementFromPoint in der Mitte von "Projekt starten" das Blatt der
+   siebten Szene zurueck, und fuenf sichtbare Links waren nicht anklickbar.
+   Blatt, Kante und Szene selbst sind jetzt fuer den Zeiger durchlaessig; die
+   Flaeche mit dem Inhalt nimmt ihn an, und die schneidet der laufende
+   Zuschnitt genau dort weg, wo die Szene auch unsichtbar ist. */
+.js .scene, .js .scene__sheet, .js .scene__edge { pointer-events: none; }
+.js .scene__in { pointer-events: auto; }
+.js .svc__sheet, .js .svc__edge { pointer-events: none; }
+.js .svc__in { pointer-events: auto; }
+.scene__body {
+  position: relative; z-index: 2; height: 100%;
+  padding: var(--scene-top) 0 var(--scene-bot);
+  display: flex; flex-direction: column;
+}
+.scene__h { font-size: var(--d2); text-transform: uppercase; letter-spacing: -.01em; hyphens: auto; }
+.scene__h em { font-style: italic; color: var(--acid); }
+
+/* --- Die Blende, ab 901px: festes diagonales Blatt, das durchs Bild faehrt -- */
+@media (min-width: 1024px) and (min-height: 740px) {
+  .js .acts { height: calc(100dvh + var(--room, 0px)); }
+  .js .stage { position: sticky; top: 0; }
+
+  .js .scene[data-wipe] .scene__sheet,
+  .js .scene[data-wipe] .scene__edge { top: 0; height: 100%; width: 180vw; }
+  .js .scene[data-wipe] .scene__in { inset: 0 auto 0 0; width: 100vw; }
+  .js .scene[data-wipe] .scene__edge { display: block; position: absolute; background: var(--acid); }
+
+  /* von rechts hereinlaufend, obere Kante voraus */
+  .js .scene[data-wipe="r"] .scene__sheet,
+  .js .scene[data-wipe="r"] .scene__edge { left: 0; }
+  .js .scene[data-wipe="r"] .scene__sheet { clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 22.222% 100%); transform: translate3d(118vw, 0, 0); }
+  .js .scene[data-wipe="r"] .scene__in { transform: translate3d(-118vw, 0, 0); }
+  .js .scene[data-wipe="r"] .scene__edge { clip-path: polygon(-7.778% 0%, .6% 0%, 22.822% 100%, 14.444% 100%); transform: translate3d(118vw, 0, 0); }
+
+  /* von links hereinlaufend */
+  .js .scene[data-wipe="l"] .scene__sheet,
+  .js .scene[data-wipe="l"] .scene__edge { left: -180vw; }
+  .js .scene[data-wipe="l"] .scene__in { left: 180vw; }
+  .js .scene[data-wipe="l"] .scene__sheet { clip-path: polygon(0% 0%, 100% 0%, 77.778% 100%, 0% 100%); transform: translate3d(-18vw, 0, 0); }
+  .js .scene[data-wipe="l"] .scene__in { transform: translate3d(18vw, 0, 0); }
+  .js .scene[data-wipe="l"] .scene__edge { clip-path: polygon(99.4% 0%, 107.778% 0%, 85.556% 100%, 77.178% 100%); transform: translate3d(-18vw, 0, 0); }
+
+  /* Der Regelweg: die Diagonale wird als clip-path gerechnet und laeuft ueber
+     den Bildschirm. Ohne .w-clip (Adresse ?wipe=fast) greifen die Regeln
+     darueber: ein Blatt mit festem Zuschnitt, das nur verschoben wird. */
+  .js.w-clip .scene[data-wipe] { --w: 0; }
+  /* Im Bild ist eine Szene nur zwischen zwei Punkten: ab dem ersten Millimeter
+     ihres eigenen Zuschnitts (--w) bis zu dem Augenblick, in dem der Zuschnitt
+     der naechsten Szene sie ganz zugedeckt hat (--wnext, von deren Zeitstrahl
+     gesetzt). Davor und danach steht sie auf 0 - dann faengt sie weder Licht
+     noch Zeiger, und was auf der Buehne gemessen wird, ist auch zu sehen.
+     Beide Schwellen liegen bei 1/200 der Fahrt, also 2px Weg: die Szene ist
+     dort ohnehin noch vollstaendig hinter der Kante. */
+  .js.w-clip .stage .scene {
+    --wnext: 0;
+    opacity: clamp(0, min(calc(var(--w, 1) * 200), calc((1 - var(--wnext)) * 200)), 1);
+  }
+  .js.w-clip .scene[data-wipe] .scene__sheet,
+  .js.w-clip .scene[data-wipe] .scene__in,
+  .js.w-clip .scene[data-wipe] .scene__edge {
+    left: 0; width: 100vw; transform: none; clip-path: none;
+  }
+  .js.w-clip .scene[data-wipe="r"] .scene__in {
+    clip-path: polygon(calc(115% - var(--w) * 160%) 0%, 160% 0%, 160% 101%, calc(145% - var(--w) * 160%) 101%);
+  }
+  .js.w-clip .scene[data-wipe="r"] .scene__edge {
+    clip-path: polygon(calc(100.4% - var(--w) * 160%) 0%, calc(115.6% - var(--w) * 160%) 0%, calc(145.6% - var(--w) * 160%) 101%, calc(130.4% - var(--w) * 160%) 101%);
+  }
+  .js.w-clip .scene[data-wipe="l"] .scene__in {
+    clip-path: polygon(-60% 0%, calc(var(--w) * 160% - 15%) 0%, calc(var(--w) * 160% - 45%) 101%, -60% 101%);
+  }
+  .js.w-clip .scene[data-wipe="l"] .scene__edge {
+    clip-path: polygon(calc(var(--w) * 160% - 15.6%) 0%, calc(var(--w) * 160% - .4%) 0%, calc(var(--w) * 160% - 30.4%) 101%, calc(var(--w) * 160% - 45.6%) 101%);
+  }
+}
+
+/* ==========================================================================
+   01 Held
+   ========================================================================== */
+.hero .scene__body { justify-content: center; }
+.hero__glow {
+  position: absolute; left: 46%; top: 48%; translate: -50% -50%;
+  width: min(120vw, 1150px); aspect-ratio: 1; pointer-events: none;
+  background: radial-gradient(circle, rgba(215, 249, 8, .13), transparent 58%);
+  filter: blur(48px);
+}
+.hero__crystal {
+  position: absolute; z-index: 3; pointer-events: none;
+  right: clamp(1rem, 4vw, 4.5rem); top: calc(var(--nav-h) + 4vh);
+  width: clamp(150px, 24vw, 345px); height: auto;
+  filter: drop-shadow(0 30px 70px rgba(0, 0, 0, .6));
+  will-change: transform;
+}
+.hero__torus {
+  position: absolute; z-index: 1; pointer-events: none;
+  left: -6vw; bottom: -12vh; width: clamp(140px, 19vw, 300px); height: auto; opacity: .5;
+  will-change: transform;
+}
+.hero__title {
+  position: relative; z-index: 2;
+  font-size: var(--d1); text-transform: uppercase; letter-spacing: -.025em; hyphens: none;
+}
+.hero__title .line { display: block; will-change: transform; }
+/* Die kurze weisse Zeile rueckt ein, die lange lime laeuft voll durch:
+   der Versatz bleibt, ohne die zweite Zeile umzubrechen. */
+.hero__title .line:first-child { padding-left: min(10vw, 150px); }
+.hero__title .line--2 { padding-left: 0; color: var(--acid); }
+.hero__title .w { display: inline-block; overflow: hidden; vertical-align: bottom; }
+.hero__title .w > span { display: inline-block; }
+.hero__foot {
+  position: relative; z-index: 2;
+  margin-top: clamp(1.6rem, 4.5vh, 3.4rem);
+  display: flex; flex-wrap: wrap; align-items: end; gap: 1.6rem 3rem;
+}
+.hero__sub { max-width: 46ch; color: var(--mute); }
+
+/* ==========================================================================
+   02 Leistungen: Laufband und sechs Tafeln, die nacheinander aufgeblendet werden
+   ========================================================================== */
+.svcs { min-height: 0; }
+.band {
+  width: 100vw; margin-inline: calc(50% - 50vw);
+  margin-block: clamp(.9rem, 2.4vh, 1.6rem);
+  background: var(--acid); color: #101010;
+  padding: .5rem 0; overflow: clip; user-select: none; flex: none;
+}
+.band__track { display: flex; width: max-content; will-change: transform; }
+.band__set { display: flex; flex: none; }
+.band__set span {
+  font-family: Syne, sans-serif; font-weight: 800; text-transform: uppercase;
+  font-size: clamp(.95rem, 1.9vh, 1.5rem); letter-spacing: -.01em;
+  padding-inline: clamp(.9rem, 1.7vw, 1.8rem);
+}
+
+.svcs__grid {
+  flex: 1; min-height: 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr); gap: clamp(.7rem, 1.6vh, 1.2rem);
+}
+.svc { position: relative; overflow: clip; border-radius: var(--r-panel); min-width: 0; }
+.svc__sheet { position: absolute; inset: 0; }
+.svc__in {
+  position: absolute; inset: 0;
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center; gap: clamp(.7rem, 1.4vw, 1.4rem);
+  padding: clamp(.5rem, 1.4vh, 1.4rem) clamp(.8rem, 1.5vw, 1.6rem);
+  background: var(--ink-2); border: 1px solid var(--line-soft); border-radius: var(--r-panel);
+}
+.svc__edge { display: none; }
+.svc__num {
+  align-self: start;
+  font-family: Syne, sans-serif; font-weight: 800; line-height: 1;
+  font-size: clamp(1.3rem, 3vh, 2.3rem);
+  color: transparent; -webkit-text-stroke: 1px rgba(215, 249, 8, .6);
+}
+.svc__text { min-width: 0; display: grid; gap: .3rem; }
+.svc h3 { font-size: clamp(.98rem, 2.15vh, 1.4rem); }
+.svc p { font-size: clamp(.78rem, 1.5vh, .95rem); line-height: 1.4; color: var(--mute); }
+.svc__obj {
+  width: clamp(70px, 9vw, 132px); height: auto; max-height: 100%; object-fit: contain;
+  align-self: center; pointer-events: none;
+  filter: drop-shadow(0 16px 34px rgba(0, 0, 0, .55));
+  transition: transform .5s var(--ease);
+}
+.svc:hover .svc__obj { transform: translateY(-6px) scale(1.05); }
+
+@media (min-width: 1024px) and (min-height: 740px) {
+  /* Tafeln: dieselbe Blende im Kleinen, und nach derselben Rechnung wie die
+     Szenen - der Zuschnitt laeuft ueber die stehende Tafel. Nichts wird
+     verschoben: Text, Rahmen und Bild behalten ihren Platz im Raster, nur die
+     Kante wandert. (Bis Version 2 fuhr hier ein Blatt mit Gegenlauf - dabei
+     stand der Text ausserhalb seines eigenen Zuschnitts.) */
+  .js .svc[data-tile] { --w: 0; }
+  .js .svc[data-tile] .svc__in {
+    clip-path: polygon(calc(115% - var(--w) * 160%) 0%, 160% 0%, 160% 101%, calc(145% - var(--w) * 160%) 101%);
+  }
+  .js .svc[data-tile] .svc__edge {
+    display: block; position: absolute; inset: 0; background: var(--acid); pointer-events: none;
+    clip-path: polygon(calc(100.4% - var(--w) * 160%) 0%, calc(115.6% - var(--w) * 160%) 0%, calc(145.6% - var(--w) * 160%) 101%, calc(130.4% - var(--w) * 160%) 101%);
+  }
+  /* Die rechte Spalte laeuft von links herein: die Tafeln kommen einander entgegen */
+  .js .svc[data-tile]:nth-child(even) .svc__in {
+    clip-path: polygon(-60% 0%, calc(var(--w) * 160% - 15%) 0%, calc(var(--w) * 160% - 45%) 101%, -60% 101%);
+  }
+  .js .svc[data-tile]:nth-child(even) .svc__edge {
+    clip-path: polygon(calc(var(--w) * 160% - 15.6%) 0%, calc(var(--w) * 160% - .4%) 0%, calc(var(--w) * 160% - 30.4%) 101%, calc(var(--w) * 160% - 45.6%) 101%);
+  }
+}
+
+/* Flache Buehne: die Reihen schrumpfen mit der Hoehe, die Lesegroesse nicht -
+   also ruecken Zeilen und Abstaende in den Tafeln enger zusammen. */
+@media (min-width: 1024px) and (min-height: 740px) and (max-height: 860px) {
+  .svc p { font-size: clamp(.72rem, 1.5vh, .95rem); line-height: 1.34; }
+  .svc h3 { font-size: clamp(.92rem, 2.05vh, 1.4rem); }
+  .band { margin-block: clamp(.5rem, 1.2vh, 1rem); }
+  .svcs__grid { gap: clamp(.5rem, 1.1vh, 1.2rem); }
+}
+
+/* Tablet quer: die Tafel behaelt ihre Hoehe, der Fingerlink darin ist 44px
+   hoch. Damit die Zeile nicht unten anstoesst, wird das Objekt schmaler und
+   die Spalte darum breiter - der Absatz braucht dann eine Zeile weniger. */
+@media (min-width: 1024px) and (min-height: 740px) and (max-width: 1180px) {
+  .svc__obj { width: clamp(58px, 6.4vw, 92px); }
+  .svc__text { gap: .22rem; }
+  .svc__text .link { margin-top: 0; }
+}
+
+/* ==========================================================================
+   03-05 Projekte: Vollbildfilm, Glastafel wechselt die Seite
+   ========================================================================== */
+.scene--case .case__media { position: absolute; inset: 0; background: var(--ink-2); z-index: 0; }
+.scene--case .case__media video {
+  width: 100%; height: 100%; object-fit: cover; will-change: transform;
+}
+.scene--case .case__media::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(19, 17, 15, .82) 0%, rgba(19, 17, 15, .3) 30%, rgba(19, 17, 15, .74) 74%, rgba(19, 17, 15, .94) 100%);
+}
+.case__grid { justify-content: space-between; }
+.case__h { flex: none; }
+.case__panel {
+  width: min(100%, 620px); margin-top: auto;
+  padding: clamp(1.2rem, 2.4vw, 2.2rem);
+  border-radius: var(--r-panel);
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(19, 17, 15, .72);
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 30px 80px rgba(0, 0, 0, .5);
+  will-change: transform;
+}
+.scene--case-right .case__panel { margin-left: auto; }
+.case__meta { display: block; font-size: var(--micro); color: var(--acid); margin-bottom: .8rem; }
+.case__panel h3 { font-size: var(--d3); margin-bottom: .8rem; hyphens: auto; }   /* Eigennamen tragen .np */
+.case__panel p { color: rgba(244, 244, 244, .84); margin-bottom: 1.2rem; }
+
+/* ==========================================================================
+   06 Kunden: Zeichen kommen als Welle laengs derselben Diagonale
+   ========================================================================== */
+.clients__head { display: grid; gap: .9rem; align-items: end; margin-bottom: clamp(1.2rem, 3.5vh, 2.6rem); flex: none; }
+.clients__lead { max-width: 62ch; color: var(--mute); }
+.clients__grid {
+  flex: 1; min-height: 0;
+  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr);
+  gap: 1px; background: var(--line-soft);
+  border: 1px solid var(--line-soft); border-radius: var(--r-panel); overflow: clip;
+}
+.clients__cell {
+  display: grid; place-items: center; padding: clamp(.8rem, 2vh, 1.6rem);
+  background: var(--ink); transition: background-color .35s var(--ease);
+  will-change: transform;
+}
+/* Ihre Zeichen liegen gemischt vor: weiss, grau und ein fast schwarzes.
+   Auf dunklem Grund werden sie einheitlich hell gezogen, sonst verschwindet eines. */
+.clients__cell img { width: clamp(70px, 8vw, 128px); height: auto; max-height: 100%; object-fit: contain;
+  filter: brightness(0) invert(1); opacity: .72; transition: opacity .35s var(--ease); }
+.clients__cell:hover { background: var(--ink-2); }
+.clients__cell:hover img { opacity: 1; }
+
+/* ==========================================================================
+   07 Stimmen: senkrechter Ticker, eine Stimme im Bild
+   ========================================================================== */
+.voices__view { position: relative; flex: 1; min-height: 0; margin-top: clamp(1rem, 3vh, 2.2rem); display: flex; gap: clamp(1rem, 3vw, 2.6rem); align-items: stretch; }
+.voices__reel { flex: 1; min-width: 0; position: relative; overflow: clip; }
+/* Die Walze laeuft in einem Fenster, das oben und unten Luft laesst: der Weg
+   einer Stimme (44px) bleibt dadurch innerhalb des Fensters - keine Zeile
+   faehrt jemals aus ihrem Ausschnitt heraus. */
+.voice {
+  position: absolute; inset: 44px 0;
+  display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, .5fr);
+  align-items: center; gap: clamp(1.5rem, 4vw, 4rem);
+  will-change: transform;
+}
+.voice__body { display: grid; gap: clamp(1.2rem, 3.5vh, 2.4rem); align-content: center; }
+.voice blockquote {
+  margin: 0; font-family: Syne, sans-serif; font-weight: 700;
+  font-size: clamp(1.05rem, 3.2vh, 1.95rem); line-height: 1.4;
+}
+.voice__who { display: grid; gap: .1rem; }
+/* Das Kundenzeichen gross und leise: fuellt die Flaeche mit Substanz statt mit Luft */
+/* Ihre Kundenzeichen bringen eigene helle Scheiben mit: einfarbig und
+   zurueckgenommen wirken sie als Marke, nicht als Fleck. */
+.voice__mark { width: clamp(110px, 18vh, 230px); height: auto; filter: grayscale(1); opacity: .58; justify-self: center; }
+.voice__name { font-size: 1rem; }
+.voice__firm { font-size: var(--micro); color: var(--mute); }
+.voices__rail { position: relative; width: 2px; background: var(--line-soft); flex: none; }
+.voices__rail i { position: absolute; inset: 0; display: block; background: var(--acid); transform: scaleY(0); transform-origin: 50% 0; }
+
+/* ==========================================================================
+   08 Aktuelles: drei senkrechte Spalten wie Filmstreifen
+   ========================================================================== */
+.news__cols { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(.7rem, 1.4vw, 1.2rem); margin-top: clamp(1.2rem, 3.5vh, 2.4rem); }
+.col { position: relative; overflow: clip; border-radius: var(--r-panel); min-width: 0; display: flex; }
+.col__shot { position: absolute; inset: 0; }
+.col__shot img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
+.col::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(19, 17, 15, .18) 0%, rgba(19, 17, 15, .72) 46%, rgba(19, 17, 15, .95) 100%);
+}
+.col__text {
+  position: relative; z-index: 2; flex: 1; margin-top: auto; align-self: end;
+  padding: clamp(1rem, 2.2vh, 1.7rem); display: grid; gap: .7rem;
+  /* Der Streifen ist eine Karte: das Bild darunter ist der Link auf denselben
+     Beitrag. Auf dem Telefon reicht der Text bis in die Mitte des Streifens
+     und nahm dort den Zeiger an - gemessen gab elementFromPoint in der Mitte
+     des Bildlinks H3 oder P zurueck, und die Mitte der Karte war tot. Der Text
+     laesst den Zeiger jetzt durch, sein eigener Ausgang bleibt ein Ziel. */
+  pointer-events: none;
+}
+.col__text .link { pointer-events: auto; }
+.col h3 { font-size: clamp(1rem, 2.3vh, 1.45rem); }
+.col p { font-size: clamp(.8rem, 1.55vh, .95rem); line-height: 1.55; color: rgba(244, 244, 244, .76); }
+.col:hover .col__shot img { transform: scale(1.06); }
+/* Der Text faehrt beim Auftritt von unten herein: der Streifen laesst ihm
+   diesen Weg als Fussraum frei, sonst liefe die letzte Zeile waehrend der
+   Fahrt unter die Kante des Streifens. */
+@media (min-width: 1024px) and (min-height: 740px) { .col { padding-bottom: 40px; } }
+
+/* ==========================================================================
+   09 Kontakt: natuerliche Hoehe, die Blende bleibt als Kante am Kopf stehen
+   ========================================================================== */
+.contact { position: relative; padding: clamp(4rem, 12vh, 8rem) 0 clamp(3rem, 8vh, 6rem); overflow: clip; background: var(--ink); }
+.contact__cut {
+  position: absolute; inset: 0 0 auto 0; height: clamp(46px, 7vw, 96px);
+  background: var(--acid); pointer-events: none;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 42%, 0% 100%);
+}
+.contact__obj {
+  position: absolute; right: -6vw; bottom: -8vh; z-index: 1; pointer-events: none;
+  width: clamp(180px, 30vw, 460px); height: auto; opacity: .3;
+}
+.contact__in { position: relative; z-index: 2; }
+.contact h2 { font-size: var(--d2); text-transform: uppercase; max-width: 24ch; hyphens: auto; }
+.contact h2 em { font-style: italic; color: var(--acid); }
+.contact__lead { margin-top: 1.1rem; color: var(--mute); max-width: 46ch; }
+
+.contact__cols { margin-top: clamp(2.2rem, 5vh, 4rem); display: grid; gap: clamp(2.2rem, 5vw, 4rem); }
+@media (min-width: 960px) { .contact__cols { grid-template-columns: 1.15fr .85fr; } }
+
+.field { display: grid; gap: .45rem; margin-bottom: 1.2rem; }
+.field label { font-size: var(--micro); color: var(--paper); }
+.field input, .field textarea {
+  width: 100%; padding: .85rem 1.1rem;
+  background: var(--ink-2); border: 1px solid var(--line); border-radius: 12px;
+  transition: border-color .25s var(--ease);
+}
+.field input::placeholder, .field textarea::placeholder { color: #8B8781; }  /* 4.6:1 auf --ink-2 */
+.field input:focus, .field textarea:focus { border-color: var(--acid); outline: none; }
+.field textarea { min-height: 120px; resize: vertical; }
+.field__hint { font-size: var(--micro); color: var(--mute); }
+.field__err { font-size: var(--micro); color: #FF8A7A; min-height: 1.2em; }
+.field[data-invalid="true"] input, .field[data-invalid="true"] textarea { border-color: #FF8A7A; }
+
+.consent { display: flex; gap: .75rem; align-items: start; margin-bottom: 1.4rem; font-size: var(--micro); color: var(--mute); }
+/* Der Haken misst 24px, sein Tippziel ist die ganze Beschriftung (>= 44px) */
+.consent input { width: 24px; height: 24px; accent-color: var(--acid); flex: none; margin-top: .1rem; }
+.form__note { margin-top: 1rem; font-size: var(--micro); min-height: 1.4em; }
+.form__note[data-state="ok"] { color: var(--acid); }
+.form__note[data-state="bad"] { color: #FF8A7A; }
+
+.contact__meta { display: grid; gap: 2.1rem; align-content: start; }
+.contact__meta h3 { font-family: Poppins, sans-serif; font-weight: 500; font-size: var(--micro); color: var(--mute); text-transform: uppercase; letter-spacing: .1em; }
+.contact__meta ul { list-style: none; margin: .8rem 0 0; padding: 0; display: grid; gap: .5rem; }
+.contact__meta a:hover { color: var(--acid); }
+.contact__big { font-family: Syne, sans-serif; font-weight: 700; font-size: clamp(1.25rem, 2vw, 1.75rem); }
+
+.foot {
+  margin-top: clamp(2.6rem, 7vh, 5rem); padding-top: 1.8rem; border-top: 1px solid var(--line-soft);
+  display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between;
+  font-size: var(--micro); color: var(--mute);
+}
+.foot nav { display: flex; gap: 1.5rem; }
+.foot a:hover { color: var(--paper); }
+
+/* Auftritt der Kontaktseite */
+.js .rise { opacity: 0; transform: translateY(24px); }
+
+/* --- Tippziele: auf Touch mindestens 44px -------------------------------
+   Die Zeigerabfrage allein reicht nicht: das Tablet im Querformat ist ein
+   Finger und meldet trotzdem keinen groben Zeiger. Deshalb bis 1180px. */
+@media (pointer: coarse), (max-width: 1180px) {
+  .link { min-height: 44px; align-items: center; }
+  .contact__meta ul a, .foot a, .nav__logo,
+  .nav__links a { display: inline-flex; align-items: center; min-height: 44px; }
+  .contact__meta ul { gap: .1rem; }
+}
+
+@media (max-width: 900px) { .contact__obj { width: 58vw; right: -14vw; bottom: -4vh; opacity: .22; } }
+
+/* ==========================================================================
+   Fliessende Ordnung: ueberall dort, wo die Buehne nicht hineinpasst.
+   Die Buehne braucht Platz - gemessen: unter 1024x740 stoesst der Text der
+   Leistungstafeln an die Unterkante seiner Tafel, weil die Zeilen eine
+   Lesegroesse behalten, die Reihen aber mit der Bildschirmhoehe schrumpfen.
+   Dort stehen die Szenen deshalb untereinander und die Blende laeuft
+   senkrecht statt diagonal - dieselbe Ordnung wie auf dem Telefon.
+   ========================================================================== */
+@media (max-width: 1023px), (max-height: 739px) {
+  .hud { display: none; }
+
+  .acts { height: auto !important; }
+  .stage { position: static; height: auto; overflow: visible; }
+  .scene { position: relative; inset: auto; min-height: auto; }
+  .scene__sheet { position: relative; inset: auto; }
+  .scene__in { position: relative; inset: auto; }
+  .scene__body { height: auto; padding-block: clamp(3.5rem, 9vh, 5rem); }
+  /* Held auf dem Telefon: Kristall oben rechts wie auf ihrer Seite,
+     Zeile, Unterzeile und Knopf sitzen in der unteren Haelfte. */
+  #hero .scene__body {
+    min-height: calc(100dvh - var(--nav-h));
+    justify-content: flex-end;
+    padding-top: calc(var(--nav-h) + 2rem); padding-bottom: clamp(2.5rem, 8vh, 5rem);
+  }
+
+  /* Senkrechte Blende: der Zuschnitt laeuft von unten nach oben ueber die
+     stehende Szene, die Kante leicht schraeg. Kein Blatt, kein Gegenlauf -
+     dadurch steht jede Zeile immer in ihrem eigenen Zuschnitt und wird nie
+     von der Kante abgeschnitten, auch nicht waehrend der Fahrt. */
+  .js .scene[data-wipe] { --w: 1; }
+  .js .scene[data-wipe] .scene__sheet { transform: none; clip-path: none; }
+  .js .scene[data-wipe] .scene__in {
+    transform: none;
+    clip-path: polygon(0% calc(112% - var(--w) * 124%), 100% calc(106% - var(--w) * 124%), 100% 112%, 0% 118%);
+  }
+  .js .scene[data-wipe] .scene__edge {
+    display: block; position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+    background: var(--acid); pointer-events: none;
+    clip-path: polygon(0% calc(112% - var(--w) * 124%), 100% calc(106% - var(--w) * 124%), 100% calc(103% - var(--w) * 124%), 0% calc(109% - var(--w) * 124%));
+  }
+
+  .svcs__grid { grid-auto-rows: auto; gap: clamp(.8rem, 2vh, 1.2rem); }
+  .svc__sheet, .svc__in { position: relative; inset: auto; width: 100%; }
+
+  /* In der fliessenden Ordnung bestimmt die Bildschirmhoehe die Lesegroesse
+     nicht mehr: die Tafel waechst mit ihrem Text, statt ihn zu stauchen. Nach
+     Hoehe gerechnet stand der Absatz auf 375px bei 12,5px - Lesegroesse ist
+     16px, und die Reihen sind hier ohnehin frei. */
+  .svc p, .col p, .reason p { font-size: 1rem; line-height: 1.6; }
+
+  .scene--case .scene__in { min-height: 92dvh; }
+  .scene--case .scene__body { min-height: 92dvh; justify-content: flex-end; }
+  .scene--case .case__media { z-index: 0; }
+
+  .clients__grid { grid-auto-rows: auto; }
+  .clients__cell { min-height: 108px; }
+
+  .voices__view { display: block; }
+  .voices__reel { overflow: visible; }
+  .voice { position: relative; inset: auto; display: block; padding-block: 1.6rem; border-bottom: 1px solid var(--line-soft); }
+  .voice:last-child { border-bottom: 0; }
+  .voice__mark { justify-self: start; margin-top: 1rem; opacity: .45; }
+  .voices__rail { display: none; }
+
+  .news__cols { grid-auto-rows: auto; }
+  .col { min-height: 62dvh; padding-bottom: 0; }
+}
+
+/* Fliessend, aber breit genug fuer zwei Spalten: Tablet hochkant, schmales
+   oder flaches Fenster. Eine Spalte quer ueber 1200px waere eine Wueste. */
+@media (min-width: 640px) and (max-width: 1023px),
+       (min-width: 640px) and (max-height: 739px) {
+  .svcs__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .svc__in { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .svc__obj { grid-column: auto; width: clamp(74px, 12vw, 132px); align-self: center; margin-top: 0; }
+  .clients__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .news__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hero__crystal { width: min(46vw, 40vmin); }
+  .hero__torus { width: min(36vw, 32vmin); }
+}
+@media (min-width: 1000px) and (max-width: 1023px),
+       (min-width: 1000px) and (max-height: 739px) {
+  .clients__grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .news__cols { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* ==========================================================================
+   Schmale Geraete: Telefon und Tablet hochkant. Eine Spalte, Brenner statt
+   Navigationszeile, ihre Objekte gross wie auf ihrer Seite.
+   ========================================================================== */
+@media (max-width: 900px) {
+  :root { --nav-h: 64px; --scene-bot: 3rem; }
+  .nav__links { display: none; }
+  .nav__burger { display: block; }
+  .nav .btn { display: none; }
+
+  .hero__crystal { right: -4vw; top: calc(var(--nav-h) + 1vh); width: 54vw; }
+  .hero__torus { width: 44vw; left: -12vw; bottom: -6vh; opacity: .35; }
+  .hero__title .line:first-child { padding-left: 0; }
+
+  .band { margin-block: 1.6rem; }
+  .svcs__grid { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .case__panel { width: 100%; }
+  .voice blockquote { font-size: clamp(1rem, 4.6vw, 1.35rem); }
+  .voice__mark { width: 76px; }
+}
+
+/* Telefon: eine Spalte im Ganzen. Das Objekt legt sich unter den Text und
+   wird gross - auf dem Tablet stuende daneben sonst eine leere Haelfte. */
+@media (max-width: 639px) {
+  .svc__in { grid-template-columns: auto minmax(0, 1fr); }
+  .svc__obj { grid-column: 1 / -1; width: 42vw; justify-self: start; margin-top: .4rem; align-self: start; }
+  .clients__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .news__cols { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ==========================================================================
+   Weniger Bewegung: keine Blenden, alles steht sichtbar untereinander
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+  .curtain, .hud { display: none !important; }
+  .js .rise { opacity: 1 !important; transform: none !important; }
+
+  .acts { height: auto !important; }
+  .stage { position: static !important; height: auto !important; overflow: visible !important; }
+  /* Ohne Blende gibt es kein "noch nicht im Bild": jede Szene steht sichtbar da.
+     Sonst haette die Sichtbarkeitsregel der Buehne (sie liest --w) hier alle
+     Szenen ausser der ersten auf 0 gehalten - es laeuft ja kein Zeitstrahl. */
+  .scene { position: relative !important; inset: auto !important; min-height: auto !important; opacity: 1 !important; }
+  .scene__sheet, .scene__in {
+    position: relative !important; inset: auto !important; left: auto !important;
+    width: 100% !important; height: auto !important;
+    clip-path: none !important; transform: none !important;
+  }
+  .scene__body { height: auto !important; padding-block: clamp(3.5rem, 9vh, 5rem) !important; }
+  #hero .scene__body { min-height: calc(100dvh - var(--nav-h)); }
+  .scene__edge, .svc__edge { display: none !important; }
+
+  .svc__sheet, .svc__in { position: relative !important; inset: auto !important; width: 100% !important; transform: none !important; clip-path: none !important; }
+  .svcs__grid { grid-auto-rows: auto; }
+  /* Im Fluss stauchen die Reihen den Text nicht mehr: Lesegroesse statt Hoehenmass */
+  .svc p, .col p, .reason p { font-size: 1rem; line-height: 1.6; }
+  /* Im Fluss steht der Kristall rechts, aber im Satzspiegel - buendig an der
+     Bildschirmkante klebte er sonst am Rand. */
+  .hero__crystal { position: relative; right: auto; top: auto; width: min(345px, 40vw);
+                   margin-left: auto; margin-right: var(--gut); }
+  .hero__torus { display: none; }
+
+  .scene--case .scene__in { min-height: 80dvh; }
+  .clients__grid { grid-auto-rows: auto; }
+  .clients__cell { min-height: 120px; }
+  .voices__view { display: block; }
+  .voices__reel { overflow: visible; }
+  .voice { position: relative !important; inset: auto !important; display: block !important; transform: none !important; padding-block: 1.6rem; border-bottom: 1px solid var(--line-soft); }
+  .voice__mark { width: 92px; margin-top: 1rem; opacity: .45; }
+  .voices__rail { display: none; }
+  .news__cols { grid-auto-rows: auto; }
+  .col { min-height: 56dvh; }
+}
+
+/* Weniger Transparenz: Glas wird zur Flaeche */
+@media (prefers-reduced-transparency: reduce) {
+  .nav, .case__panel { background: rgba(19, 17, 15, .96); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+
+/* ==========================================================================
+   Unterseite "Professionelles Webdesign"
+   Dieselbe Buehne, dieselbe Blende, eigenes Bildmaterial. Alles hier haengt
+   an neuen Klassen - die Startseite behaelt jede ihrer Regeln unveraendert.
+   ========================================================================== */
+
+/* --- 01 Held: die Zeile ist laenger als auf der Startseite, also eine Stufe
+   kleiner. Zwei Zeilen auf 1440 bleiben zwei Zeilen. --------------------- */
+.hero--sub .hero__title { font-size: clamp(1.35rem, 2.95vw, 3rem); }
+.hero--sub .hero__title .line:first-child { padding-left: 0; }
+/* Ihr Objekt sitzt oben rechts, die Zeile darunter - so steht es auf ihrer Seite */
+.hero--sub .scene__body { justify-content: flex-end; }
+.hero--sub .hero__crystal { top: calc(var(--nav-h) + 6vh); width: clamp(128px, 23vw, 330px); }
+
+/* Knopf auf der Markenflaeche */
+.btn--ink { background: var(--ink); color: var(--paper); }
+.btn--ink:hover { background: var(--ink-3); }
+
+/* --- 02 Angebot: die Blende faehrt durch und bleibt als Flaeche stehen --- */
+.scene--offer .scene__in { background: var(--acid); color: #101010; }   /* 15.4:1 */
+.scene--offer .scene__body { justify-content: center; }
+.offer__h {
+  font-size: clamp(1.7rem, 4.5vw, 4.1rem); text-transform: uppercase;
+  letter-spacing: -.02em; max-width: 21ch; hyphens: auto; text-wrap: balance;
+}
+.offer .btn { margin-top: clamp(1.5rem, 4vh, 2.8rem); align-self: start; }
+.offer__deco {
+  position: absolute; right: -5vw; bottom: -9vh; z-index: 1; pointer-events: none;
+  width: clamp(190px, 33vw, 500px); height: auto; opacity: .16; filter: brightness(0);
+}
+
+/* --- 03/04 Zwei Bildszenen: ihr Rendering steht, die Glastafel wechselt den Bord */
+.scene--shot .case__media { display: flex; background: var(--ink); }
+.scene--shot .case__media::after {
+  background: radial-gradient(58% 58% at 64% 46%, transparent 0%, rgba(19, 17, 15, .6) 100%);
+}
+.scene--shot .case__media img {
+  width: min(50%, 680px); height: 74%; object-fit: contain;
+  margin: auto clamp(1rem, 4vw, 4.5rem) auto auto;
+  filter: drop-shadow(0 40px 90px rgba(0, 0, 0, .6));
+  will-change: transform;
+}
+.scene--shot.scene--case-right .case__media img { margin: auto auto auto clamp(1rem, 4vw, 4.5rem); }
+.scene--shot.scene--case-right .case__media::after {
+  background: radial-gradient(58% 58% at 36% 46%, transparent 0%, rgba(19, 17, 15, .6) 100%);
+}
+.shot__glow {
+  position: absolute; right: 14%; top: 50%; translate: 50% -50%;
+  width: min(76vw, 800px); aspect-ratio: 1; pointer-events: none;
+  background: radial-gradient(circle, rgba(215, 249, 8, .12), transparent 58%);
+  filter: blur(52px);
+}
+.scene--case-right .shot__glow { right: auto; left: 14%; translate: -50% -50%; }
+.case__panel h2 { font-size: var(--d3); margin-bottom: .8rem; hyphens: auto; text-wrap: balance; }
+@media (min-width: 1024px) and (min-height: 740px) {
+  .scene--shot .case__grid { justify-content: center; }
+  .scene--shot .case__panel { margin-top: 0; width: min(48%, 560px); }
+  /* Vier Tafeln fuellen den Bildschirm nicht bis zum Rand: sie stehen als
+     Block in der Mitte, sonst haengt unter jeder Zeile eine leere Flaeche. */
+  .reasons__grid { grid-auto-rows: clamp(150px, 23vh, 212px); align-content: center; }
+}
+
+/* --- 05 Warum uns waehlen: vier Tafeln, ihre Ziffern auf der Markenflaeche -
+   Die Ziffern liegen als dunkle Vektoren vor; auf Lime stehen sie so, wie sie
+   bei ihr stehen - ohne Umfaerbung. ------------------------------------- */
+.reason .svc__in {
+  grid-template-columns: auto minmax(0, 1fr); align-items: start;
+  gap: clamp(.9rem, 2vw, 1.8rem);
+  padding: clamp(1rem, 3vh, 2.2rem) clamp(1rem, 2vw, 2rem);
+}
+.reason__plate {
+  align-self: start; display: block; background: var(--acid);
+  border-radius: var(--r-pill); padding: .3rem .8rem;
+}
+.reason__num { width: clamp(52px, 6.6vh, 82px); height: auto; }
+.reason h3 { font-size: clamp(1rem, 2.5vh, 1.6rem); }
+/* Im Fluss zaehlt die Lesegroesse, auf der Buehne die Hoehe der Reihe. Diese
+   Regel steht spaeter als die fliessende Ordnung weiter oben und hat dieselbe
+   Staerke - deshalb gehoert das Hoehenmass ausdruecklich an die Buehne, sonst
+   stand der Absatz auf 375px bei 13,8px (gemessen). */
+.reason p { font-size: 1rem; line-height: 1.6; }
+@media (min-width: 1024px) and (min-height: 740px) and (prefers-reduced-motion: no-preference) {
+  .reason p { font-size: clamp(.82rem, 1.7vh, 1.02rem); line-height: 1.55; }
+}
+
+/* Mehr-erfahren aus der Leistungstafel heraus */
+.svc__text .link { justify-self: start; margin-top: .4rem; }
+
+/* --- Zaehler ueber der Markenflaeche: heller Rand verschwaende dort ------ */
+html[data-tone="acid"] .hud__idx span { -webkit-text-stroke-color: rgba(16, 16, 16, .85); }
+html[data-tone="acid"] .hud__ticks li { background: rgba(16, 16, 16, .28); }
+html[data-tone="acid"] .hud__ticks li[data-on] { background: #101010; }
+
+/* --- Bis 900px: Bild oben, Tafel darunter. Kein Text auf dem Rendering --- */
+@media (max-width: 900px) {
+  .hero--sub .hero__title .line:first-child { padding-left: 0; }
+  /* "Professionelles" ist ein Wort und bricht nicht: die Zeile misst sich
+     deshalb an der Breite, sonst steht sie auf 360px ueber dem Rand. */
+  .hero--sub .hero__title { font-size: clamp(1.05rem, 5.2vw, 2.6rem); }
+  .hero--sub .hero__crystal { right: -6vw; top: calc(var(--nav-h) + 1vh); width: 50vw; }
+
+  .offer__h { max-width: none; }
+  .offer__deco { width: 62vw; right: -16vw; bottom: -3vh; }
+
+  .scene--shot .scene__in, .scene--shot .scene__body { min-height: 0; }
+  .scene--shot .scene__body { padding-top: clamp(1.4rem, 4vh, 2.4rem); }
+  .scene--shot .case__media { position: relative; inset: auto; height: 42dvh; }
+  .scene--shot .case__media img,
+  .scene--shot.scene--case-right .case__media img { width: 86%; height: 100%; margin: auto; }
+  .scene--shot .case__media::after,
+  .scene--shot.scene--case-right .case__media::after {
+    background: radial-gradient(70% 70% at 50% 50%, transparent 0%, rgba(19, 17, 15, .5) 100%);
+  }
+  .shot__glow, .scene--case-right .shot__glow {
+    right: auto; left: 50%; top: 50%; translate: -50% -50%; width: 92vw;
+  }
+  .reasons__grid { grid-template-columns: minmax(0, 1fr); }
+  .reason .svc__in { padding: 1.1rem 1rem; }
+}
+
+/* --- Weniger Bewegung: gleiche Stapelung, nichts liegt uebereinander ----- */
+@media (prefers-reduced-motion: reduce) {
+  .scene--shot .scene__in, .scene--shot .scene__body { min-height: 0 !important; }
+  .scene--shot .case__media { position: relative !important; inset: auto !important; height: 44dvh; }
+  .scene--shot .case__media img,
+  .scene--shot.scene--case-right .case__media img { width: 84%; height: 100%; margin: auto; }
+  .scene--shot .case__media::after,
+  .scene--shot.scene--case-right .case__media::after {
+    background: radial-gradient(70% 70% at 50% 50%, transparent 0%, rgba(19, 17, 15, .5) 100%);
+  }
+  .shot__glow { display: none; }
+  .scene--shot .case__panel { margin-top: clamp(1.2rem, 3vh, 2rem); }
+}
+
+/* ==========================================================================
+   Telefon im Querformat: die Hoehe ist knapp, also bestimmt sie die Schrift,
+   und die Objekte messen sich an der kurzen Seite (vmin) statt an der Breite -
+   nach der Breite gerechnet legte sich der Kristall ueber Zeile und Knopf.
+   Steht am Ende der Datei, weil es beide Seiten korrigiert; im Schonmodus
+   greift es nicht, dort steht der Kristall ohnehin ueber der Zeile im Fluss.
+   ========================================================================== */
+@media (max-width: 900px) and (max-height: 540px) and (orientation: landscape)
+   and (prefers-reduced-motion: no-preference) {
+  #hero .scene__body { padding-top: calc(var(--nav-h) + .7rem); padding-bottom: 1.4rem; }
+  .hero__title, .hero--sub .hero__title { font-size: clamp(1.4rem, 7.2vh, 3rem); }
+  .hero__crystal, .hero--sub .hero__crystal { width: 30vmin; right: 1vw; top: calc(var(--nav-h) + .4vh); }
+  .hero__torus { width: 26vmin; opacity: .25; }
+  .hero__sub { max-width: 42ch; }
+}

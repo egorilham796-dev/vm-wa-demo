@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>V&amp;M Werbeagentur · Design-Varianten</title>
+<link rel="icon" href="../vm-wa/assets/img/frame-1-2023.png">
+<style>
+  :root {
+    --bg: #13110F; --panel: #1A1714; --fg: #F4F4F4; --mute: rgba(244, 244, 244, .62);
+    --line: rgba(244, 244, 244, .14); --acid: #D7F908; --bar-h: 56px;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); }
+  body { font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--acid); outline-offset: 2px; border-radius: 6px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+  /* ---------- Modus „Vorschau mit Leiste“ (Desktop) ---------- */
+  .bar {
+    position: fixed; inset: 0 0 auto 0; height: var(--bar-h); z-index: 10;
+    display: flex; align-items: center; gap: 18px; padding: 0 18px;
+    background: rgba(19, 17, 15, .92); border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  }
+  .bar__brand { font-weight: 800; letter-spacing: .02em; white-space: nowrap; }
+  .bar__brand span { color: var(--mute); font-weight: 500; margin-left: .45em; }
+  .seg { display: flex; gap: 4px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
+  .seg button {
+    border: 0; background: transparent; color: var(--mute); border-radius: 999px;
+    padding: 6px 13px; cursor: pointer; white-space: nowrap; line-height: 1.2;
+  }
+  .seg button:hover { color: var(--fg); }
+  .seg button[aria-pressed="true"] { background: var(--acid); color: #13110F; font-weight: 700; }
+  .seg--var { margin-left: 6px; }
+  .bar__open { margin-left: auto; color: var(--mute); text-decoration: none; white-space: nowrap; padding: 6px 4px; }
+  .bar__open:hover { color: var(--fg); }
+  .frame {
+    position: fixed; top: var(--bar-h); left: 0; width: 100%; height: calc(100vh - var(--bar-h)); height: calc(100dvh - var(--bar-h));
+    border: 0; background: var(--bg); display: block;
+  }
+
+  /* ---------- Modus „Liste“ (Telefon, Tablet, Touch) ---------- */
+  .list { max-width: 720px; margin: 0 auto; padding: max(28px, env(safe-area-inset-top)) 20px 48px; }
+  .list__eyebrow { color: var(--acid); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: 12px; }
+  .list h1 { font-size: clamp(26px, 6.4vw, 34px); line-height: 1.08; letter-spacing: -.02em; margin: 10px 0 12px; font-weight: 800; }
+  .list__lead { color: var(--mute); margin: 0 0 26px; max-width: 46ch; }
+  .card { border: 1px solid var(--line); border-radius: 16px; padding: 18px; background: var(--panel); margin-bottom: 14px; }
+  .card h2 { margin: 0 0 6px; font-size: 19px; line-height: 1.2; }
+  .card p { margin: 0 0 14px; color: var(--mute); }
+  .card__row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .card__row a {
+    display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 14px;
+    border-radius: 12px; text-decoration: none; font-weight: 700; border: 1px solid var(--line);
+  }
+  .card__row a.primary { background: var(--acid); color: #13110F; border-color: var(--acid); }
+  .list__note { color: var(--mute); font-size: 13px; margin-top: 26px; }
+
+  body[data-mode="frame"] .list { display: none; }
+  body[data-mode="list"] .bar, body[data-mode="list"] .frame { display: none; }
+</style>
+</head>
+<body data-mode="frame">
+
+<header class="bar" id="bar">
+  <div class="bar__brand">V&amp;M <span>Design-Varianten</span></div>
+  <nav class="seg seg--var" id="segVar" aria-label="Variante"></nav>
+  <nav class="seg seg--page" id="segPage" aria-label="Seite">
+    <button type="button" data-page="start" aria-pressed="true">Startseite</button>
+    <button type="button" data-page="webdesign" aria-pressed="false">Webdesign</button>
+  </nav>
+  <a class="bar__open" id="openRaw" href="../vm-wa/" target="_blank" rel="noopener">Ohne Leiste öffnen ↗</a>
+</header>
+<iframe class="frame" id="frame" title="Vorschau der gewählten Variante" allow="autoplay; fullscreen" src="about:blank"></iframe>
+
+<main class="list" id="list">
+  <div class="list__eyebrow">V&amp;M Werbeagentur</div>
+  <h1>Design-Varianten für vm-wa.de</h1>
+  <p class="list__lead">Jede Variante hat eine Startseite und die Unterseite „Webdesign“. Zurück zu dieser Übersicht: Zurück-Taste des Browsers.</p>
+  <div id="cards"></div>
+  <p class="list__note">Am Desktop erscheint dieselbe Übersicht als Leiste mit Umschalter über der Vorschau.</p>
+</main>
+
+<script>
+(() => {
+  // Bereit gestellte Varianten. Reihenfolge = Reihenfolge der Schalter. `ready: false` wird nicht angezeigt.
+  const VARIANTS = [
+    { id: 'v1', dir: 'vm-wa',    name: 'V1 · Kino',    ready: true,  desc: 'Lange Bildstrecke mit haftenden Blöcken: der Scroll fährt wie eine Kamera, Glas-Panels über den Projekten, horizontale Leistungsschiene.' },
+    { id: 'v2', dir: 'vm-wa-v2', name: 'V2 · Szene',   ready: false, desc: 'Eine Bühne für die ganze Seite: vier 3D-Objekte wandern zwischen den Abschnitten in neue Positionen.' },
+    { id: 'v3', dir: 'vm-wa-v3', name: 'V3 · Licht',   ready: false, desc: 'Die Seite als dunkler Raum: limettengrünes Licht wandert mit dem Scroll und legt den Inhalt frei.' },
+    { id: 'v4', dir: 'vm-wa-v4', name: 'V4 · Blenden', ready: true,  desc: 'Kinovorführung: acht Vollbild-Szenen, zwischen ihnen zieht eine limettengrüne Blende diagonal durchs Bild.' },
+    { id: 'v5', dir: 'vm-wa-v5', name: 'V5 · Typo',    ready: false, desc: 'Syne 800 als Material: jede große Zeile sitzt exakt auf Spaltenbreite, die Schrift selbst bewegt sich.' },
+    { id: 'v6', dir: 'vm-wa-v6', name: 'V6 · Film',    ready: false, desc: 'Ein Filmstreifen: Held und Kontakt als Vorsätze, alles dazwischen fährt als horizontale Spur hinter perforierten Rändern.' },
+    { id: 'v7', dir: 'vm-wa-v7', name: 'V7 · Kacheln', ready: false, desc: 'Bento-Raster mit lebenden Kacheln: jede fliegt in ihr Fach, neigt sich unter dem Cursor, nimmt sich ihre Reihe.' },
+  ].filter(v => v.ready);
+
+  const PAGES = { start: '', webdesign: 'webdesign.html' };
+  const $ = s => document.querySelector(s);
+  const frame = $('#frame'), segVar = $('#segVar'), segPage = $('#segPage'), openRaw = $('#openRaw'), cards = $('#cards');
+  const listMedia = matchMedia('(pointer: coarse), (max-width: 1023px)');
+
+  // Dieselbe Datei liegt in demos/vm-wa-preview/ (Varianten eine Ebene höher) und im Wurzelverzeichnis
+  // der veröffentlichten Seite (Varianten daneben).
+  const BASE = /\/vm-wa-preview\/?$/.test(location.pathname.replace(/index\.html$/, '')) ? '../' : './';
+  document.querySelector('link[rel="icon"]').href = BASE + 'vm-wa/assets/img/frame-1-2023.png';
+
+  let cur = { id: VARIANTS[0].id, page: 'start' };
+
+  const byId = id => VARIANTS.find(v => v.id === id);
+  const hrefOf = (v, page) => `${BASE}${v.dir}/${PAGES[page]}`;
+
+  // ---- Zustand aus dem Hash: #v4 oder #v4/webdesign ----
+  function readHash() {
+    const [id, page] = location.hash.replace(/^#/, '').split('/');
+    return { id: byId(id) ? id : VARIANTS[0].id, page: page === 'webdesign' ? 'webdesign' : 'start' };
+  }
+  function writeHash() {
+    const h = '#' + cur.id + (cur.page === 'webdesign' ? '/webdesign' : '');
+    if (location.hash !== h) history.replaceState(null, '', h);
+  }
+
+  // ---- Leiste ----
+  VARIANTS.forEach(v => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.dataset.id = v.id; b.textContent = v.name; b.title = v.desc;
+    b.addEventListener('click', () => go({ id: v.id }));
+    segVar.appendChild(b);
+  });
+  segPage.querySelectorAll('button').forEach(b => b.addEventListener('click', () => go({ page: b.dataset.page })));
+
+  function paint() {
+    segVar.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.id === cur.id)));
+    segPage.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.page === cur.page)));
+    openRaw.href = hrefOf(byId(cur.id), cur.page);
+    document.title = `${byId(cur.id).name} · ${cur.page === 'webdesign' ? 'Webdesign' : 'Startseite'} · V&M Design-Varianten`;
+  }
+
+  let expected = '';
+  function load() {
+    const href = hrefOf(byId(cur.id), cur.page);
+    expected = href;
+    if (document.body.dataset.mode === 'frame' && frame.getAttribute('src') !== href) frame.setAttribute('src', href);
+  }
+  function go(patch) { cur = { ...cur, ...patch }; paint(); writeHash(); load(); }
+
+  // Navigiert der Besucher im Rahmen selbst (Link im Menü), folgt die Leiste nach.
+  frame.addEventListener('load', () => {
+    try {
+      const p = frame.contentWindow.location.pathname;
+      const m = p.match(/\/(vm-wa(?:-v\d+)?)\/(webdesign\.html|index\.html)?$/);
+      if (!m) return;
+      const v = VARIANTS.find(x => x.dir === m[1]);
+      if (!v) return;
+      cur = { id: v.id, page: m[2] === 'webdesign.html' ? 'webdesign' : 'start' };
+      paint(); writeHash();
+    } catch (e) { /* fremder Ursprung: nichts tun */ }
+  });
+
+  // ---- Liste ----
+  VARIANTS.forEach(v => {
+    const c = document.createElement('article'); c.className = 'card';
+    c.innerHTML = `<h2>${v.name}</h2><p>${v.desc}</p>
+      <div class="card__row"><a class="primary" href="${hrefOf(v, 'start')}">Startseite</a><a href="${hrefOf(v, 'webdesign')}">Webdesign</a></div>`;
+    cards.appendChild(c);
+  });
+
+  // ---- Modus ----
+  function applyMode() {
+    const list = listMedia.matches;
+    document.body.dataset.mode = list ? 'list' : 'frame';
+    if (!list) load(); else if (frame.getAttribute('src') !== 'about:blank') frame.setAttribute('src', 'about:blank');
+  }
+  listMedia.addEventListener('change', applyMode);
+  window.addEventListener('hashchange', () => { cur = readHash(); paint(); load(); });
+
+  cur = readHash(); paint(); writeHash(); applyMode();
+})();
+</script>
+</body>
+</html>
