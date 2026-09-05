@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V&amp;M Werbeagentur - Ihre Intension, unsere Motivation</title>
+<meta name="description" content="Grafikdesign, Webdesign, Webentwicklung, Foto und Video, Social Media und 360-Grad-Marketing aus einer Hand.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preload" as="font" type="font/woff2" href="assets/font/syne-800-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="assets/font/poppins-400-latin.woff2" crossorigin>
+<link rel="icon" href="assets/logo/vm-logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/vmwa.css">
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="nav__in wrap">
+    <a class="nav__logo" href="#hero" aria-label="V&amp;M Werbeagentur, zum Seitenanfang">
+      <img src="assets/logo/vm-logo.svg" alt="V&amp;M Werbeagentur" width="120" height="26">
+    </a>
+    <nav class="nav__links" aria-label="Hauptnavigation">
+      <a href="#leistungen">Leistungen</a>
+      <a href="webdesign.html">Webdesign</a>
+      <a href="#projekte">Projekte</a>
+      <a href="#kunden">Kunden</a>
+      <a href="#aktuelles">Aktuelles</a>
+    </nav>
+    <a class="btn btn--acid" href="#kontakt">Projekt starten
+      <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path></svg>
+    </a>
+    <button class="nav__burger" id="burger" aria-label="Menü öffnen" aria-expanded="false">
+      <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path></svg>
+    </button>
+  </div>
+</header>
+
+<div class="menu" id="menu" data-open="false">
+  <button class="menu__close" id="menuClose" aria-label="Menü schließen">
+    <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>
+  </button>
+  <a href="#leistungen">Leistungen</a>
+  <a href="webdesign.html">Webdesign</a>
+  <a href="#projekte">Projekte</a>
+  <a href="#kunden">Kunden</a>
+  <a href="#aktuelles">Aktuelles</a>
+  <a href="#kontakt">Kontakt</a>
+</div>
+
+<main>
+
+<!-- ============ 1. Held: fünf Kacheln fliegen in ihre Fächer ============ -->
+<section class="hero" id="hero">
+  <div class="wrap hero__bento" id="heroBento">
+
+    <article class="tl hero__t hero__t--title">
+      <h1 class="hero__title">
+        <span class="line">Ihre Intension</span>
+        <span class="line line--acid">unsere Motivation</span>
+      </h1>
+      <p class="hero__sub">Grafikdesign, Webdesign, Webentwicklung, Foto und Video, Social Media und 360-Grad-Marketing aus einer Hand.</p>
+    </article>
+
+    <article class="tl hero__t hero__t--obj">
+      <span class="hero__halo" aria-hidden="true"></span>
+      <img class="hero__crystal" src="assets/img/svc-01-grafik.webp" width="601" height="517" fetchpriority="high" alt="" aria-hidden="true">
+    </article>
+
+    <a class="tl hero__t hero__t--cta" href="#kontakt">
+      <span class="hero__cta-label">Projekt starten</span>
+      <svg class="hero__cta-arrow" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+    </a>
+
+    <article class="tl hero__t hero__t--film">
+      <video class="hero__film" id="heroFilm" data-src="assets/video/case-innova.mp4" data-in="0.9" data-out="3.05" muted loop playsinline preload="none" aria-hidden="true"></video>
+    </article>
+
+    <!-- ============ 2. Band: die einzige Laufschrift der Seite ============ -->
+    <div class="tl hero__t hero__t--band" id="band" aria-hidden="true">
+      <div class="band__track" id="bandTrack">
+        <div class="band__set">
+          <span>Grafikdesign</span><i></i><span>Webdesign</span><i></i><span>Webentwicklung</span><i></i><span>Foto und Video</span><i></i><span>Social Media</span><i></i><span>360-Grad-Marketing</span><i></i>
+        </div>
+        <div class="band__set">
+          <span>Grafikdesign</span><i></i><span>Webdesign</span><i></i><span>Webentwicklung</span><i></i><span>Foto und Video</span><i></i><span>Social Media</span><i></i><span>360-Grad-Marketing</span><i></i>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 3. Leistungen: sechs Kacheln, die sich neigen ============ -->
+<section class="sec svcs" id="leistungen">
+  <div class="wrap head">
+    <h2>Unsere <em>Dienstleistungen</em></h2>
+  </div>
+
+  <div class="wrap bento svcs__grid" id="svcsGrid">
+
+    <article class="tl svc svc--a">
+      <div class="svc__txt">
+        <span class="num">01</span>
+        <h3>Grafikdesign</h3>
+        <p>Grafikdesign ist essenziell für eine erfolgreiche Online-Präsenz, denn es zieht Kunden an und stärkt die Markenidentität. Professionelles Design entscheidet über den ersten Eindruck.</p>
+        <a class="link" href="#kontakt">Mehr erfahren
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+        </a>
+      </div>
+      <img class="svc__obj" src="assets/img/obj-glass.png" width="601" height="592" loading="lazy" decoding="async" alt="" aria-hidden="true">
+    </article>
+
+    <article class="tl svc svc--b">
+      <div class="svc__txt">
+        <span class="num">02</span>
+        <h3>Webdesign</h3>
+        <p>Ein professionelles Webdesign mit WordPress bietet unzählige Möglichkeiten. Gute Webdesigns machen den Unterschied, ob Firmenwebsite, Social Media oder Online Shop.</p>
+        <a class="link" href="webdesign.html">Mehr erfahren
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+        </a>
+      </div>
+      <img class="svc__obj" src="assets/img/svc-02-webdesign.webp" width="650" height="570" loading="lazy" decoding="async" alt="" aria-hidden="true">
+    </article>
+
+    <article class="tl svc svc--c">
+      <div class="svc__txt">
+        <span class="num">03</span>
+        <h3>Webentwicklung und technische Umsetzung</h3>
+        <p>V&amp;M bietet umfassende Webentwicklung und technische Umsetzung. Von der Landingpage bis zur komplexen Webanwendung, zu transparenten Preisen.</p>
+        <a class="link" href="#kontakt">Mehr erfahren
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+        </a>
+      </div>
+      <img class="svc__obj" src="assets/img/svc-03-dev.webp" width="646" height="411" loading="lazy" decoding="async" alt="" aria-hidden="true">
+    </article>
+
+    <article class="tl svc svc--d">
+      <div class="svc__txt">
+        <span class="num">04</span>
+        <h3>Professionelle Fotografie und Video</h3>
+        <p>Ein Business-Fotoshooting hebt die Marke hervor und schafft Vertrauen. Hochwertige Bilder tragen Ihre Botschaft auf Webseiten, in Marketingmaterialien und in sozialen Medien.</p>
+        <a class="link" href="#kontakt">Mehr erfahren
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+        </a>
+      </div>
+      <img class="svc__obj" src="assets/img/svc-04-foto.webp" width="682" height="799" loading="lazy" decoding="async" alt="" aria-hidden="true">
+    </article>
+
+    <article class="tl svc svc--e">
+      <div class="svc__txt">
+        <span class="num">05</span>
+        <h3>Soziale Netzwerke</h3>
+        <p>Gezielte Instagram Werbung, Meta Business Suite, Facebook und Google Ads. Wir sorgen dafür, dass Ihre Werbung die richtige Zielgruppe erreicht.</p>
+        <a class="link" href="#kontakt">Mehr erfahren
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+        </a>
+      </div>
+      <img class="svc__obj" src="assets/img/svc-05-social.webp" width="520" height="610" loading="lazy" decoding="async" alt="" aria-hidden="true">
+    </article>
+
+    <article class="tl svc svc--f">
+      <div class="svc__txt">
+        <span class="num">06</span>
+        <h3>360-Grad-Marketinglösungen</h3>
+        <p>Lösungen, die alle Aspekte des modernen Marketings abdecken, von SEO bis Influencer Marketing. Maßgeschneiderte Strategien für Ihre Sichtbarkeit im Netz.</p>
+        <a class="link" href="#kontakt">Mehr erfahren
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+        </a>
+      </div>
+      <img class="svc__obj" src="assets/img/svc-06-360.webp" width="600" height="600" loading="lazy" decoding="async" alt="" aria-hidden="true">
+    </article>
+
+  </div>
+</section>
+
+<!-- ============ 4. Projekte: die aktive Kachel nimmt die Reihe ============ -->
+<section class="sec pjs" id="projekte">
+  <div class="pjs__stage" id="pjsStage">
+    <div class="wrap head">
+      <h2>Unsere <em>Projekte</em></h2>
+    </div>
+
+    <div class="wrap pjs__row" id="pjsRow" data-active="0">
+
+      <article class="tl pj" data-pj="0">
+        <div class="pj__in">
+          <div class="pj__media">
+            <video data-src="assets/video/case-innova.mp4" data-in="0.9" data-out="3.05" muted loop playsinline preload="none" aria-hidden="true"></video>
+          </div>
+          <span class="pj__num" aria-hidden="true">01</span>
+          <div class="pj__glass">
+            <span class="pj__meta">2023 · Web Design, mehrseitige Website</span>
+            <h3>Erfolgreiche Digitalisierung für Innova - Consult</h3>
+            <p>Für die führende Consulting-Firma haben wir eine Website geschaffen, die Innovation und Fachwissen in den Vordergrund stellt, ansprechend und benutzerfreundlich zugleich.</p>
+            <a class="link" href="#kontakt">Projekt ansehen
+              <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <article class="tl pj" data-pj="1">
+        <div class="pj__in">
+          <div class="pj__media">
+            <video data-src="assets/video/case-allerhand.mp4" muted loop playsinline preload="none" aria-hidden="true"></video>
+          </div>
+          <span class="pj__num" aria-hidden="true">02</span>
+          <div class="pj__glass">
+            <span class="pj__meta">2023 · Web Design, E-Commerce</span>
+            <h3>Digitale Blütezeit für Allerhand Gartencenter</h3>
+            <p>Ein benutzerfreundlicher Online-Shop, der das umfangreiche Sortiment digital zugänglich macht und den Kunden ein nahtloses Einkaufserlebnis bietet.</p>
+            <a class="link" href="#kontakt">Projekt ansehen
+              <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <article class="tl pj" data-pj="2">
+        <div class="pj__in">
+          <div class="pj__media">
+            <video data-src="assets/video/case-befamed.mp4" muted loop playsinline preload="none" aria-hidden="true"></video>
+          </div>
+          <span class="pj__num" aria-hidden="true">03</span>
+          <div class="pj__glass">
+            <span class="pj__meta">2023 · Web Design, mehrseitige Website</span>
+            <h3>Neue Wege in der Talentgewinnung für BeFaMed</h3>
+            <p>Eine Webseite, die die Expertise im medizinischen Sektor zeigt und potenziellen Mitarbeitern Einblick in Werte und Karrierewege gibt.</p>
+            <a class="link" href="#kontakt">Projekt ansehen
+              <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+            </a>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. Kunden: zwölf Kacheln, Licht in den Fugen ============ -->
+<section class="sec cls" id="kunden" aria-label="Kundenlogos">
+  <div class="wrap head head--split">
+    <h2>Unsere <em>Kunden</em></h2>
+    <p class="head__lead">Eine Agentur, die eine breite Palette hochwertiger Dienstleistungen zu angemessenen Preisen anbietet.</p>
+  </div>
+
+  <div class="wrap cls__grid" id="clsGrid">
+    <span class="cls__seams" aria-hidden="true"></span>
+    <span class="cls__glow" id="clsGlow" aria-hidden="true"></span>
+    <div class="cls__cell"><img src="assets/logo/cl-24.svg" width="300" height="150" alt="" loading="lazy"></div>
+    <div class="cls__cell"><img src="assets/logo/cl-21.svg" width="300" height="150" alt="" loading="lazy"></div>
+    <div class="cls__cell"><img src="assets/logo/cl-25.svg" width="300" height="150" alt="" loading="lazy"></div>
+    <div class="cls__cell"><img src="assets/logo/cl-28.svg" width="300" height="150" alt="" loading="lazy"></div>
+    <div class="cls__cell"><img src="assets/logo/cl-Frame-31.svg" width="300" height="150" alt="" loading="lazy"></div>
+    <div class="cls__cell"><img src="assets/logo/cl-R1R3.svg" width="300" height="150" alt="" loading="lazy"></div>
+    <div class="cls__cell"><img src="assets/logo/cl-piqo.svg" width="300" height="150" alt="" loading="lazy"></div>
+    <div class="cls__cell"><img src="assets/logo/cl-ssz.svg" width="300" height="150" alt="" loading="lazy"></div>
+    <div class="cls__cell"><img src="assets/logo/cl-ick.svg" width="300" height="150" alt="" loading="lazy"></div>
+    <div class="cls__cell"><img src="assets/logo/cl-bs2.svg" width="300" height="150" alt="" loading="lazy"></div>
+    <div class="cls__cell"><img src="assets/logo/cl-mk2.svg" width="300" height="150" alt="" loading="lazy"></div>
+  </div>
+</section>
+
+<!-- ============ 6. Stimmen: fünf Kacheln im Verband ============ -->
+<section class="sec vcs" id="stimmen">
+  <div class="wrap head">
+    <h2>Was unsere Kunden <em>über uns sagen</em></h2>
+  </div>
+
+  <div class="wrap bento vcs__grid">
+
+    <article class="tl vc vc--a">
+      <blockquote>„Sie entwickelten eine übersichtliche, leicht navigierbare und professionelle Webseite, die unsere Erwartungen übertraf.“</blockquote>
+      <div class="vc__who">
+        <span class="vc__name">Alexander Meyhöfer</span>
+        <span class="vc__firm">BeFaMed</span>
+      </div>
+      <img class="vc__mark" src="assets/logo/av-004.svg" width="200" height="201" alt="" loading="lazy" aria-hidden="true">
+    </article>
+
+    <article class="tl vc vc--b">
+      <blockquote>„Das Design ist modern und benutzerfreundlich und spiegelt unsere professionelle Haltung perfekt wider.“</blockquote>
+      <div class="vc__who">
+        <span class="vc__name">Nevzat Aydin</span>
+        <span class="vc__firm">Innova Consult</span>
+      </div>
+      <img class="vc__mark" src="assets/logo/av-005.svg" width="200" height="201" alt="" loading="lazy" aria-hidden="true">
+    </article>
+
+    <article class="tl vc vc--c">
+      <blockquote>„Dank der kreativen und technischen Expertise haben wir nun eine benutzerfreundliche Webseite, die unsere Kunden lieben.“</blockquote>
+      <div class="vc__who">
+        <span class="vc__name">Christian Aller</span>
+        <span class="vc__firm">Allerhand Gartencenter</span>
+      </div>
+      <img class="vc__mark" src="assets/logo/av-002.svg" width="200" height="201" alt="" loading="lazy" aria-hidden="true">
+    </article>
+
+    <article class="tl vc vc--d">
+      <blockquote>„Sie übernehmen das Management unseres Instagram-Accounts, was die Interaktion und Sichtbarkeit deutlich gesteigert hat.“</blockquote>
+      <div class="vc__who">
+        <span class="vc__name">Eugen Ickert</span>
+        <span class="vc__firm">Autotechnik Ickert</span>
+      </div>
+      <img class="vc__mark" src="assets/logo/av-ickert.svg" width="200" height="201" alt="" loading="lazy" aria-hidden="true">
+    </article>
+
+    <article class="tl vc vc--e">
+      <blockquote>„Durch ihre Fotografie und Videografie fangen sie bei unseren Spielen die Emotionen und wichtigen Momente perfekt ein.“</blockquote>
+      <div class="vc__who">
+        <span class="vc__name">Selim Akarsu</span>
+        <span class="vc__firm">FC Lion's Ransbach</span>
+      </div>
+      <img class="vc__mark" src="assets/logo/av-lion.svg" width="200" height="201" alt="" loading="lazy" aria-hidden="true">
+    </article>
+
+  </div>
+</section>
+
+<!-- ============ 7. Aktuelles: drei Kacheln ============ -->
+<section class="sec nws" id="aktuelles">
+  <div class="wrap head">
+    <h2>Aktuelles</h2>
+  </div>
+
+  <div class="wrap bento nws__grid">
+
+    <article class="tl nw nw--a">
+      <a class="nw__shot" href="https://vm-wa.de/physiotherapie-limburg-individuelle-behandlungsansatze-bei-vivamedica/" tabindex="-1" aria-hidden="true">
+        <img src="assets/img/post-vivamedica.webp" width="1600" height="900" alt="" loading="lazy">
+      </a>
+      <div class="nw__txt">
+        <h3>Physiotherapie Limburg: individuelle Behandlungsansätze bei VivaMedica</h3>
+        <p>VivaMedica ist die führende Adresse für Physiotherapie in Limburg, wo erfahrene Fachleute individuelle Behandlungsansätze bieten.</p>
+        <a class="link" href="https://vm-wa.de/physiotherapie-limburg-individuelle-behandlungsansatze-bei-vivamedica/">Weiterlesen
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+        </a>
+      </div>
+    </article>
+
+    <article class="tl nw nw--b">
+      <a class="nw__shot" href="https://vm-wa.de/erfolgreiches-social-media-marketing-ihre-schlussel-zum-erfolg-mit-vm/" tabindex="-1" aria-hidden="true">
+        <img src="assets/img/post-social.webp" width="1600" height="900" alt="" loading="lazy">
+      </a>
+      <div class="nw__txt">
+        <h3>Erfolgreiches Social Media Marketing mit V&amp;M</h3>
+        <p>In der heutigen digitalen Ära ist Social Media Marketing ein unverzichtbares Instrument für Unternehmen.</p>
+        <a class="link" href="https://vm-wa.de/erfolgreiches-social-media-marketing-ihre-schlussel-zum-erfolg-mit-vm/">Weiterlesen
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+        </a>
+      </div>
+    </article>
+
+    <article class="tl nw nw--c">
+      <a class="nw__shot" href="https://vm-wa.de/seo-optimierung-fur-ihre-website-der-schlussel-zu-ihrem-online-erfolg/" tabindex="-1" aria-hidden="true">
+        <img src="assets/img/post-seo.webp" width="1200" height="675" alt="" loading="lazy">
+      </a>
+      <div class="nw__txt">
+        <h3>SEO Optimierung für Ihre Website: der Schlüssel zum Online-Erfolg</h3>
+        <p>In der heutigen digitalen Welt ist die SEO Optimierung Ihrer Website unerlässlich, um überhaupt gefunden zu werden.</p>
+        <a class="link" href="https://vm-wa.de/seo-optimierung-fur-ihre-website-der-schlussel-zu-ihrem-online-erfolg/">Weiterlesen
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+        </a>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ============ 8. Kontakt: Formularkachel und Kontaktkacheln ============ -->
+<section class="sec ctc" id="kontakt">
+  <div class="wrap head head--split">
+    <h2>Nehmen Sie <em>Kontakt auf</em></h2>
+    <p class="head__lead">Und wir werden eine einzigartige Website für Sie erstellen.</p>
+  </div>
+
+  <div class="wrap bento ctc__grid">
+
+    <article class="tl ctc__form">
+      <form id="form" novalidate>
+        <div class="ctc__fields">
+          <div class="field" data-field>
+            <label for="f-name">Name</label>
+            <input id="f-name" name="name" type="text" autocomplete="name" required placeholder="Ihr Name">
+            <span class="field__err" data-err></span>
+          </div>
+          <div class="field" data-field>
+            <label for="f-mail">E-Mail</label>
+            <input id="f-mail" name="email" type="email" autocomplete="email" required placeholder="name@firma.de">
+            <span class="field__err" data-err></span>
+          </div>
+        </div>
+        <div class="field" data-field>
+          <label for="f-tel">Telefon</label>
+          <input id="f-tel" name="tel" type="tel" autocomplete="tel" placeholder="+49">
+          <span class="field__hint">Optional. Wir rufen nur zurück, wenn Sie es wünschen.</span>
+          <span class="field__err" data-err></span>
+        </div>
+        <div class="field" data-field>
+          <label for="f-msg">Nachricht</label>
+          <textarea id="f-msg" name="message" required placeholder="Worum geht es in Ihrem Projekt?"></textarea>
+          <span class="field__err" data-err></span>
+        </div>
+        <label class="consent">
+          <input type="checkbox" id="f-ok" name="consent" required>
+          <span>Ich willige ein, dass diese Website meine übermittelten Informationen speichert, sodass meine Anfrage beantwortet werden kann.*</span>
+        </label>
+        <button class="btn btn--acid" type="submit" id="send">Senden
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path></svg>
+        </button>
+        <p class="form__note" id="note" role="status" aria-live="polite"></p>
+        <!-- Anbindung: hier den echten Endpunkt des Formulars eintragen (WPForms, CF7 oder eigener Handler). -->
+      </form>
+    </article>
+
+    <article class="tl ctc__tel">
+      <h3>Unsere Kontakte</h3>
+      <a class="ctc__big" href="tel:+491635154355">+49 163 5154355</a>
+      <a class="ctc__side" href="https://wa.me/491635154355">WhatsApp
+        <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+      </a>
+    </article>
+
+    <article class="tl ctc__mail">
+      <a class="ctc__big" href="mailto:info@vm-wa.de">info@vm-wa.de</a>
+      <a class="ctc__side" href="https://www.instagram.com/">Instagram
+        <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+      </a>
+    </article>
+
+    <article class="tl ctc__nav">
+      <div>
+        <h3>Navigation</h3>
+        <ul>
+          <li><a href="#hero">Startseite</a></li>
+          <li><a href="#projekte">Unsere Projekte</a></li>
+          <li><a href="#kunden">Kunden</a></li>
+          <li><a href="#aktuelles">Aktuelles</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Unsere Dienstleistungen</h3>
+        <ul>
+          <li><a href="#leistungen">Grafikdesign</a></li>
+          <li><a href="webdesign.html">Webdesign</a></li>
+          <li><a href="#leistungen">Webentwicklung</a></li>
+          <li><a href="#leistungen">Foto- und Videoproduktion</a></li>
+          <li><a href="#leistungen">Soziale Netzwerke</a></li>
+          <li><a href="#leistungen">360-Grad-Marketing</a></li>
+        </ul>
+      </div>
+    </article>
+
+  </div>
+
+  <div class="wrap foot">
+    <nav aria-label="Rechtliches">
+      <a href="https://vm-wa.de/datenschutz/">Datenschutz</a>
+      <a href="https://vm-wa.de/impressum/">Impressum</a>
+    </nav>
+    <span>© 2026 V&amp;M Werbeagentur</span>
+  </div>
+</section>
+
+</main>
+
+<script src="assets/lib/gsap.min.js"></script>
+<script src="assets/lib/ScrollTrigger.min.js"></script>
+<script src="assets/lib/lenis.min.js"></script>
+<script src="js/vmwa.js"></script>
+</body>
+</html>

@@ -1,0 +1,768 @@
+/* ==========================================================================
+   V&M Werbeagentur - Variante 7 "Kacheln"
+   Marke: Farben, Schriften und Bildmaterial von vm-wa.de (Stand 04.09.2026).
+   Formsprache: asymmetrisches Bento. Eine Kachel ist die Einheit der Bewegung.
+   Radien-System: Flaechen 20px, Innenteile 12px, Bedienelemente Pille.
+   Ein Theme (dunkel), ein Akzent (#D7F908).
+   ========================================================================== */
+
+@import url("../assets/fonts.css");
+
+/* --- Tokens ------------------------------------------------------------- */
+:root {
+  --ink:        #13110F;   /* Grundflaeche, vom Live-Auftritt uebernommen */
+  --ink-2:      #1A1714;   /* Kachel */
+  --ink-3:      #221E1A;   /* erhoehte Kachel */
+  --acid:       #D7F908;   /* Markenakzent, einziger Akzent der Seite */
+  --paper:      #F4F4F4;
+  --mute:       #9A968F;
+  --line:       rgba(255, 255, 255, .12);
+  --line-soft:  rgba(255, 255, 255, .07);
+
+  --dh: clamp(1.4rem, calc(3.6vw + 9.9px), 4rem);  /* Held: zwei Zeilen auf 1440, nie ein Buchstabe allein */
+  --d2: clamp(1.35rem, 3.6vw, 3.1rem);    /* Abschnitt */
+  --d3: clamp(1.12rem, 1.55vw, 1.5rem);   /* Kachel */
+  --body: clamp(.9375rem, .98vw, 1.0625rem);
+  --micro: .8125rem;
+
+  --r-panel: 20px;
+  --r-inner: 12px;
+  --r-pill: 999px;
+
+  --gut: clamp(1.1rem, 3.6vw, 4.5rem);
+  --tgap: clamp(9px, .85vw, 15px);
+  --sec: clamp(4.5rem, 11vh, 9rem);
+  --pad: clamp(1.25rem, 1.9vw, 2.25rem);
+
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  --nav-h: 72px;
+}
+
+/* --- Reset -------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font: 400 var(--body)/1.7 Poppins, system-ui, sans-serif;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+img, video, svg { display: block; max-width: 100%; }
+/* Stehen width und height im Markup, sind das Praesentationswerte: ohne diese
+   Zeile zieht die Angabe das Bild in die Laenge - die Ziffernvektoren der
+   Unterseite standen 54x50 statt 54x27 (gemessen 05.09.2026). */
+img { height: auto; }
+a { color: inherit; text-decoration: none; }
+button, input, textarea { font: inherit; color: inherit; }
+h1, h2, h3 {
+  margin: 0; font-family: Syne, system-ui, sans-serif; font-weight: 800; line-height: 1.05;
+  /* Deutsche Komposita sind lang: umbrechen und trennen statt ueberlaufen. */
+  overflow-wrap: break-word; hyphens: auto;
+}
+p { margin: 0; }
+:focus-visible { outline: 2px solid var(--acid); outline-offset: 3px; border-radius: 4px; }
+
+.wrap { width: min(100% - var(--gut) * 2, 1440px); margin-inline: auto; }
+
+/* --- Flaeche ueber allem: Korn + Fortschritt ---------------------------- */
+.grain {
+  position: fixed; inset: 0; z-index: 90; pointer-events: none;
+  opacity: .3; mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+.progress {
+  position: fixed; inset: 0 auto auto 0; z-index: 95;
+  height: 2px; width: 100%; transform: scaleX(0); transform-origin: 0 50%;
+  background: var(--acid); pointer-events: none;
+}
+
+/* --- Navigation: Reihe kleiner Pillen ----------------------------------- */
+.nav {
+  position: fixed; inset: 0 0 auto 0; z-index: 80;
+  height: var(--nav-h);
+  display: flex; align-items: center;
+  background: rgba(19, 17, 15, .6);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border-bottom: 1px solid var(--line-soft);
+}
+.nav__in { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
+.nav__logo img { height: 24px; width: auto; }
+.nav__links { display: flex; gap: .4rem; align-items: center; }
+.nav__links a {
+  font-size: var(--micro); color: var(--mute);
+  padding: .5rem .95rem; border-radius: var(--r-pill); border: 1px solid var(--line-soft);
+  transition: color .3s var(--ease), border-color .3s var(--ease);
+}
+.nav__links a:hover { color: var(--paper); border-color: var(--line); }
+.nav__burger { display: none; background: none; border: 0; padding: .5rem; cursor: pointer; color: var(--paper); }
+.nav__burger svg { width: 26px; height: 26px; }
+
+/* --- Bedienelemente ----------------------------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; gap: .6rem; white-space: nowrap;
+  padding: .8rem 1.4rem; border-radius: var(--r-pill); border: 1px solid transparent;
+  font-size: .9375rem; font-weight: 500; cursor: pointer;
+  transition: transform .25s var(--ease), background-color .25s var(--ease);
+}
+.btn svg { width: 18px; height: 18px; flex: none; }
+.btn--acid { background: var(--acid); color: #101010; }   /* Kontrast 15.4:1 */
+.btn--acid:hover { background: #E4FF2E; }
+.btn:active { transform: translateY(1px) scale(.985); }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+.link {
+  display: inline-flex; align-items: center; gap: .45rem;
+  font-size: .9375rem; color: var(--acid);
+  border-bottom: 1px solid rgba(215, 249, 8, .35); padding-bottom: 2px;
+  transition: border-color .3s var(--ease), gap .3s var(--ease);
+}
+.link svg { width: 15px; height: 15px; }
+.link:hover { border-color: var(--acid); gap: .75rem; }
+
+/* --- Vollbild-Menue (mobil) -------------------------------------------- */
+.menu {
+  position: fixed; inset: 0; z-index: 85;
+  display: none; flex-direction: column; justify-content: center; gap: 1rem;
+  padding: var(--gut);
+  background: var(--ink);
+}
+.menu[data-open="true"] { display: flex; }
+.menu a { font-family: Syne, sans-serif; font-weight: 700; font-size: clamp(2rem, 9vw, 3.5rem); text-transform: uppercase; }
+.menu__close { position: absolute; top: 1.25rem; right: var(--gut); background: none; border: 0; color: var(--paper); cursor: pointer; }
+.menu__close svg { width: 30px; height: 30px; }
+
+/* ==========================================================================
+   Kachel-System
+   ========================================================================== */
+.tl {
+  position: relative; min-width: 0;
+  border-radius: var(--r-panel);
+  border: 1px solid var(--line-soft);
+  background: var(--ink-2);
+  overflow: hidden;
+}
+.bento {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--tgap);
+}
+.sec { padding-top: var(--sec); }
+
+.head {
+  padding-bottom: clamp(1.5rem, 3.5vh, 2.75rem);
+  margin-bottom: clamp(1.25rem, 3vh, 2.25rem);
+  border-bottom: 1px solid var(--line-soft);
+}
+.head h2 { font-size: var(--d2); text-transform: uppercase; letter-spacing: -.015em; hyphens: manual; }
+.head h2 em { font-style: italic; color: var(--acid); }
+.head--split { display: grid; gap: 1rem 3rem; align-items: end; }
+.head__lead { color: var(--mute); max-width: 46ch; }
+@media (min-width: 901px) {
+  .head--split { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); }
+}
+
+/* Ihre Ziffernschrift: offene Kontur, nie gefuellt. */
+.num {
+  font-family: Syne, sans-serif; font-weight: 800; line-height: 1;
+  font-size: clamp(2rem, 3.4vw, 3.4rem);
+  color: transparent; -webkit-text-stroke: 1px rgba(215, 249, 8, .5);
+}
+
+/* ==========================================================================
+   1. Held: fuenf Kacheln
+   ========================================================================== */
+.hero {
+  min-height: 100dvh; display: grid; grid-template-rows: minmax(0, 1fr);
+  padding: calc(var(--nav-h) + var(--tgap)) 0 var(--tgap);
+}
+.hero__bento {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: clamp(180px, 33vh, 320px) minmax(0, 1fr) clamp(58px, 8vh, 78px);
+  gap: var(--tgap);
+}
+.hero__t--film  { grid-area: 1 / 1 / 2 / 9; background: var(--ink-3); }
+.hero__t--obj   { grid-area: 1 / 9 / 2 / 13; display: grid; place-items: center; background: var(--ink-3); }
+.hero__t--title { grid-area: 2 / 1 / 3 / 13; display: flex; flex-direction: column; justify-content: center; gap: clamp(1.4rem, 4.5vh, 3.2rem); padding: clamp(1.4rem, 2.5vw, 2.6rem); }
+.hero__t--cta   { grid-area: 3 / 1 / 4 / 5; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0 var(--pad); transition: background-color .35s var(--ease), color .35s var(--ease), border-color .35s var(--ease); }
+.hero__t--band  { grid-area: 3 / 5 / 4 / 13; background: var(--acid); border-color: var(--acid); display: flex; align-items: center; }
+
+.hero__title { font-size: var(--dh); text-transform: uppercase; letter-spacing: -.025em; hyphens: none; }
+.hero__title .line { display: block; }
+.hero__title .line--acid { color: var(--acid); padding-left: min(3vw, 48px); }
+.hero__sub {
+  color: var(--mute);
+  border-top: 1px solid var(--line-soft);            /* die Linie laeuft ueber die ganze Kachel */
+  padding-top: clamp(.9rem, 1.6vh, 1.35rem);
+  padding-right: min(46%, 660px);                    /* der Satz bricht auf halber Breite */
+}
+
+.hero__halo {
+  position: absolute; inset: 12% 6%;
+  background: radial-gradient(circle closest-side, rgba(215, 249, 8, .2), transparent 76%);
+  pointer-events: none;
+}
+.hero__crystal {
+  position: relative; width: min(78%, 300px); height: auto;
+  filter: drop-shadow(0 26px 60px rgba(0, 0, 0, .6));
+}
+
+.hero__t--cta { color: var(--paper); }
+.hero__cta-label { font-family: Syne, sans-serif; font-weight: 800; font-size: clamp(.95rem, 1.15vw, 1.3rem); text-transform: uppercase; letter-spacing: -.01em; white-space: nowrap; }
+.hero__cta-arrow { width: 22px; height: 22px; flex: none; color: var(--acid); transition: color .35s var(--ease); }
+.hero__t--cta:hover { background: var(--acid); border-color: var(--acid); color: #101010; }
+.hero__t--cta:hover .hero__cta-arrow { color: #101010; }
+
+/* Die groesste Kachel des ersten Bildschirms muss ihren Inhalt zeigen. Der
+   alte Schleier deckte in der Mitte 71 Prozent (Flaeche .58 plus Verlauf .30)
+   und machte aus dem Fall ein braunes Rechteck: im Ausschnitt gemessen
+   YAVG 41, YMIN 27 - kein Gegenstand zu erkennen. Jetzt traegt der Rand die
+   Verblendung und die Mitte bleibt offen (Deckung dort 26 Prozent). */
+.hero__film { width: 100%; height: 100%; object-fit: cover; filter: saturate(.5) contrast(1.1) brightness(.96); }
+.hero__t--film::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(19, 17, 15, .8), rgba(19, 17, 15, .1) 46%, rgba(19, 17, 15, .72)),
+    rgba(19, 17, 15, .22);
+}
+
+/* Laufschrift: die einzige der Seite */
+.hero__t--band { overflow: hidden; user-select: none; }
+.band__track { display: flex; width: max-content; will-change: transform; }
+.band__set { display: flex; align-items: center; flex: none; }
+.band__set span {
+  font-family: Syne, sans-serif; font-weight: 800; text-transform: uppercase;
+  font-size: clamp(.95rem, 1.6vw, 1.5rem); letter-spacing: -.01em; color: #101010;
+  padding-inline: clamp(.7rem, 1.2vw, 1.3rem);
+}
+.band__set i { width: 7px; height: 7px; background: #101010; rotate: 45deg; flex: none; }
+
+/* ==========================================================================
+   2. Leistungen: sechs Kacheln, die sich unter dem Zeiger neigen
+   ========================================================================== */
+.svcs__grid { perspective: 1500px; }
+.svc {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--objw, 32%);
+  align-items: end; gap: clamp(1rem, 1.7vw, 2.25rem);
+  padding: var(--pad);
+  min-height: clamp(290px, 40vh, 410px);
+  transform-style: preserve-3d;
+  background: var(--ink-2);
+}
+.svc--a { grid-column: span 7; --objw: 32%; }
+.svc--b { grid-column: span 5; --objw: 34%; }
+.svc--c { grid-column: span 7; --objw: 26%; }
+.svc--d { grid-column: span 5; --objw: 32%; }
+.svc--e { grid-column: span 6; --objw: 36%; }
+.svc--f { grid-column: span 6; --objw: 30%; }
+
+.svc__txt { grid-column: 1; align-self: end; display: grid; gap: .7rem; }
+.svc__txt .link { margin-top: .35rem; justify-self: start; }
+.svc h3 { font-size: var(--d3); hyphens: manual; }   /* Titel umbrechen als Wort, nicht mit Trennstrich */
+.svc p { color: var(--mute); }
+
+/* Der Render sitzt in seiner eigenen Spalte und hebt sich beim Zeigen von der
+   Flaeche ab: nur transform, der Schatten steht fest. */
+.svc__obj {
+  grid-column: 2; width: 100%; height: auto; pointer-events: none;
+  filter: drop-shadow(0 26px 55px rgba(0, 0, 0, .6));
+  transition: transform .55s var(--ease);
+}
+.svc--a .svc__obj { align-self: end; }
+.svc--b .svc__obj { align-self: start; }
+.svc--c .svc__obj { align-self: center; }
+.svc--d .svc__obj { align-self: center; }
+.svc--e .svc__obj { align-self: end; }
+.svc--f .svc__obj { align-self: center; }
+.svc:hover .svc__obj { transform: translateY(-7%) scale(1.07); }
+
+/* ==========================================================================
+   3. Projekte: die aktive Kachel nimmt die Reihe ein
+   ========================================================================== */
+.pjs { padding-top: 0; }
+.pjs__stage { padding-top: calc(var(--nav-h) + clamp(1.5rem, 5vh, 3.5rem)); padding-bottom: var(--tgap); }
+.pjs__row {
+  display: grid;
+  grid-template-columns: var(--pj-cols, 8fr 2fr 2fr);
+  gap: var(--tgap);
+  height: clamp(340px, 62vh, 640px);
+}
+.pjs__row[data-active="0"] { --pj-cols: 8fr 2fr 2fr; }
+.pjs__row[data-active="1"] { --pj-cols: 2fr 8fr 2fr; }
+.pjs__row[data-active="2"] { --pj-cols: 2fr 2fr 8fr; }
+
+.pj { overflow: hidden; transform-origin: 0 0; background: var(--ink-3); }
+.pj__in { position: absolute; inset: 0; transform-origin: 0 0; }
+.pj__media { position: absolute; inset: 0; }
+.pj__media video { width: 100%; height: 100%; object-fit: cover; filter: saturate(.85); }
+.pj__media::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(19, 17, 15, .6) 0%, rgba(19, 17, 15, .32) 30%, rgba(19, 17, 15, .94) 100%);
+  transition: opacity .5s var(--ease);
+}
+.pj__num {
+  position: absolute; left: var(--pad); bottom: calc(var(--pad) * .7); z-index: 3;
+  font-family: Syne, sans-serif; font-weight: 800; line-height: 1;
+  font-size: clamp(1.6rem, 2.6vw, 2.6rem);
+  color: transparent; -webkit-text-stroke: 1px rgba(244, 244, 244, .6);
+}
+.pj__glass {
+  position: absolute; z-index: 2; left: var(--pad); bottom: var(--pad);
+  width: min(calc(100% - var(--pad) * 2), 540px);
+  padding: clamp(1.1rem, 1.7vw, 1.7rem);
+  border-radius: var(--r-inner);
+  border: 1px solid rgba(255, 255, 255, .15);
+  background: rgba(19, 17, 15, .74);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .13), 0 26px 60px rgba(0, 0, 0, .5);
+}
+.pj__meta { display: block; font-size: var(--micro); color: var(--acid); margin-bottom: .6rem; }
+/* Projekttitel tragen Eigennamen: nicht trennen, nur umbrechen. */
+.pj__glass h3 { font-size: var(--d3); margin-bottom: .6rem; hyphens: manual; }
+.pj__glass p { color: rgba(244, 244, 244, .82); margin-bottom: 1rem; }
+
+/* Ruhende Kacheln: Ziffer statt Tafel, Bild tritt zurueck. */
+.pjs__row[data-flip="on"] .pj__glass { transition: opacity .45s var(--ease), transform .45s var(--ease); }
+/* Die ankommende Tafel steht schon in Endgroesse, waehrend das Fenster der
+   Kachel noch schmal ist - ohne Wartezeit haette der Rand den Satz eine
+   halbe Sekunde lang abgeschnitten (auf 1024 gemessen: Fenster 490px,
+   Tafel 559px). Erst oeffnet sich die Kachel, dann kommt die Schrift. */
+.pjs__row[data-flip="on"] .pj[data-state="on"] .pj__glass { transition-delay: .26s; }
+.pjs__row[data-flip="on"] .pj:not([data-state="on"]) .pj__glass { opacity: 0; transform: translateY(16px); pointer-events: none; }
+.pjs__row[data-flip="on"] .pj:not([data-state="on"]) .pj__media::after { opacity: 1; }
+.pjs__row[data-flip="on"] .pj[data-state="on"] .pj__media::after { opacity: .72; }
+.pjs__row[data-flip="on"] .pj[data-state="on"] .pj__num { opacity: 0; transition: opacity .3s var(--ease); }
+
+/* ==========================================================================
+   4. Kunden: zwoelf Kacheln, Licht laeuft durch die Fugen
+   ========================================================================== */
+.cls__grid {
+  position: relative;
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 1px;
+  border: 1px solid var(--line-soft); border-radius: var(--r-panel); overflow: hidden;
+}
+.cls__seams { position: absolute; inset: 0; z-index: 0; background: rgba(255, 255, 255, .08); }
+.cls__glow {
+  position: absolute; z-index: 1; left: 0; top: 0;
+  width: 440px; height: 440px; margin: -220px 0 0 -220px; opacity: 0;
+  background: radial-gradient(circle closest-side, rgba(215, 249, 8, .95), rgba(215, 249, 8, .25) 52%, rgba(215, 249, 8, 0) 74%);
+}
+.cls__cell {
+  position: relative; z-index: 2;
+  display: grid; place-items: center;
+  min-height: clamp(96px, 11.5vw, 152px); padding: 1.25rem;
+  background: var(--ink); transition: background-color .35s var(--ease);
+}
+.cls__cell img { width: min(78%, 124px); opacity: .66; transition: opacity .35s var(--ease); }
+.cls__cell:hover { background: var(--ink-2); }
+.cls__cell:hover img { opacity: 1; }
+
+/* Elf Zeichen auf drei vollen Reihen: 4+3+3+2, 3+3+3+3, 4+4+4. Das zwoelfte
+   Fach ist weggefallen - dort lag kein Kundenzeichen, sondern ihr Laufband
+   mit dem Satz aus dem Held ("Ihre Intension - unsere Motivation"). Auf
+   118px Breite blieb davon nur ein Strich, die Zelle las sich leer. */
+.cls__cell:nth-of-type(1)  { grid-column: span 4; }
+.cls__cell:nth-of-type(2)  { grid-column: span 3; }
+.cls__cell:nth-of-type(3)  { grid-column: span 3; }
+.cls__cell:nth-of-type(4)  { grid-column: span 2; }
+.cls__cell:nth-of-type(5)  { grid-column: span 3; }
+.cls__cell:nth-of-type(6)  { grid-column: span 3; }
+.cls__cell:nth-of-type(7)  { grid-column: span 3; }
+.cls__cell:nth-of-type(8)  { grid-column: span 3; }
+.cls__cell:nth-of-type(9)  { grid-column: span 4; }
+.cls__cell:nth-of-type(10) { grid-column: span 4; }
+.cls__cell:nth-of-type(11) { grid-column: span 4; }
+
+/* ==========================================================================
+   5. Stimmen: fuenf Kacheln im Verband
+   ========================================================================== */
+/* minmax(0, 1fr) statt der stillschweigenden auto-Spalte: sonst waechst die
+   Spalte auf das laengste deutsche Wort und schiebt es aus der Kachel. */
+.vc {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; align-content: space-between;
+  padding: var(--pad); min-height: clamp(200px, 25vh, 285px);
+  background: var(--ink-3);
+}
+.vc--a { grid-column: span 5; }
+.vc--b { grid-column: span 7; }
+.vc--c { grid-column: span 7; }
+.vc--d { grid-column: span 5; }
+.vc--e { grid-column: span 12; }
+
+.vc blockquote {
+  margin: 0; font-family: Syne, sans-serif; font-weight: 700;
+  font-size: clamp(1rem, 1.24vw, 1.3rem); line-height: 1.45; max-width: 54ch;
+}
+.vc__who { display: grid; gap: .1rem; }
+.vc__name { font-size: .9375rem; }
+.vc__firm { font-size: var(--micro); color: var(--mute); }
+/* Das Zeichen sitzt unten rechts: das Zitat bekommt die volle Breite. */
+.vc__mark { position: absolute; right: var(--pad); bottom: var(--pad); width: clamp(56px, 6vw, 96px); opacity: .13; }
+
+.vc--e { grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); align-items: center; column-gap: clamp(2rem, 5vw, 5rem); }
+.vc--e blockquote { grid-area: 1 / 1; align-self: end; }
+.vc--e .vc__who { grid-area: 2 / 1; }
+.vc--e .vc__mark { position: static; grid-area: 1 / 2 / 3 / 3; width: clamp(90px, 11vw, 165px); justify-self: center; }
+
+/* ==========================================================================
+   6. Aktuelles: drei Kacheln
+   ========================================================================== */
+.nw { display: flex; flex-direction: column; }
+.nw--a { grid-column: 1 / span 7; grid-row: 1 / span 2; }
+.nw--b { grid-column: 8 / span 5; grid-row: 1; }
+.nw--c { grid-column: 8 / span 5; grid-row: 2; }
+
+.nw__shot { display: block; overflow: hidden; }
+.nw__shot img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
+.nw:hover .nw__shot img { transform: scale(1.05); }
+.nw__txt { padding: var(--pad); display: grid; gap: .7rem; align-content: start; }
+.nw h3 { font-size: var(--d3); hyphens: manual; }
+.nw p { color: var(--mute); }
+.nw__txt .link { justify-self: start; margin-top: .25rem; }
+
+.nw--a .nw__shot { aspect-ratio: 16 / 9; }
+.nw--b, .nw--c { flex-direction: row; align-items: stretch; min-height: clamp(215px, 27vh, 290px); }
+.nw--b .nw__shot, .nw--c .nw__shot { flex: none; width: 33%; }
+.nw--b h3, .nw--c h3 { font-size: clamp(1.02rem, 1.22vw, 1.18rem); }
+.nw--b .nw__txt, .nw--c .nw__txt { flex: 1; align-content: center; gap: .5rem; }
+/* Schmale Kachel: der Anriss bleibt lesbar, er wird kleiner, nicht versteckt. */
+.nw--b p, .nw--c p { font-size: var(--micro); line-height: 1.55; }
+
+/* ==========================================================================
+   7. Kontakt: Formularkachel und drei Kontaktkacheln
+   ========================================================================== */
+.ctc__form { grid-column: span 7; grid-row: span 3; padding: var(--pad); }
+.ctc__tel  { grid-column: span 5; background: var(--acid); border-color: var(--acid); color: #101010; }
+.ctc__mail { grid-column: span 5; }
+.ctc__nav  { grid-column: span 5; }
+.ctc__tel, .ctc__mail { padding: var(--pad); display: grid; grid-template-columns: minmax(0, 1fr); align-content: space-between; gap: 1rem; }
+.ctc__nav { padding: var(--pad); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 2rem; }
+
+.ctc__tel h3, .ctc__nav h3 {
+  font-family: Poppins, sans-serif; font-weight: 500; font-size: var(--micro);
+  text-transform: uppercase; letter-spacing: .1em; color: var(--mute);
+}
+.ctc__tel h3 { color: rgba(16, 16, 16, .66); }
+.ctc__big { font-family: Syne, sans-serif; font-weight: 800; font-size: clamp(1.3rem, 2.1vw, 2rem); line-height: 1.1; }
+.ctc__side { display: inline-flex; align-items: center; gap: .45rem; font-size: .9375rem; color: var(--mute); }
+.ctc__side svg { width: 14px; height: 14px; }
+.ctc__side:hover { color: var(--paper); }
+.ctc__tel .ctc__side { color: rgba(16, 16, 16, .7); }
+.ctc__tel .ctc__side:hover { color: #101010; }
+.ctc__nav ul { list-style: none; margin: .8rem 0 0; padding: 0; display: grid; gap: .4rem; font-size: .9375rem; }
+.ctc__nav a { color: var(--mute); }
+.ctc__nav a:hover { color: var(--acid); }
+
+.ctc__fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1rem; }
+.field { display: grid; gap: .4rem; margin-bottom: 1.1rem; }
+.field label { font-size: var(--micro); color: var(--paper); }
+.field input, .field textarea {
+  width: 100%; padding: .85rem 1rem;
+  background: var(--ink); border: 1px solid var(--line); border-radius: var(--r-inner);
+  transition: border-color .25s var(--ease);
+}
+.field input::placeholder, .field textarea::placeholder { color: #8B8781; }  /* 4.6:1 auf --ink */
+.field input:focus, .field textarea:focus { border-color: var(--acid); outline: none; }
+.field textarea { min-height: 116px; resize: vertical; }
+.field__hint { font-size: var(--micro); color: var(--mute); }
+.field__err { font-size: var(--micro); color: #FF8A7A; min-height: 1.2em; }
+.field[data-invalid="true"] input, .field[data-invalid="true"] textarea { border-color: #FF8A7A; }
+
+.consent { display: flex; gap: .7rem; align-items: start; margin-bottom: 1.25rem; font-size: var(--micro); color: var(--mute); }
+.consent input { width: 18px; height: 18px; accent-color: var(--acid); flex: none; margin-top: .2rem; }
+.form__note { margin-top: .9rem; font-size: var(--micro); min-height: 1.4em; }
+.form__note[data-state="ok"] { color: var(--acid); }
+.form__note[data-state="bad"] { color: #FF8A7A; }
+
+.foot {
+  margin-top: clamp(2rem, 5vh, 3.5rem); padding: 1.75rem 0 clamp(2rem, 5vh, 3.5rem);
+  border-top: 1px solid var(--line-soft);
+  display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between;
+  font-size: var(--micro); color: var(--mute);
+}
+.foot nav { display: flex; gap: 1.5rem; }
+.foot a:hover { color: var(--paper); }
+
+/* --- Tippziele: auf Touch mindestens 44px -------------------------------
+   Die Zeigerart laesst sich in Chromium nicht emulieren, und das quer
+   liegende Tablet ist mit 1180px ebenfalls ein Finger: darum zusaetzlich
+   die Breite. Bis 900px kommt weiter unten die Brennerschaltung dazu. */
+@media (pointer: coarse), (max-width: 1180px) {
+  .link, .ctc__side { min-height: 44px; align-items: center; }
+  .ctc__nav ul a, .foot a, .nav__logo, .ctc__big, .nav__links a { display: inline-flex; align-items: center; min-height: 44px; }
+  .ctc__nav ul { gap: 0; }
+  /* Die Tippflaeche der Einwilligung ist ihre Beschriftung: auf einer Zeile
+     war sie 22px hoch. Das Kaestchen selbst misst 24px. */
+  .consent { min-height: 44px; }
+  .consent input { width: 24px; height: 24px; }
+}
+
+/* --- Startzustand der Kacheln (nur mit JS) ------------------------------ */
+.js .tl { opacity: 0; }
+/* Die Projektkacheln kommen mit der angehefteten Buehne und bewegen sich
+   ueber FLIP: sie warten auf kein Auftauchen und bleiben immer sichtbar. */
+.js .pj { opacity: 1; }
+
+/* ==========================================================================
+   Mittlere Breiten: gleiche Kacheln, ruhigeres Raster
+   ========================================================================== */
+@media (max-width: 1199px) and (min-width: 901px) {
+  /* Die Handlungskachel braucht hier eine Spalte mehr, sonst bricht ihr Wort. */
+  .hero__t--cta  { grid-area: 3 / 1 / 4 / 6; }
+  .hero__t--band { grid-area: 3 / 6 / 4 / 13; }
+
+  .svc--a, .svc--b, .svc--c, .svc--d, .svc--e, .svc--f { grid-column: span 6; --objw: 36%; }
+
+  /* Elf Zeichen zu je drei Spalten liessen die letzte Reihe um drei Spalten
+     offen: die drei letzten nehmen darum je vier - 8x3 + 3x4 = 36. */
+  .cls__cell:nth-of-type(n) { grid-column: span 3; }
+  .cls__cell:nth-of-type(n+9) { grid-column: span 4; }
+
+  .vc--a, .vc--b, .vc--c, .vc--d { grid-column: span 6; }
+
+  .nw--a { grid-column: 1 / span 12; grid-row: 1; }
+  .nw--b { grid-column: 1 / span 6; grid-row: 2; }
+  .nw--c { grid-column: 7 / span 6; grid-row: 2; }
+
+  .ctc__form { grid-column: span 12; grid-row: auto; }
+  .ctc__tel, .ctc__mail, .ctc__nav { grid-column: span 4; }
+  .ctc__nav { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ==========================================================================
+   Telefon: eine Spalte, keine Neigung, kein Scroll-Entzug
+   ========================================================================== */
+@media (max-width: 900px) {
+  :root { --nav-h: 64px; --pad: 1.15rem; }
+  /* Nur "Dienstleistungen" ist laenger als die Zeile: dieses eine Wort wird
+     nach der Kompositumsfuge getrennt, alle anderen Titel umbrechen als Wort. */
+  .svcs .head h2 { hyphens: auto; }
+  .nav__links { display: none; }
+  .nav__burger { display: grid; place-items: center; min-width: 44px; min-height: 44px; }
+  .nav .btn { display: none; }
+
+  .hero { padding-bottom: 2rem; }
+  .hero__bento { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; }
+  .hero__t--title { grid-area: 1 / 1 / 2 / 2; gap: 1.5rem; }
+  .hero__t--cta   { grid-area: 2 / 1 / 3 / 2; min-height: 92px; column-gap: .5rem; }
+  /* Die Beschriftung laeuft in einer Zeile, der Pfeil steht am Rand: auf der
+     Unterseite verlangte "Angebot einholen" 341px, die Kachel bot 338 (375)
+     und 323 (360) - der Pfeil sass im Innenrand. Der Kegel wird jetzt ueber
+     die Breite bemessen, auf 360 bleiben 18px Luft. */
+  .hero__cta-label { font-size: clamp(.85rem, 3.55vw, .95rem); }
+  .hero__t--obj   { grid-area: 3 / 1 / 4 / 2; min-height: 34vh; }
+  /* Feste Hoehe statt Mindesthoehe: der Film hat keine Groessenangabe, also
+     zog er die Kachel auf sein Eigenmass (588px auf 844) und schob die
+     Stapelmitte nach unten. Der Streifen bleibt der Streifen. */
+  .hero__t--film  { grid-area: 4 / 1 / 5 / 2; height: clamp(140px, 22vh, 220px); min-height: 0; }
+  .hero__t--band  { grid-area: 5 / 1 / 6 / 2; min-height: 56px; }
+  .hero__title .line--acid { padding-left: 0; }
+  .hero__sub { padding-right: 0; }
+  .hero__crystal { width: min(64%, 260px); }
+
+  .bento, .cls__grid { grid-template-columns: minmax(0, 1fr); }
+  .svc--a, .svc--b, .svc--c, .svc--d, .svc--e, .svc--f,
+  .vc--a, .vc--b, .vc--c, .vc--d, .vc--e,
+  .cls__cell, .cls__cell:nth-of-type(n),
+  .ctc__form, .ctc__tel, .ctc__mail, .ctc__nav { grid-column: 1 / -1; grid-row: auto; }
+
+  .svc { min-height: 0; grid-template-columns: minmax(0, 1fr); gap: 1.1rem; }
+  .svc__obj, .svc--a .svc__obj, .svc--b .svc__obj, .svc--c .svc__obj,
+  .svc--d .svc__obj, .svc--e .svc__obj, .svc--f .svc__obj {
+    grid-column: 1; order: -1; align-self: auto;
+    width: 46%; max-width: 200px; justify-self: end;
+  }
+  .svc:hover .svc__obj { transform: none; }
+
+  .pjs__stage { padding-top: var(--sec); }
+  .pjs__row { grid-template-columns: minmax(0, 1fr); height: auto; gap: var(--tgap); }
+  .pj { height: 74vh; min-height: 420px; }
+  .pj__glass { width: calc(100% - var(--pad) * 2); }
+  /* Die Ziffer sitzt oben, die Tafel steht unten ueber die ganze Breite. */
+  .pj__num { top: var(--pad); bottom: auto; }
+
+  .cls__grid { gap: 1px; }
+  .cls__cell { min-height: 104px; }
+  .cls__cell img { width: min(58%, 118px); }
+
+  .vc--e { grid-template-columns: minmax(0, 1fr); }
+  .vc--e blockquote, .vc--e .vc__who { grid-area: auto; }
+  .vc--e .vc__mark { grid-area: auto; position: absolute; right: var(--pad); bottom: var(--pad); top: auto; width: 62px; }
+
+  .nw--a, .nw--b, .nw--c { grid-column: 1 / -1; grid-row: auto; flex-direction: column; min-height: 0; }
+  .nw--a .nw__shot, .nw--b .nw__shot, .nw--c .nw__shot { width: 100%; aspect-ratio: 16 / 9; }
+  .nw--b p, .nw--c p { display: block; }
+
+  .ctc__fields { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .ctc__nav { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ==========================================================================
+   Weniger Bewegung: alles steht, nichts ist angeheftet
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+  .js .tl { opacity: 1 !important; transform: none !important; }
+  .progress { display: none; }
+  .band__track { transform: none !important; }
+
+  .hero { min-height: 0; }
+  .hero__bento { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; }
+  .hero__t--title { grid-area: auto; }
+  .hero__t--cta { grid-area: auto; min-height: 92px; }
+  .hero__t--obj { grid-area: auto; min-height: 300px; }
+  .hero__t--film { grid-area: auto; min-height: 220px; }
+  .hero__t--band { grid-area: auto; min-height: 60px; }
+
+  .pjs__row { grid-template-columns: minmax(0, 1fr); height: auto; }
+  .pj { height: 70vh; min-height: 400px; }
+  .pj__glass { opacity: 1 !important; transform: none !important; }
+  .svc:hover .svc__obj { transform: none; }
+  .cls__glow { display: none; }
+}
+
+/* Weniger Transparenz: Glas wird zur Flaeche */
+@media (prefers-reduced-transparency: reduce) {
+  .nav, .pj__glass { background: rgba(19, 17, 15, .96); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+
+/* ==========================================================================
+   Unterseite "Professionelles Webdesign"
+   Dieselben Kacheln, dieselbe Bewegung, dieselbe Kopfzeile. Neu sind nur die
+   Faecher: der Held ist gespiegelt, dazu kommen die Angebotskachel, zwei
+   Leistungskacheln und vier Gruende mit ihren Ziffern.
+   ========================================================================== */
+
+/* --- 1. Held: Objekt links, Filmstreifen rechts ------------------------- */
+.hero--sub .hero__t--obj  { grid-area: 1 / 1 / 2 / 5; }
+.hero--sub .hero__t--film { grid-area: 1 / 5 / 2 / 13; }
+/* Der Titel der Unterseite ist eine Stufe leiser: gemessen passt die erste
+   Zeile auf 1440 bis 42,5px in die Kachel, gewaehlt sind 38,9px - zwei Zeilen
+   auf 1440, und auch auf 1024 bleibt die Zeile ungebrochen. */
+.hero--sub .hero__title { font-size: clamp(1.1rem, 2.7vw, 2.5rem); }
+
+/* Das Glasobjekt steht hochkant: es wird ueber die Hoehe bemessen, nicht
+   ueber die Breite - eine Prozenthoehe haette in der Telefonspalte keinen
+   festen Bezug und waere auf die volle Bildhoehe aufgegangen. */
+.hero--sub .hero__crystal { width: auto; height: clamp(150px, 26vh, 280px); }
+
+/* --- 2. Angebot: eine Markenflaeche ueber alle zwoelf Spalten ----------- */
+.ofr__t {
+  grid-column: 1 / -1;
+  background: var(--acid); border-color: var(--acid); color: #101010;
+  padding: clamp(1.5rem, 3vw, 2.6rem);
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 1.1rem 2rem;
+}
+/* "PERSONALISIERTES" misst 306px und die Kachel bietet auf 360px nur 275px:
+   ohne min-width darf das Flex-Kind nicht schrumpfen und stand 8px ueber dem
+   Rand. Die Trennung nach Silben faengt das Wort ab (Chromium hat das
+   deutsche Woerterbuch, gemessen 05.09.2026). */
+.ofr__t h2 {
+  font-size: clamp(1.15rem, 2.5vw, 2.15rem); text-transform: uppercase;
+  letter-spacing: -.015em; max-width: 24ch; min-width: 0; hyphens: auto;
+}
+.btn--ink { background: #101010; color: var(--paper); }   /* Kontrast 15.4:1 */
+.btn--ink:hover { background: #201C18; }
+
+/* --- 3. Zwei Leistungskacheln: Text mit Render, wie im Dienstleistungsraster */
+.wds__grid { perspective: 1500px; }
+.wd {
+  display: grid; grid-template-columns: minmax(0, 1fr) var(--objw, 30%);
+  align-items: end; gap: clamp(1rem, 1.7vw, 2.25rem);
+  padding: var(--pad); min-height: clamp(300px, 42vh, 430px);
+  transform-style: preserve-3d; background: var(--ink-2);
+}
+.wd--a { grid-column: span 7; --objw: 30%; }
+.wd--b { grid-column: span 5; --objw: 36%; }
+.wd__txt { grid-column: 1; align-self: end; display: grid; gap: .75rem; }
+.wd__txt .link { justify-self: start; margin-top: .35rem; }
+.wd h2 { font-size: clamp(1.15rem, 1.75vw, 1.7rem); hyphens: manual; }
+.wd p { color: var(--mute); }
+.wd__obj {
+  grid-column: 2; align-self: center; width: 100%; height: auto; pointer-events: none;
+  filter: drop-shadow(0 26px 55px rgba(0, 0, 0, .6));
+  transition: transform .55s var(--ease);
+}
+.wd:hover .wd__obj { transform: translateY(-7%) scale(1.07); }
+
+/* --- 4. Warum uns waehlen: vier Kacheln mit ihren Ziffern --------------- */
+.head__deco { width: clamp(42px, 5vw, 78px); opacity: .55; justify-self: end; align-self: end; }
+.whys__grid { perspective: 1500px; }
+.why {
+  padding: var(--pad); display: grid; grid-template-columns: minmax(0, 1fr);
+  align-content: start; gap: .8rem;
+  min-height: clamp(200px, 25vh, 290px);
+  transform-style: preserve-3d; background: var(--ink-2);
+}
+.why--a { grid-column: span 7; }
+.why--b { grid-column: span 5; }
+.why--c { grid-column: span 5; }
+.why--d { grid-column: span 7; }
+/* Ihre Ziffernvektoren sind dunkel gezeichnet: auf der dunklen Kachel werden
+   sie umgekehrt, damit die Kontur wieder hell steht. */
+.why__num { width: clamp(54px, 5.6vw, 82px); filter: invert(1); opacity: .8; }
+/* Vier Komposita ohne Eigennamen: hier trennt die Silbentrennung sauber,
+   "Kundenzufriedenheit:" brauchte 309px in einer 286px-Kachel. */
+.why h3 { font-size: var(--d3); hyphens: auto; }
+.why p { color: var(--mute); max-width: 52ch; }
+
+/* --- Mittlere Breiten --------------------------------------------------- */
+@media (max-width: 1199px) and (min-width: 901px) {
+  .wd--a, .wd--b { grid-column: span 6; --objw: 36%; }
+  .why--a, .why--b, .why--c, .why--d { grid-column: span 6; }
+}
+
+/* --- Telefon: eine Spalte, keine Neigung ------------------------------- */
+@media (max-width: 900px) {
+  /* Auf 375 px bleiben 301 px fuer die Zeile; das laengste Wort
+     "Professionelles" braucht bei 17,6 px 285 px - es bricht nicht mehr
+     mitten im Wort, wie es bei 21,6 px der Fall war. */
+  .hero--sub .hero__t--title { padding: 1.15rem; }
+  .hero--sub .hero__t--obj  { grid-area: 3 / 1 / 4 / 2; }
+  .hero--sub .hero__t--film { grid-area: 4 / 1 / 5 / 2; }
+  .hero--sub .hero__crystal { height: clamp(150px, 24vh, 230px); }
+
+  .ofr__t, .wd--a, .wd--b, .why--a, .why--b, .why--c, .why--d { grid-column: 1 / -1; }
+  .wd { grid-template-columns: minmax(0, 1fr); min-height: 0; gap: 1.1rem; }
+  .wd__obj { grid-column: 1; order: -1; align-self: auto; width: 46%; max-width: 200px; justify-self: end; }
+  .wd:hover .wd__obj { transform: none; }
+  .head__deco { justify-self: start; }
+}
+
+/* --- Telefon quer: Titel oben, darunter Handlung und Band ---------------
+   Auf 844x390 stand die Handlungskachel 6px unter der Kante (396 von 390).
+   Zwei Spalten holen sie in den ersten Bildschirm: gemessen 368 von 390.
+   Die Objekte werden ueber die kleinere Seite bemessen, damit sie im Quer-
+   format nicht die halbe Breite schlucken. */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 520px) {
+  .hero { padding-bottom: 1rem; }
+  .hero__bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hero__t--title { grid-area: 1 / 1 / 2 / 3; }
+  .hero__t--cta   { grid-area: 2 / 1 / 3 / 2; min-height: 64px; }
+  .hero__t--band  { grid-area: 2 / 2 / 3 / 3; min-height: 64px; }
+  .hero__t--obj,  .hero--sub .hero__t--obj  { grid-area: 3 / 1 / 4 / 2; height: 42vh; min-height: 0; }
+  .hero__t--film, .hero--sub .hero__t--film { grid-area: 3 / 2 / 4 / 3; height: 42vh; min-height: 0; }
+  /* Nur vh, kein Prozent: eine Prozenthoehe im Rasterkind ist zirkulaer, die
+     Zeile waere auf die Eigenhoehe des Bildes gewachsen (331px statt 133px)
+     und die Kachel haette es unten um 68px beschnitten. */
+  .hero__crystal, .hero--sub .hero__crystal { width: auto; height: 34vh; }
+}
+
+/* --- Weniger Bewegung: auch hier steht alles ---------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  /* Feste Hoehen statt Mindesthoehen: ein Video, dessen Metadaten noch nicht
+     geladen sind, hat das Ersatzverhaeltnis 300x150 und zog die Kachel in der
+     einspaltigen Ansicht auf 668 px Leere auf (gemessen auf 1440). */
+  .hero__t--film { height: 220px; min-height: 0; }
+  .hero__t--obj  { height: 300px; min-height: 0; }
+  .hero--sub .hero__t--obj  { grid-area: auto; height: 300px; }
+  .hero--sub .hero__t--film { grid-area: auto; height: 220px; }
+  .hero--sub .hero__crystal { height: 240px; }
+  .wd:hover .wd__obj { transform: none; }
+}
