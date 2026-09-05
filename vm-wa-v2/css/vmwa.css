@@ -1,0 +1,629 @@
+/* ==========================================================================
+   V&M Werbeagentur - V2 "Bühne"
+   Marke: Farben, Schriften und Bildmaterial von vm-wa.de (Stand 04.09.2026).
+   Idee: eine einzige Bühne hinter der ganzen Seite. Vier Objekte der Kundin
+   spielen darin; der Übergang zwischen zwei Abschnitten ist ihr Umzug.
+   Regel der Komposition: jeder Abschnitt haelt ein freies Feld frei, in das
+   niemals Text laeuft. Dort und nur dort stehen die Objekte.
+   Radien-System: Flächen 20px, Buttons und Chips Pille. Keine Ausnahmen.
+   ========================================================================== */
+
+@import url("../assets/fonts.css");
+
+/* --- Tokens ------------------------------------------------------------- */
+:root {
+  --ink:        #13110F;
+  --ink-2:      #1A1714;
+  --ink-3:      #221E1A;
+  --acid:       #D7F908;
+  --paper:      #F4F4F4;
+  --mute:       #9A968F;
+  --line:       rgba(255, 255, 255, .12);
+  --line-soft:  rgba(255, 255, 255, .06);
+
+  --d1: clamp(1.6rem, 3.45vw, 3.2rem);
+  --d2: clamp(1.4rem, 2.9vw, 2.7rem);
+  --d3: clamp(1.2rem, 1.85vw, 1.7rem);
+  --d4: clamp(1rem, 1.2vw, 1.15rem);
+  --body: clamp(.9375rem, 1vw, 1.0625rem);
+  --micro: .8125rem;
+
+  --r-panel: 20px;
+  --r-pill: 999px;
+
+  --gut: clamp(1.25rem, 4vw, 4.5rem);
+  --sec: clamp(5rem, 11vh, 9.5rem);
+
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  --nav-h: 72px;
+
+  /* Grundmasse der vier Objekte. Der Massstab je Szene kommt aus JS. */
+  --w-c: clamp(170px, 24vw, 345px);
+  --w-g: clamp(150px, 21vw, 300px);
+  --w-a: clamp(120px, 17vw, 240px);
+  --w-b: clamp(120px, 17vw, 240px);
+}
+
+/* --- Reset -------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
+body {
+  position: relative; margin: 0;
+  background: var(--ink); color: var(--paper);
+  font: 400 var(--body)/1.75 Poppins, system-ui, sans-serif;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+img, video, svg { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button, input, textarea { font: inherit; color: inherit; }
+h1, h2, h3, h4 {
+  margin: 0; font-family: Syne, system-ui, sans-serif; font-weight: 800; line-height: 1.05;
+  overflow-wrap: break-word; hyphens: manual;   /* KUN-DEN gemessen: auto trennt zu frueh */
+}
+p { margin: 0; }
+:focus-visible { outline: 2px solid var(--acid); outline-offset: 3px; border-radius: 4px; }
+
+.wrap { width: min(100% - var(--gut) * 2, 1440px); margin-inline: auto; }
+
+/* --- Fläche über allem: Korn + Fortschritt ------------------------------ */
+.grain {
+  position: fixed; inset: 0; z-index: 90; pointer-events: none;
+  opacity: .3; mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+.progress {
+  position: fixed; inset: 0 auto auto 0; z-index: 95;
+  height: 2px; width: 100%; transform: scaleX(0); transform-origin: 0 50%;
+  background: var(--acid); pointer-events: none;
+}
+
+/* --- Vorhang beim Laden ------------------------------------------------- */
+html:not(.js) .curtain { display: none; }
+.curtain { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: var(--ink); }
+.curtain__mark { width: clamp(120px, 18vw, 210px); opacity: 0; }
+.curtain__bar { position: absolute; inset: auto 0 0 0; height: 3px; background: var(--acid); transform: scaleX(0); transform-origin: 0 50%; }
+
+/* ==========================================================================
+   Die Bühne
+   ========================================================================== */
+.stage {
+  position: fixed; inset: 0; z-index: 0;
+  overflow: clip; pointer-events: none;
+  contain: layout paint;
+}
+.stage__veil { position: absolute; inset: 0; background: var(--ink); opacity: 0; }
+.actor { position: absolute; left: 0; top: 0; will-change: transform; }
+.actor__p { will-change: transform; }
+.actor img { width: 100%; height: auto; }
+.actor[data-actor="c"] { width: var(--w-c); }
+.actor[data-actor="g"] { width: var(--w-g); }
+.actor[data-actor="a"] { width: var(--w-a); }
+.actor[data-actor="b"] { width: var(--w-b); }
+
+/* Ohne JS steht die Bühne still im Bild des Helden, wie auf der Live-Seite. */
+html:not(.js) .actor { left: 78%; top: 32%; transform: translate(-50%, -50%); }
+html:not(.js) .actor[data-actor="g"] { left: 68%; top: 78%; transform: translate(-50%, -50%) scale(.6); }
+html:not(.js) .actor[data-actor="a"] { left: 92%; top: 64%; transform: translate(-50%, -50%) scale(.5); opacity: .45; }
+html:not(.js) .actor[data-actor="b"] { left: 90%; top: 88%; transform: translate(-50%, -50%) scale(.36); opacity: .34; }
+
+main { position: relative; z-index: 2; }
+
+/* --- Navigation --------------------------------------------------------- */
+.nav {
+  position: fixed; inset: 0 0 auto 0; z-index: 80;
+  height: var(--nav-h); display: flex; align-items: center;
+  background: rgba(19, 17, 15, .55);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border-bottom: 1px solid var(--line-soft);
+}
+.nav__in { display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+.nav__logo img { height: 26px; width: auto; }
+.nav__links { display: flex; gap: clamp(1rem, 2vw, 2.25rem); align-items: center; }
+.nav__links a { font-size: var(--micro); letter-spacing: .04em; color: var(--mute); transition: color .3s var(--ease); }
+.nav__links a:hover { color: var(--paper); }
+.nav__burger { display: none; background: none; border: 0; padding: .6rem; min-height: 44px; min-width: 44px; cursor: pointer; color: var(--paper); }
+.nav__burger svg { width: 26px; height: 26px; }
+
+/* --- Buttons ------------------------------------------------------------ */
+.btn {
+  display: inline-flex; align-items: center; gap: .6rem; white-space: nowrap;
+  padding: .85rem 1.5rem; border-radius: var(--r-pill); border: 1px solid transparent;
+  font-size: .9375rem; font-weight: 500; cursor: pointer;
+  transition: transform .25s var(--ease), background-color .25s var(--ease);
+}
+.btn svg { width: 18px; height: 18px; flex: none; }
+.btn--acid { background: var(--acid); color: #101010; }   /* Kontrast 15.4:1 */
+.btn--acid:hover { background: #E4FF2E; }
+.btn:active { transform: translateY(1px) scale(.985); }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+.link {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-size: .9375rem; color: var(--acid);
+  border-bottom: 1px solid rgba(215, 249, 8, .35); padding-bottom: 2px;
+  transition: border-color .3s var(--ease), gap .3s var(--ease);
+}
+.link svg { width: 15px; height: 15px; }
+.link:hover { border-color: var(--acid); gap: .8rem; }
+
+/* --- Vollbild-Menü (mobil) ---------------------------------------------
+   Mittig, solange Platz ist. Wird es eng, faengt die Liste oben an und laesst
+   sich scrollen: mit justify-content: center schnitt sie nach beiden Seiten ab
+   und auf dem liegenden Telefon (844x390) standen 4 von 6 Punkten ausserhalb
+   des Bildschirms - gemessen, nicht vermutet. Die automatischen Aussenabstaende
+   zentrieren bei Platz und geben ihn auf, wenn er fehlt.                    */
+.menu {
+  position: fixed; inset: 0; z-index: 85;
+  display: none; flex-direction: column; gap: 1rem;
+  padding: calc(var(--nav-h) + 1rem) var(--gut) var(--gut);
+  background: var(--ink);
+  overflow-y: auto; overscroll-behavior: contain;
+}
+.menu[data-open="true"] { display: flex; }
+.menu a { font-family: Syne, sans-serif; font-weight: 800; font-size: clamp(2rem, 9vw, 3.5rem); text-transform: uppercase;
+  display: flex; align-items: center; min-height: 44px; }
+.menu a:first-of-type { margin-top: auto; }
+.menu a:last-of-type  { margin-bottom: auto; }
+.menu__close { position: absolute; top: .5rem; right: var(--gut); display: grid; place-items: center;
+  width: 44px; height: 44px; background: none; border: 0; padding: 0; color: var(--paper); cursor: pointer; }
+.menu__close svg { width: 30px; height: 30px; }
+
+/* Liegendes Telefon: die Schrift richtet sich nach der Hoehe, nicht der Breite */
+@media (max-height: 560px) {
+  .menu { gap: .25rem; padding-block: 60px .75rem; }
+  .menu a { font-size: clamp(1.15rem, 5.2vh, 2rem); line-height: 1.2; }
+}
+
+/* --- Gemeinsames Szenenmass -------------------------------------------- */
+/* Jede Szene ist mindestens einen Bildschirm hoch: darauf steht die Rechnung
+   des Umzugs (ein Fenster von genau einer Bildschirmhöhe je Übergang). */
+.scene { position: relative; min-height: 100dvh; }
+
+h2 em, h3 em { font-style: italic; color: var(--acid); }
+
+/* ==========================================================================
+   1. Held: Text links, freies Feld rechts (dort steht der Kristall)
+   ========================================================================== */
+.hero { display: flex; align-items: center; padding: calc(var(--nav-h) + 4rem) 0 4rem; }
+.hero__copy { width: min(100%, 68vw); }
+.hero__title { font-size: var(--d1); text-transform: uppercase; letter-spacing: -.02em; hyphens: none; }
+.hero__title .line { display: block; will-change: transform; }
+.hero__title .line--2 { color: var(--acid); padding-left: min(3vw, 42px); }
+.hero__title .w { display: inline-block; overflow: hidden; vertical-align: bottom; }
+.hero__title .w > span { display: inline-block; }
+
+.hero__foot { margin-top: clamp(1.75rem, 4vh, 3rem); display: flex; flex-wrap: wrap; align-items: end; gap: 1.5rem 2.5rem; }
+.hero__sub { max-width: 44ch; color: var(--mute); }
+
+/* ==========================================================================
+   2. Band: der Schnitt zwischen zwei Bühnenbildern (einziges Marquee)
+   ========================================================================== */
+.band {
+  position: relative; z-index: 3;
+  background: var(--acid); color: #101010;
+  padding: .85rem 0; overflow: hidden; user-select: none;
+  border-block: 1px solid rgba(19, 17, 15, .25);
+}
+.band__track { display: flex; width: max-content; will-change: transform; }
+.band__set { display: flex; flex: none; }
+.band__set span {
+  font-family: Syne, sans-serif; font-weight: 800; text-transform: uppercase;
+  font-size: clamp(1rem, 1.9vw, 1.6rem); letter-spacing: -.01em;
+  padding-inline: clamp(1rem, 2vw, 2rem);
+}
+
+/* ==========================================================================
+   3. Leistungen: stehende Säule links, freies Feld in der Mitte, Tafeln rechts
+   ========================================================================== */
+.svcs { padding: var(--sec) 0; }
+/* Die Spalten sind Anteile des Satzspiegels, nicht des Fensters: der Satzspiegel
+   endet bei 1440, das Fenster nicht. Auf 1920 blieben von der freien Gasse in der
+   Mitte sonst 96 px, und der Kristall stand mit 0,90 Deckkraft auf der
+   Ueberschrift "Unsere Dienstleistungen" (55 px gemessen). Bis 1440 geben 32,6 %
+   und 43,5 % exakt dieselben Breiten wie 30vw und 40vw. */
+.svcs__grid { display: grid; grid-template-columns: minmax(0, 32.6%) minmax(0, 1fr) minmax(0, 43.5%); }
+.svcs__side { grid-column: 1; }
+.svcs__list  { grid-column: 3; display: grid; gap: clamp(1.25rem, 2.5vh, 2rem); }
+
+.svcs__sticky { position: sticky; top: calc(var(--nav-h) + 8vh); display: grid; gap: 1.75rem; }
+.svcs__sticky h2 { font-size: clamp(1.05rem, 1.6vw, 1.45rem); text-transform: uppercase; letter-spacing: -.01em;
+  padding-bottom: 1.25rem; border-bottom: 1px solid var(--line-soft); }
+.svcs__now { display: grid; gap: .35rem; }
+.svcs__num {
+  font-family: Syne, sans-serif; font-weight: 800; line-height: .9;
+  font-size: clamp(3.5rem, 8vw, 7rem); color: var(--acid);
+  will-change: transform;
+}
+.svcs__name { font-size: var(--micro); color: var(--mute); letter-spacing: .06em; will-change: transform; }
+.svcs__num, .svcs__name { transition: transform .45s var(--ease), opacity .45s var(--ease); }
+.svcs__now[data-flip="true"] .svcs__num,
+.svcs__now[data-flip="true"] .svcs__name { transform: translateY(14px); opacity: 0; }
+
+.svcs__ticks { list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; }
+.svcs__ticks li { width: 26px; height: 2px; background: var(--line); transform-origin: 0 50%; transition: background-color .4s var(--ease), transform .4s var(--ease); }
+.svcs__ticks li[data-on="true"] { background: var(--acid); transform: scaleY(2); }
+
+.svc {
+  position: relative; min-height: 46vh; align-content: center;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 30%); gap: clamp(1rem, 2vw, 2rem);
+  padding: clamp(1.5rem, 2.6vw, 2.5rem);
+  border: 1px solid var(--line-soft); border-radius: var(--r-panel);
+  background: rgba(26, 23, 20, .78);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+}
+/* align-items: start hiess: jedes Kind bekommt seine Wunschbreite. Bei einem
+   Wort, das breiter ist als die Spalte, ist die Wunschbreite das Wort selbst -
+   'Marketinglösungen' mass 405 px in einer 321 px breiten Spalte und lag mit
+   55 px auf dem Rendering der Tafel (1440, gemessen 05.09). Umbruch hilft dort
+   nicht: overflow-wrap: break-word senkt die Mindestbreite nicht. Also stehen
+   Ueberschrift und Absatz jetzt auf voller Spaltenbreite, und nur Ziffer und
+   Link behalten ihre eigene. Getrennt wird nach den Regeln der Sprache. */
+.svc__body { display: flex; flex-direction: column; align-items: stretch; }
+.svc__no, .svc__more { align-self: start; }
+.svc__no { font-family: Syne, sans-serif; font-weight: 800; font-size: 1rem; color: var(--acid); }
+/* Getrennt wird an Stellen, die im Text stehen (&shy;), nicht nach Ermessen des
+   Browsers: 'hyphens: auto' bleibt in diesem Chromium ohne Woerterbuch stumm -
+   gemessen 05.09, die Komposita brachen trotzdem hart um ('Webentwickl|ung',
+   'Marketinglös|ungen', 'techn|ische'). Mit manual und gesetzten Trennstellen
+   sieht der Umbruch ueberall gleich aus, mit Woerterbuch wie ohne. */
+.svc h2, .svc h3 { font-size: var(--d3); margin: .55rem 0 .85rem; hyphens: manual; }
+.svc p  { color: var(--mute); }
+.svc__more { margin-top: 1.15rem; }
+.svc__obj { align-self: center; width: 100%; filter: drop-shadow(0 20px 44px rgba(0, 0, 0, .55)); }
+
+/* ==========================================================================
+   4. Projekte: Glasrahmen fahren abwechselnd von links und rechts ein
+   ========================================================================== */
+.cases { padding: var(--sec) 0; }
+.cases__head { width: min(100% - var(--gut) * 2, 74vw); margin: 0 auto clamp(2rem, 5vh, 4rem); }
+.cases__head h2 { font-size: var(--d2); text-transform: uppercase; }
+
+.case {
+  position: relative; width: min(100% - var(--gut) * 2, 74vw); margin: 0 auto clamp(3rem, 8vh, 7rem);
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: end;
+}
+.case__media {
+  grid-row: 1; overflow: hidden; border-radius: var(--r-panel);
+  background: var(--ink-2); border: 1px solid var(--line-soft);
+  will-change: transform;
+}
+.case__media video { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.case__panel {
+  grid-row: 1; z-index: 2; margin-bottom: clamp(-1rem, -3vh, -2.5rem);
+  padding: clamp(1.25rem, 2.4vw, 2.1rem);
+  border-radius: var(--r-panel); border: 1px solid rgba(255, 255, 255, .16);
+  background: rgba(19, 17, 15, .82);
+  backdrop-filter: blur(22px) saturate(1.5); -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 30px 70px rgba(0, 0, 0, .55);
+  will-change: transform;
+}
+/* Ungerade Szene: Bild links, Tafel greift von rechts hinein. Gerade: gespiegelt. */
+.case[data-dir="1"]  .case__media { grid-column: 1 / span 8; }
+.case[data-dir="1"]  .case__panel { grid-column: 6 / span 7; }
+.case[data-dir="-1"] .case__media { grid-column: 5 / span 8; }
+.case[data-dir="-1"] .case__panel { grid-column: 1 / span 7; }
+.case__meta { display: block; font-size: var(--micro); color: var(--acid); margin-bottom: .8rem; }
+.case__panel h3 { font-size: var(--d3); margin-bottom: .8rem; hyphens: manual; }   /* Eigennamen nicht trennen */
+.case__panel p { color: rgba(244, 244, 244, .82); }
+
+/* ==========================================================================
+   5. Kunden: Raster im Vordergrund, Objekte weit dahinter
+   ========================================================================== */
+.clients { padding: var(--sec) 0; }
+.clients__copy { width: min(100%, 50vw); }
+.clients h2 { font-size: var(--d2); text-transform: uppercase; }
+.clients__lead { max-width: 46ch; margin-top: 1.15rem; color: var(--mute); }
+.clients__grid {
+  margin-top: clamp(2.5rem, 6vh, 5rem);
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--line-soft); border-radius: var(--r-panel); overflow: hidden;
+}
+.clients__cell {
+  display: grid; place-items: center; min-height: clamp(110px, 12vw, 160px); padding: 1.5rem;
+  border-right: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft);
+  transition: background-color .35s var(--ease);
+}
+.clients__cell:nth-child(4n) { border-right: 0; }
+.clients__cell:nth-last-child(-n+4) { border-bottom: 0; }
+.clients__cell img { width: clamp(80px, 8vw, 120px); opacity: .68; transition: opacity .35s var(--ease); }
+.clients__cell:hover { background: rgba(26, 23, 20, .72); }
+.clients__cell:hover img { opacity: 1; }
+
+/* ==========================================================================
+   6. Stimmen: Spalte links, ein Objekt tritt rechts vor und dreht sich
+   ========================================================================== */
+.voices { padding: var(--sec) 0; }
+.voices__col { width: min(100% - var(--gut) * 2, 54vw); margin-inline: var(--gut) auto; display: grid; gap: clamp(1.25rem, 3vh, 2rem); }
+.voices h2 { font-size: var(--d2); text-transform: uppercase; margin-bottom: clamp(1rem, 3vh, 2rem); }
+.voice {
+  padding: clamp(1.4rem, 2.4vw, 2.1rem);
+  border: 1px solid var(--line-soft); border-radius: var(--r-panel);
+  background: rgba(34, 30, 26, .8);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+}
+.voice blockquote { margin: 0 0 1.25rem; font-family: Syne, sans-serif; font-weight: 800; font-size: var(--d4); line-height: 1.5; }
+.voice__who { display: flex; align-items: center; gap: 1rem; }
+.voice__who > span { display: grid; }
+.voice__mark { width: 42px; height: auto; opacity: .5; flex: none; }
+.voice__name { font-size: .9375rem; }
+.voice__firm { font-size: var(--micro); color: var(--mute); }
+
+/* ==========================================================================
+   7. Aktuelles: schmale Mittelspalte, Objekte in den vier Ecken
+   ========================================================================== */
+.news { padding: var(--sec) 0; }
+.news__col { width: min(100% - var(--gut) * 2, 62vw); margin-inline: auto; }
+.news h2 { font-size: var(--d2); text-transform: uppercase; }
+.news__list { margin-top: clamp(2rem, 5vh, 4rem); display: grid; gap: clamp(2rem, 5vh, 3.5rem); }
+.post { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(1.25rem, 2.5vw, 2.25rem); align-items: center; }
+.post__shot { overflow: hidden; border-radius: var(--r-panel); }
+.post__shot img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; transition: transform .8s var(--ease); }
+.js .post__shot img { clip-path: inset(0 0 100% 0); }
+.post:hover .post__shot img { transform: scale(1.04); }
+.post h3 { font-size: var(--d3); hyphens: manual; }
+.post p { color: var(--mute); margin: .85rem 0 1.15rem; }
+
+/* ==========================================================================
+   8. Kontakt: Formular links, der Kristall setzt sich rechts daneben
+   ========================================================================== */
+.contact { padding: var(--sec) 0 clamp(3rem, 7vh, 5rem); }
+.contact__col { width: min(100% - var(--gut) * 2, 60vw); margin-inline: var(--gut) auto; }
+.contact h2 { font-size: var(--d2); text-transform: uppercase; max-width: 16ch; }
+.contact__lead { margin-top: 1.15rem; color: var(--mute); max-width: 42ch; }
+.contact__cols { margin-top: clamp(2.25rem, 5vh, 4rem); display: grid; gap: clamp(2rem, 4vw, 3.25rem); grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); }
+
+.field { display: grid; gap: .5rem; margin-bottom: 1.25rem; }
+.field label { font-size: var(--micro); color: var(--paper); }
+.field input, .field textarea {
+  width: 100%; padding: .9rem 1.1rem;
+  background: rgba(26, 23, 20, .86); border: 1px solid var(--line); border-radius: 12px;
+  transition: border-color .25s var(--ease);
+}
+.field input::placeholder, .field textarea::placeholder { color: #8B8781; }   /* 4.6:1 */
+.field input:focus, .field textarea:focus { border-color: var(--acid); outline: none; }
+.field textarea { min-height: 124px; resize: vertical; }
+.field__hint { font-size: var(--micro); color: var(--mute); }
+.field__err { font-size: var(--micro); color: #FF8A7A; min-height: 1.2em; }
+.field[data-invalid="true"] input, .field[data-invalid="true"] textarea { border-color: #FF8A7A; }
+
+/* Das Kaestchen selbst 24 px, die Tippflaeche ist die Beschriftung: sie ist
+   das label und damit mindestens 44 px hoch (Vorgabe der Abnahme). */
+.consent { display: flex; gap: .75rem; align-items: start; margin-bottom: 1.4rem; font-size: var(--micro); color: var(--mute); min-height: 44px; cursor: pointer; }
+.consent input { width: 24px; height: 24px; accent-color: var(--acid); flex: none; margin-top: .1rem; }
+.form__note { margin-top: 1rem; font-size: var(--micro); min-height: 1.4em; }
+.form__note[data-state="ok"] { color: var(--acid); }
+.form__note[data-state="bad"] { color: #FF8A7A; }
+
+.contact__meta { display: grid; gap: 2rem; align-content: start; }
+.contact__meta h3 { font-family: Poppins, sans-serif; font-weight: 500; font-size: var(--micro); color: var(--mute); text-transform: uppercase; letter-spacing: .1em; }
+.contact__meta ul { list-style: none; margin: .8rem 0 0; padding: 0; display: grid; gap: .5rem; }
+.contact__meta a:hover { color: var(--acid); }
+.contact__big { font-family: Syne, sans-serif; font-weight: 800; font-size: clamp(1.15rem, 1.7vw, 1.5rem); }
+
+.foot {
+  margin-top: clamp(3rem, 7vh, 5rem); padding-top: 2rem; border-top: 1px solid var(--line-soft);
+  display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between;
+  font-size: var(--micro); color: var(--mute);
+}
+.foot nav { display: flex; gap: 1.5rem; }
+.foot a:hover { color: var(--paper); }
+
+/* --- Tippziele: auf Touch mindestens 44px -------------------------------
+   Die Zeiger-Emulation greift in Chromium nicht, und ein Tablet im Querformat
+   ist ebenfalls ein Finger: darum haengt die Regel an beidem - grober Zeiger
+   ODER Breite bis 1180. Gemessen auf 1024 und 1180: 26 Ziele unter 40 px
+   (fuenf Menuepunkte, Logo, vierzehn Links der Kontaktspalte, zwei in der
+   Fusszeile, vier Textlinks) - alle liegen unter dieser Regel.             */
+@media (pointer: coarse), (max-width: 1180px) {
+  .link { min-height: 44px; align-items: center; }
+  .contact__meta ul a, .foot a, .nav__logo, .nav__links a { display: inline-flex; align-items: center; min-height: 44px; }
+  .contact__meta ul { gap: .1rem; }
+}
+
+/* --- Auftritt beim Erreichen ------------------------------------------- */
+.js .rise { opacity: 0; transform: translateY(24px); }
+
+/* ==========================================================================
+   Schmale Bildschirme: eine Spalte, zwei Objekte, keine Unschärfe
+   ========================================================================== */
+@media (max-width: 900px) {
+  /* Von der KLEINEREN Bildschirmseite, nicht von der Breite: im liegenden
+     Telefon (844x390) war der Kristall sonst 388 px breit und lag mit 0,55
+     Deckkraft auf der Ueberschrift, die Kugel mit 0,28 auf der Unterzeile. */
+  :root { --nav-h: 64px; --w-c: 46vmin; --w-g: 40vmin; }
+  .nav__links, .nav .btn { display: none; }
+  .nav__burger { display: block; }
+
+  .actor[data-actor="a"], .actor[data-actor="b"] { display: none; }
+
+  .hero { padding-top: calc(var(--nav-h) + 3rem); }
+  .hero__copy { width: 100%; }
+  .hero__title .line--2 { padding-left: 0; }
+
+  .svcs__grid { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
+  .svcs__side, .svcs__list { grid-column: 1; }
+  .svcs__sticky { position: static; }
+  .svcs__ticks { display: none; }
+  .svc { min-width: 0; min-height: 0; grid-template-columns: minmax(0, 1fr); }
+  .svc__obj { width: 46vw; align-self: start; margin-top: 1.25rem; }
+
+  /* Der Satzspiegel bleibt derselbe wie ueberall sonst: die Randzone von .wrap.
+     Gemessen 05.09 auf 375 und 768: mit width: 100% standen Formularfelder,
+     Beschriftungen und die Ueberschriften von Projekten, Stimmen, Aktuelles
+     und Kontakt bei left = 0 ueber die volle Bildschirmbreite, waehrend der
+     Held daneben 20 px Rand hielt. Jetzt haelt ihn die ganze Seite. */
+  .cases__head, .case { width: min(100% - var(--gut) * 2, 1440px); margin-inline: auto; }
+  .case { grid-template-columns: minmax(0, 1fr); }
+  .case[data-dir="1"] .case__media, .case[data-dir="-1"] .case__media { grid-column: 1; }
+  .case[data-dir="1"] .case__panel, .case[data-dir="-1"] .case__panel { grid-column: 1; grid-row: 2; margin: -2.5rem 1rem 0; }
+
+  .clients__copy { width: 100%; }
+  .voices__col, .news__col, .contact__col { width: min(100% - var(--gut) * 2, 1440px); margin-inline: auto; }
+  .clients__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .clients__cell:nth-child(4n) { border-right: 1px solid var(--line-soft); }
+  .clients__cell:nth-child(2n) { border-right: 0; }
+  .clients__cell:nth-last-child(-n+4) { border-bottom: 1px solid var(--line-soft); }
+  .clients__cell:nth-last-child(-n+2) { border-bottom: 0; }
+
+  .post, .contact__cols { grid-template-columns: minmax(0, 1fr); }
+
+  /* Auf einer Spalte liegt der Text direkt ueber der Bühne: die Tafeln
+     werden dichter, damit nichts durch die Schrift scheint. */
+  .svc { background: rgba(26, 23, 20, .93); }
+  .voice { background: rgba(34, 30, 26, .93); }
+  .case__panel { background: rgba(19, 17, 15, .93); }
+}
+
+/* Liegendes Telefon: neben dem Text ist kein Feld fuer zwei Objekte frei.
+   Auf 844x390 lag die Kugel im Ruhezustand mit 0,28 auf der Unterzeile des
+   Helden (90x7 px gemessen, auf der Unterseite 28x12). Dort spielt nur der
+   Kristall - dieselbe Regel wie fuer die beiden Tori unter 900 px. */
+@media (max-width: 900px) and (max-height: 560px) {
+  .actor[data-actor="g"] { display: none; }
+}
+
+/* Sehr schmal: der Kristall darf den Text nicht bedraengen */
+@media (max-width: 480px) {
+  :root { --w-c: 52vmin; --w-g: 46vmin; }
+}
+
+/* ==========================================================================
+   Weniger Bewegung: die Bühne steht still im Bild des Helden, sonst nichts
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+  .curtain, .progress { display: none; }
+  .js .rise { opacity: 1 !important; transform: none !important; }
+  .js .post__shot img { clip-path: none !important; }
+
+  /* nichts ist mehr festgesteckt: die Bühne wird zum ruhenden Bild im Helden */
+  .stage { position: absolute; inset: 0 0 auto 0; height: 100dvh; }
+  .stage__veil { display: none; }
+  .actor { left: 78%; top: 32%; transform: translate(-50%, -50%); }
+  .actor[data-actor="g"] { left: 68%; top: 78%; transform: translate(-50%, -50%) scale(.6); }
+  .actor[data-actor="a"] { left: 92%; top: 64%; transform: translate(-50%, -50%) scale(.5); opacity: .45; }
+  .actor[data-actor="b"] { left: 90%; top: 88%; transform: translate(-50%, -50%) scale(.36); opacity: .34; }
+  .actor img { filter: none !important; }
+
+  /* Ohne Bewegung traegt die stehende Saeule nichts mehr: sie wird zum Kopf
+     ueber den Tafeln, damit keine leere Haelfte stehen bleibt. Verborgen wird
+     nichts - der Zaehler bleibt sichtbar, nur kleiner. */
+  .svcs__sticky { position: static; }
+  .svcs__grid { grid-template-columns: minmax(0, 1fr); gap: clamp(1.5rem, 4vh, 2.5rem); }
+  .svcs__side, .svcs__list { grid-column: 1; }
+  .svcs__sticky h2 { font-size: var(--d2); border-bottom: 0; padding-bottom: 0; }
+  .svcs__now { grid-auto-flow: column; justify-content: start; align-items: baseline; gap: .9rem; }
+  .svcs__num { font-size: clamp(2rem, 3.5vw, 3rem); }
+  .svc { grid-template-columns: minmax(0, 1fr) minmax(0, 26%); min-height: 0; }
+  .scene { min-height: 0; }
+  .hero { min-height: 100dvh; }
+}
+
+/* Weniger Transparenz: Glas wird zur Fläche */
+@media (prefers-reduced-transparency: reduce) {
+  .nav, .case__panel, .svc, .voice, .reason {
+    background: rgba(19, 17, 15, .97);
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+  }
+  .svc, .reason { background: var(--ink-2); }
+  .voice { background: var(--ink-3); }
+}
+
+/* ==========================================================================
+   UNTERSEITE "Professionelles Webdesign" (webdesign.html)
+   Dieselbe Bühne, dieselben Tafeln, andere Abschnitte. Hier stehen nur die
+   Stücke, die es auf der Startseite nicht gibt: die Angebotsfläche als
+   Klebestelle, die vier Gründe und die gespiegelte Stimmen-Spalte.
+   ========================================================================== */
+
+/* Held einer Stufe leiser: der Titel der Unterseite ist laenger als
+   "Ihre Intension", passt so aber weiter in zwei Zeilen (auf 1440 gemessen). */
+/* Ihr Titel hier ist dreimal so lang wie "Ihre Intension". Gemessen:
+   die laengste Zeile braucht 1223 px bei 41 px Schrift, die Spalte hat 979.
+   2,2vw mit Deckel 2rem haelt die zwei Zeilen von 1024 bis 1440 (954 px bei 32). */
+.hero--sub .hero__title { font-size: clamp(1.25rem, 2.2vw, 2rem); }
+.hero--sub .hero__sub { max-width: 40ch; }
+/* Die Spalte bleibt so breit wie auf der Startseite: bei 62vw brach die erste
+   Zeile um (gemessen: 4 Zeilen statt 2). Das freie Feld rechts bleibt frei -
+   der Zeilenkasten der Schrift endet bei 952 px, der Kristall beginnt bei 1029. */
+
+/* --- Angebot: die lime Fläche gehoert dem Abschnitt, der Vorhang zieht weg -
+   Vorher lief es andersherum: die lime Fläche fuhr ueber den dunklen Grund
+   herein und der Text stand schon da. Gemessen auf 430x932: in dem Moment
+   stand die Ueberschrift in ihrem dunklen #101010 auf dunklem Grund (die
+   Fläche war erst bei scaleX 0,019) und dahinter lief die Glaskugel mit 0,28
+   durch - 114x15 px Ueberdeckung. Jetzt ist das Lime der Grund des
+   Abschnitts, und der dunkle Vorhang liegt UEBER dem Text und zieht nach
+   rechts weg. Dieselbe Kante wandert nach rechts, aber der Text taucht nie
+   ueber etwas anderem als seiner eigenen Fläche auf. */
+.offer { position: relative; z-index: 3; overflow: hidden; background: var(--acid); border-block: 1px solid rgba(19, 17, 15, .25); }
+.offer__plane {
+  position: absolute; inset: 0; z-index: 2; background: var(--ink); pointer-events: none;
+  transform-origin: 100% 50%; transform: scaleX(0); will-change: transform;
+}
+.js .offer__plane { transform: scaleX(1); }
+.offer__in {
+  position: relative; z-index: 1; color: #101010;
+  padding-block: clamp(2rem, 5.5vh, 3.4rem);
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 1.25rem 2.5rem;
+}
+.offer h2 { font-size: clamp(1.15rem, 2.3vw, 2rem); text-transform: uppercase; max-width: 24ch; }
+.btn--ink { background: var(--ink); color: var(--paper); }        /* Kontrast 14.8:1 */
+.btn--ink:hover { background: var(--ink-3); }
+
+/* --- Warum uns wählen: ihre vier Ziffern in einer Reihe ------------------ */
+.reasons { padding: var(--sec) 0; display: grid; align-content: center; }
+.reasons__head { display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+.reasons h2 { font-size: var(--d2); text-transform: uppercase; }
+.reasons__deco { width: clamp(52px, 6.5vw, 92px); aspect-ratio: 145/146; opacity: .55; flex: none; }
+.reasons__grid {
+  margin-top: clamp(2rem, 5vh, 3.5rem);
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1rem, 1.6vw, 1.5rem);
+}
+.reason {
+  padding: clamp(1.25rem, 1.9vw, 1.85rem);
+  border: 1px solid var(--line-soft); border-radius: var(--r-panel);
+  background: rgba(26, 23, 20, .78);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+}
+/* Ihre Ziffern liegen als dunkles SVG vor (#222) - auf dunklem Grund waeren
+   sie unsichtbar. Statt Filterakrobatik traegt eine Maske die Marke: die
+   Form kommt aus ihrer Datei, die Farbe aus dem Akzent. */
+.reason__num {
+  display: block; width: clamp(58px, 5.5vw, 78px); height: clamp(29px, 2.75vw, 39px);
+  background: var(--acid);
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: left center; mask-position: left center;
+  -webkit-mask-size: contain; mask-size: contain;
+}
+.reason__num--1 { -webkit-mask-image: url("../assets/img/num-01.svg"); mask-image: url("../assets/img/num-01.svg"); }
+.reason__num--2 { -webkit-mask-image: url("../assets/img/num-02.svg"); mask-image: url("../assets/img/num-02.svg"); }
+.reason__num--3 { -webkit-mask-image: url("../assets/img/num-03.svg"); mask-image: url("../assets/img/num-03.svg"); }
+.reason__num--4 { -webkit-mask-image: url("../assets/img/num-04.svg"); mask-image: url("../assets/img/num-04.svg"); }
+/* "Kundenzufriedenheit" brach auf vier Spalten mitten im Wort um. 'auto' half
+   nicht (siehe oben), die Trennstelle steht jetzt im Wort selbst. */
+.reason h3 { font-size: var(--d4); margin: 1.1rem 0 .65rem; hyphens: manual; }
+.reason p { color: var(--mute); font-size: .9375rem; }
+
+/* --- Stimmen der Unterseite: Spalte rechts, freies Feld links ------------ */
+.voices--right .voices__col { margin-inline: auto var(--gut); }
+
+@media (min-width: 1101px) {
+  .reasons__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  .offer__in { flex-direction: column; align-items: start; }
+  .reasons__head { flex-direction: column; align-items: start; gap: 1rem; }
+  .reasons__grid { grid-template-columns: minmax(0, 1fr); }
+  .reason { background: rgba(26, 23, 20, .93); }
+  .voices--right .voices__col { margin-inline: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Ohne Bewegung wischt nichts: der Vorhang ist von Anfang an weg. */
+  .js .offer__plane { transform: scaleX(0) !important; }
+}
