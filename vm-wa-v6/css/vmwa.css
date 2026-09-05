@@ -1,0 +1,674 @@
+/* ==========================================================================
+   V&M Werbeagentur - V6 "Film"
+   Die ganze Seite ist ein Filmstreifen: Held und Kontakt sind die senkrechten
+   Buchdeckel, alles dazwischen laeuft in einer einzigen waagerechten Fahrt.
+   Marke: Farben, Schriften und Bildmaterial von vm-wa.de (Stand 04.09.2026).
+   Radien-System: Buttons und Chips = Pille, Flaechen = 20px, Eingaben = 12px.
+   Die Bildfenster selbst sind kantig - ein Filmkader hat keine Rundung.
+   ========================================================================== */
+
+@import url("../assets/fonts.css");
+
+/* --- Tokens ------------------------------------------------------------- */
+:root {
+  --ink:        #13110F;   /* Grundflaeche, vom Live-Auftritt uebernommen */
+  --ink-2:      #1A1714;   /* leicht erhoehte Flaeche */
+  --ink-3:      #221E1A;   /* Karten */
+  --film:       #0E0C0B;   /* Streifenrand, dunkler als die Kader */
+  --acid:       #D7F908;   /* Markenakzent, einziger Akzent der Seite */
+  --paper:      #F4F4F4;
+  --mute:       #9A968F;
+  --line:       rgba(255, 255, 255, .12);
+  --line-soft:  rgba(255, 255, 255, .06);
+
+  --d1: clamp(1.6rem, 4.65vw, 4.4rem);
+  --d2: clamp(1.4rem, 1.95vw, 2rem);
+  --d3: clamp(1.3rem, 1.9vw, 1.9rem);
+  --d4: clamp(1.05rem, 1.35vw, 1.28rem);
+  --body: clamp(1rem, 1.05vw, 1.0625rem);
+  --micro: .8125rem;
+
+  --r-panel: 20px;
+  --r-input: 12px;
+  --r-pill: 999px;
+
+  --gut: clamp(1.25rem, 4vw, 4.5rem);
+  --pad: clamp(1.25rem, 2.2vw, 2.4rem);   /* Innenrand eines Bildfensters */
+  --sec: clamp(6rem, 12vh, 11rem);
+
+  --ease: cubic-bezier(.16, 1, .3, 1);
+
+  --nav-h: 72px;
+  --perf-h: 30px;
+  --rail-h: 54px;
+
+  /* Perforation: ein Loch je 48px, als Muster in die Kante gelegt */
+  --holes-x: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='30'%3E%3Crect x='15' y='9' width='18' height='12' rx='3' fill='%23F4F4F4' fill-opacity='.11'/%3E%3C/svg%3E");
+  --holes-y: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='48'%3E%3Crect x='7' y='15' width='12' height='18' rx='3' fill='%23F4F4F4' fill-opacity='.11'/%3E%3C/svg%3E");
+}
+
+/* --- Reset -------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font: 400 var(--body)/1.75 Poppins, system-ui, sans-serif;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+img, video, svg { display: block; max-width: 100%; }
+/* Jedes Bild traegt width und height in echten Pixeln; height:auto haelt das
+   Seitenverhaeltnis und laesst den Platz schon vor dem Laden reservieren.
+   Ohne die Angaben wuchs die Seite unter dem Finger (gemessen 05.09.2026:
+   auf 768 um 2132px, auf dem Telefon um rund 1500px). */
+img { height: auto; }
+a { color: inherit; text-decoration: none; }
+button, input, textarea { font: inherit; color: inherit; }
+h1, h2, h3, h4 {
+  margin: 0; font-family: Syne, system-ui, sans-serif; font-weight: 800; line-height: 1.05;
+  /* Deutsche Komposita sind lang: brechen und trennen statt ueberlaufen. */
+  overflow-wrap: break-word; hyphens: auto;
+}
+p { margin: 0; overflow-wrap: break-word; }
+:focus-visible { outline: 2px solid var(--acid); outline-offset: 3px; border-radius: 4px; }
+
+.wrap { width: min(100% - var(--gut) * 2, 1440px); margin-inline: auto; }
+
+/* --- Korn ueber allem ---------------------------------------------------- */
+.grain {
+  position: fixed; inset: 0; z-index: 90; pointer-events: none;
+  opacity: .3; mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+
+/* --- Vorspann beim Laden ------------------------------------------------ */
+html:not(.js) .curtain { display: none; }
+.curtain {
+  position: fixed; inset: 0; z-index: 100;
+  display: grid; place-items: center;
+  background: var(--ink);
+}
+.curtain__mark { width: clamp(120px, 18vw, 210px); opacity: 0; }
+.curtain__bar {
+  position: absolute; inset: auto 0 0 0; height: 3px;
+  background: var(--acid); transform: scaleX(0); transform-origin: 0 50%;
+}
+
+/* --- Navigation --------------------------------------------------------- */
+.nav {
+  position: fixed; inset: 0 0 auto 0; z-index: 80;
+  height: var(--nav-h);
+  display: flex; align-items: center;
+  background: rgba(19, 17, 15, .58);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border-bottom: 1px solid var(--line-soft);
+}
+.nav__in { display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+.nav__logo img { height: 26px; width: auto; }
+.nav__links { display: flex; gap: clamp(1rem, 2vw, 2.25rem); align-items: center; }
+.nav__links a { font-size: var(--micro); letter-spacing: .04em; color: var(--mute); transition: color .3s var(--ease); }
+.nav__links a:hover { color: var(--paper); }
+/* .6rem statt .5rem: mit dem 26px-Zeichen ergibt das 45px Tippflaeche - unter
+   .5rem waren es 42 und damit unter den geforderten 44 (gemessen 05.09.2026). */
+.nav__burger { display: none; background: none; border: 0; padding: .6rem; cursor: pointer; color: var(--paper); }
+.nav__burger svg { width: 26px; height: 26px; }
+
+/* --- Buttons ------------------------------------------------------------ */
+.btn {
+  display: inline-flex; align-items: center; gap: .6rem; white-space: nowrap;
+  padding: .85rem 1.5rem; border-radius: var(--r-pill); border: 1px solid transparent;
+  font-size: .9375rem; font-weight: 500; cursor: pointer;
+  transition: transform .25s var(--ease), background-color .25s var(--ease), color .25s var(--ease);
+}
+.btn svg { width: 18px; height: 18px; flex: none; }
+.btn--acid { background: var(--acid); color: #101010; }   /* Kontrast 15.4:1 */
+.btn--acid:hover { background: #E4FF2E; }
+.btn:active { transform: translateY(1px) scale(.985); }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+.link {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-size: .9375rem; color: var(--acid);
+  border-bottom: 1px solid rgba(215, 249, 8, .35); padding-bottom: 2px;
+  transition: border-color .3s var(--ease), gap .3s var(--ease);
+}
+.link svg { width: 15px; height: 15px; }
+.link:hover { border-color: var(--acid); gap: .8rem; }
+
+/* --- Vollbild-Menue (mobil) --------------------------------------------- */
+.menu {
+  position: fixed; inset: 0; z-index: 85;
+  display: none; flex-direction: column; justify-content: center; gap: 1rem;
+  padding: var(--gut);
+  background: var(--ink);
+}
+.menu[data-open="true"] { display: flex; }
+.menu a { font-family: Syne, sans-serif; font-weight: 700; font-size: clamp(2rem, 9vw, 3.5rem); text-transform: uppercase; }
+.menu__close { position: absolute; top: 1.5rem; right: var(--gut); background: none; border: 0; color: var(--paper); cursor: pointer; }
+.menu__close svg { width: 30px; height: 30px; }
+
+/* ==========================================================================
+   Perforation: die Kante des Streifens
+   ========================================================================== */
+.perf {
+  position: relative; flex: none; height: var(--perf-h); overflow: hidden;
+  background: var(--film);
+  border-block: 1px solid rgba(255, 255, 255, .07);
+}
+.perf__strip {
+  position: absolute; inset: 0 auto 0 0; display: block;
+  width: calc(100% + 48px);
+  background-image: var(--holes-x); background-repeat: repeat-x;
+  will-change: transform;
+}
+/* Der Streifen faedelt beim Anlauf ein: die Kanten fahren aus der Mitte auf. */
+.reel__stage .perf { transform: scaleY(0); transition: transform .55s var(--ease); }
+.perf--top { transform-origin: 50% 100%; }
+.perf--bot { transform-origin: 50% 0; }
+.reel-live .reel__stage .perf { transform: scaleY(1); }
+
+/* ==========================================================================
+   1. Held: senkrechter Buchdeckel, unten faedelt der Streifen an
+   ========================================================================== */
+.hero {
+  position: relative; min-height: 100dvh; overflow: hidden;
+  display: flex; flex-direction: column; padding-top: var(--nav-h);
+}
+.hero__glow {
+  position: absolute; left: 42%; top: 44%; translate: -50% -50%;
+  width: min(120vw, 1100px); aspect-ratio: 1; pointer-events: none;
+  background: radial-gradient(circle, rgba(215, 249, 8, .12), transparent 58%);
+  filter: blur(46px);
+}
+.hero__crystal {
+  position: absolute; z-index: 1; pointer-events: none;
+  right: clamp(1rem, 2vw, 2.5rem);
+  top: calc(var(--nav-h) + clamp(.5rem, 2vh, 1.25rem));
+  width: clamp(150px, 24vw, 345px);
+  will-change: transform;
+}
+.hero__in {
+  position: relative; z-index: 2; flex: 1;
+  /* Titel in der Bildmitte, Fusszeile an der Kante: die Aufteilung eines Kaders. */
+  display: grid; grid-template-rows: 1.35fr auto .7fr auto;
+  padding-block: clamp(1.5rem, 4vh, 3rem);
+  will-change: transform;
+}
+.hero__title { grid-row: 2; }
+.hero__foot  { grid-row: 4; }
+.hero__title {
+  font-size: var(--d1); text-transform: uppercase; letter-spacing: -.03em;
+  hyphens: none;   /* die Markenzeile wird nicht getrennt */
+}
+/* Die Unterseite traegt einen laengeren Titel: eine Stufe kleiner, damit er
+   auf 1440 in zwei Zeilen bleibt. Gemessen 05.09.2026: die laengere Zeile
+   braucht das 29,5-fache der Schriftgroesse, in 1325px passen also 44px. */
+.hero--sub .hero__title { font-size: clamp(1.375rem, 2.95vw, 2.7rem); }
+/* Ihr Glasobjekt steht hochkant: nach der Breite bemessen reicht es sonst bis
+   in die Titelzeile. Eine Stufe kleiner, und die Ecke bleibt frei. */
+.hero--sub .hero__crystal { width: clamp(130px, 19vw, 274px); }
+.hero__title .line { display: block; }
+.hero__title .line--2 { padding-left: min(8.5vw, 120px); color: var(--acid); }
+.hero__title .w { display: inline-block; overflow: hidden; vertical-align: bottom; }
+.hero__title .w > span { display: inline-block; }
+.hero__foot {
+  display: flex; flex-wrap: wrap; align-items: end; gap: 1.75rem 3rem;
+  border-top: 1px solid var(--line-soft); padding-top: clamp(1.25rem, 2.5vh, 2rem);
+}
+.hero__sub { max-width: 46ch; color: var(--mute); }
+.perf--lead { margin-top: auto; }
+
+/* ==========================================================================
+   2. Der Streifen
+   ========================================================================== */
+.reel { position: relative; }
+.reel__stage {
+  height: 100dvh; padding-top: var(--nav-h);
+  display: flex; flex-direction: column;
+  background: var(--ink);
+}
+.reel__view { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+
+/* Drei Tiefen: hinten langsamer als der Streifen, vorne schneller. */
+.depth { position: absolute; inset: 0 auto 0 0; pointer-events: none; will-change: transform; }
+.depth img { position: absolute; }
+.depth--back  { z-index: 0; opacity: .16; }
+.depth--mid   { z-index: 0; opacity: .26; }
+.depth--front { z-index: 6; opacity: .32; }
+
+.reel__track { position: relative; z-index: 2; display: flex; height: 100%; width: max-content; will-change: transform; }
+.grp { display: flex; flex: none; height: 100%; }
+
+.frame {
+  position: relative; flex: none; min-width: 0;
+  width: calc(var(--w) * 1vw); height: 100%;
+  padding: var(--pad);
+  display: flex; flex-direction: column;
+  /* Die Kaderlinie: sichtbar genug, um den Streifen zu gliedern. */
+  border-left: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(26, 23, 20, .72), rgba(19, 17, 15, .88));
+}
+
+/* --- Titelkader --------------------------------------------------------- */
+.frame--title { justify-content: flex-end; gap: 1.5rem; background: linear-gradient(180deg, rgba(19, 17, 15, .5), rgba(19, 17, 15, .92)); }
+/* Trennstriche aus: die Titel brechen an den Leerzeichen, nicht im Wort. */
+.frame--title h2 { font-size: var(--d2); text-transform: uppercase; hyphens: manual; }
+.frame--title h2 em { font-style: italic; color: var(--acid); }
+.frame--title .rule { display: block; height: 2px; background: var(--acid); transform: scaleX(0); transform-origin: 0 50%; }
+
+/* --- Leistungskader ----------------------------------------------------- */
+.frame--svc { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: clamp(.9rem, 1.6vw, 1.6rem); }
+.frame--svc::after, .frame--essay::after, .frame--reason::after {
+  content: ""; position: absolute; inset: auto 0 0 0; z-index: 4; height: 2px; background: var(--acid);
+  transform: scaleX(0); transform-origin: 0 50%; transition: transform .55s var(--ease);
+}
+.frame--svc:hover::after, .frame--svc:focus-within::after,
+.frame--essay:hover::after, .frame--essay:focus-within::after,
+.frame--reason:hover::after, .frame--reason:focus-within::after { transform: scaleX(1); }
+.svc__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; }
+/* min-width:0, sonst sprengt das laengste deutsche Wort die Zeile: auf 375 war
+   die Kopfzeile 391px breit in einer 309px-Spalte (gemessen 05.09.2026). */
+.svc__top h3 { min-width: 0; }
+.svc__num { flex: none; }
+/* 19ch: das laengste Wort (Marketingloesungen) passt in eine Zeile, damit
+   keine Trennung im Wort noetig wird. */
+.svc__top h3 { font-size: var(--d3); max-width: 19ch; hyphens: manual; }
+.svc__num {
+  font-family: Syne, sans-serif; font-weight: 800; line-height: .85;
+  font-size: clamp(2.5rem, 4.4vw, 4.4rem);
+  color: transparent; -webkit-text-stroke: 1px rgba(215, 249, 8, .55);
+}
+/* Absolut gesetzt, damit sich max-height an der Zeilenhoehe misst: als
+   Rasterkind bleibt ein Prozentwert sonst wirkungslos und das Bild laeuft
+   in den Textfuss (gemessen 05.09.2026: 519px statt 420px). */
+.svc__shot { position: relative; min-height: 0; overflow: hidden; }
+.svc__shot img {
+  position: absolute; inset: 0; margin: auto;
+  max-height: 100%; max-width: 74%; width: auto; height: auto;
+  filter: drop-shadow(0 24px 60px rgba(0, 0, 0, .55));
+  transition: transform .7s var(--ease);
+}
+.frame--svc:hover .svc__shot img, .frame--svc:focus-within .svc__shot img { transform: translateY(-12px) scale(1.05); }
+.svc__foot { display: grid; gap: 1.1rem; justify-items: start; }
+.svc__foot p { color: var(--mute); max-width: 54ch; transition: color .4s var(--ease); }
+/* .72 statt .45: der Ruhezustand muss lesbar sein. Bei .45 blieb der Verweis
+   auf der breiten Anzeige dauerhaft halbdurchsichtig - sechsmal "Mehr erfahren"
+   nie richtig sichtbar (gemessen 05.09.2026). Das Aufleuchten bleibt. */
+.svc__foot .link { opacity: .72; transform: translateY(6px); transition: opacity .4s var(--ease), transform .4s var(--ease), border-color .3s var(--ease), gap .3s var(--ease); }
+.frame--svc:hover .svc__foot p, .frame--svc:focus-within .svc__foot p { color: var(--paper); }
+.frame--svc:hover .svc__foot .link, .frame--svc:focus-within .svc__foot .link { opacity: 1; transform: none; }
+
+/* --- Projektkader ------------------------------------------------------- */
+.frame--case { padding: 0; overflow: hidden; justify-content: flex-end; }
+.case__media { position: absolute; inset: 0; background: var(--ink-2); }
+.case__media video { width: 100%; height: 100%; object-fit: cover; will-change: transform; }
+.case__media::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, rgba(19, 17, 15, .88) 0%, rgba(19, 17, 15, .42) 52%, rgba(19, 17, 15, .12) 100%),
+    linear-gradient(180deg, rgba(19, 17, 15, .55), transparent 26%);
+}
+.case__panel {
+  position: relative; z-index: 3; align-self: flex-start;
+  width: min(48%, 600px); margin: clamp(1.25rem, 3vw, 3rem);
+  padding: clamp(1.35rem, 2vw, 2.15rem);
+  border-radius: var(--r-panel); border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(19, 17, 15, .74);   /* deckt auch helles Filmmaterial ab, AA bleibt sicher */
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 30px 80px rgba(0, 0, 0, .5);
+}
+.case__meta { display: block; font-size: var(--micro); color: var(--acid); margin-bottom: .8rem; }
+/* Projekttitel tragen Eigennamen: nicht trennen, nur umbrechen. */
+.case__panel h3, .case__panel h2 { font-size: var(--d3); margin-bottom: .8rem; hyphens: manual; }
+.case__panel p { color: rgba(244, 244, 244, .84); margin-bottom: 1.25rem; }
+
+/* --- Kundenkader -------------------------------------------------------- */
+.frame--clients { display: grid; grid-template-columns: minmax(0, 26%) minmax(0, 1fr); gap: clamp(1.5rem, 3vw, 3.5rem); align-items: center; }
+.clients__intro h2 { font-size: var(--d2); text-transform: uppercase; hyphens: manual; }
+.clients__intro h2 em { font-style: italic; color: var(--acid); }
+.clients__lead { margin-top: 1.1rem; color: var(--mute); }
+.clients__grid {
+  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 1px;
+  height: min(100%, 62vh);
+  background: var(--line-soft); border: 1px solid var(--line-soft); border-radius: var(--r-panel); overflow: hidden;
+}
+.clients__cell {
+  display: grid; place-items: center; padding: 1.25rem; min-width: 0;
+  background: var(--ink); transition: background-color .35s var(--ease);
+}
+.clients__cell img { width: clamp(70px, 7vw, 120px); opacity: .68; transition: opacity .35s var(--ease); }
+.clients__cell:hover { background: var(--ink-2); }
+.clients__cell:hover img { opacity: 1; }
+
+/* --- Stimmenkader ------------------------------------------------------- */
+.frame--voice { justify-content: center; gap: 1.6rem; overflow: hidden; }
+/* Das Kundenzeichen liegt als Wasserzeichen im Kader. Entfaerbt, damit die
+   Seite bei ihrem einzigen Akzent bleibt. */
+.voice__mark { position: absolute; right: -8%; bottom: -6%; width: 62%; opacity: .12; filter: grayscale(1); pointer-events: none; }
+.frame--voice blockquote {
+  position: relative; z-index: 2; margin: 0;
+  font-family: Syne, sans-serif; font-weight: 700; font-size: var(--d4); line-height: 1.45;
+}
+.voice__who { position: relative; z-index: 2; display: grid; gap: .15rem; }
+.voice__name { font-size: .9375rem; }
+.voice__firm { font-size: var(--micro); color: var(--mute); hyphens: manual; }
+
+/* --- Aktuelleskader ----------------------------------------------------- */
+.frame--post { gap: 1.1rem; }
+.post__shot { flex: 1; min-height: 0; overflow: hidden; border-radius: var(--r-panel); }
+.post__shot img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
+.frame--post:hover .post__shot img { transform: scale(1.05); }
+.frame--post h3 { font-size: var(--d3); hyphens: manual; }
+.frame--post p { color: var(--mute); max-width: 60ch; }
+.frame--post .link { align-self: start; }
+
+/* ==========================================================================
+   Kader der Unterseite (webdesign.html): dieselben Regeln, andere Fracht
+   ========================================================================== */
+
+/* --- Zwischentitel: ihre Markenflaeche wischt in den Kader --------------- */
+.frame--card { justify-content: center; overflow: hidden; background: var(--film); }
+/* Die Flaeche wird vom Skript von links hereingewischt; ohne Skript steht sie. */
+.card__plane { position: absolute; inset: 0; z-index: 0; background: var(--acid); transform-origin: 0 50%; }
+/* minmax(0, 1fr): ohne die Deckelung nimmt die Spalte die Breite des laengsten
+   Wortes an ("personalisiertes") und schiebt die Zeile aus dem Kader - auf 360
+   stand die Ueberschrift 65px im Freien (gemessen 05.09.2026). */
+.card__in { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(1.5rem, 3vw, 2.5rem); justify-items: start; }
+.frame--card h2 { font-size: var(--d2); text-transform: uppercase; color: #101010; max-width: 20ch; hyphens: manual; }
+.btn--ink { background: var(--ink); color: var(--paper); }   /* heller Text auf dunkler Pille: 17:1 */
+.btn--ink:hover { background: var(--ink-3); }
+
+/* --- Aufsatzkader: ihr Render im Bild, die Glastafel davor --------------- */
+.frame--essay { padding: 0; overflow: hidden; justify-content: flex-end; }
+.essay__media { position: absolute; inset: 0; display: grid; place-items: center; }
+.essay__halo {
+  position: absolute; left: 50%; top: 50%; translate: -50% -50%;
+  width: 58%; aspect-ratio: 1; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(215, 249, 8, .14), transparent 62%); filter: blur(42px);
+}
+.essay__media img {
+  position: relative; max-width: 76%; max-height: 76%; width: auto; height: auto;
+  filter: drop-shadow(0 30px 70px rgba(0, 0, 0, .6));
+  transition: transform .8s var(--ease);
+}
+.frame--essay:hover .essay__media img, .frame--essay:focus-within .essay__media img { transform: translateY(-14px) scale(1.03); }
+/* Deckender Schleier statt Durchsichtigkeit: die Tafel steht nie auf dem Render. */
+.essay__veil {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(90deg, rgba(19, 17, 15, .9) 0%, rgba(19, 17, 15, .45) 48%, rgba(19, 17, 15, .06) 100%);
+}
+
+/* --- Grundkader: ihre Ziffer, darunter der Grund ------------------------- */
+.frame--reason { justify-content: space-between; gap: clamp(1rem, 2vw, 1.75rem); }
+/* Die Huelle traegt den Auftritt, das Bild seine eigene Bewegung: sonst
+   ueberlagern sich CSS-Uebergang und Skript auf derselben Transform. */
+.reason__mark { flex: none; }
+/* Ihre Ziffern liegen als #222222 vor - auf dem dunklen Kader unsichtbar. Die
+   Datei dient deshalb als Maske, gefuellt wird sie mit dem Markenakzent: dieselbe
+   Ziffernsprache wie die Nummern 01-06 der Startseite, nur mit ihrer Zeichnung. */
+.reason__num {
+  display: block; width: clamp(96px, 12vw, 172px); aspect-ratio: 2 / 1;
+  background: var(--acid); opacity: .5;
+  -webkit-mask-position: 0 50%; mask-position: 0 50%;
+  -webkit-mask-size: contain;  mask-size: contain;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  transition: transform .6s var(--ease), opacity .4s var(--ease);
+}
+.num--01 { -webkit-mask-image: url("../assets/img/num-01.svg"); mask-image: url("../assets/img/num-01.svg"); }
+.num--02 { -webkit-mask-image: url("../assets/img/num-02.svg"); mask-image: url("../assets/img/num-02.svg"); }
+.num--03 { -webkit-mask-image: url("../assets/img/num-03.svg"); mask-image: url("../assets/img/num-03.svg"); }
+.num--04 { -webkit-mask-image: url("../assets/img/num-04.svg"); mask-image: url("../assets/img/num-04.svg"); }
+.frame--reason:hover .reason__num, .frame--reason:focus-within .reason__num { transform: translateY(-8px); opacity: .95; }
+.reason__body { display: grid; gap: .85rem; }
+.frame--reason h3 { font-size: var(--d4); hyphens: manual; }
+.frame--reason p { color: var(--mute); max-width: 42ch; transition: color .4s var(--ease); }
+.frame--reason:hover p, .frame--reason:focus-within p { color: var(--paper); }
+
+/* Ihr Dekorstern steht im Titelkader ueber der Ueberschrift. */
+.frame--title .deco { width: clamp(46px, 5vw, 72px); opacity: .85; }
+
+/* ==========================================================================
+   3. Laufwerk: Fortschritt mit den Namen der Abschnitte
+   ========================================================================== */
+.rail {
+  position: relative; flex: none; z-index: 8;
+  height: var(--rail-h); display: flex; align-items: stretch;
+  background: rgba(14, 12, 11, .94); border-top: 1px solid var(--line-soft);
+  opacity: 0; transform: translateY(100%); pointer-events: none;
+  /* visibility nimmt die Marken aus der Tabreihenfolge, solange der Streifen ruht. */
+  visibility: hidden;
+  transition: opacity .5s var(--ease), transform .5s var(--ease), visibility 0s linear .5s;
+}
+.reel-live .rail {
+  opacity: 1; transform: none; pointer-events: auto; visibility: visible;
+  transition: opacity .5s var(--ease), transform .5s var(--ease), visibility 0s;
+}
+.rail__mark {
+  flex: 1 1 0; min-width: 0; display: flex; align-items: center;
+  padding: 0 clamp(.6rem, 1vw, 1.1rem); min-height: 44px;
+  background: none; border: 0; border-left: 1px solid var(--line-soft);
+  color: var(--mute); font-size: var(--micro); letter-spacing: .04em; text-align: left; cursor: pointer;
+  transition: color .3s var(--ease), background-color .3s var(--ease);
+}
+.rail__mark:first-child { border-left: 0; }
+.rail__mark span { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rail__mark:hover { color: var(--paper); }
+.rail__mark[data-active="true"] { color: var(--acid); background: rgba(215, 249, 8, .05); }
+.rail__fill {
+  position: absolute; inset: auto 0 0 0; height: 2px; background: var(--acid);
+  transform: scaleX(0); transform-origin: 0 50%; pointer-events: none;
+}
+
+/* ==========================================================================
+   4. Kontakt: der zweite Buchdeckel
+   ========================================================================== */
+.contact { position: relative; padding-bottom: clamp(3rem, 8vh, 6rem); }
+.contact__in { padding-top: var(--sec); }
+.contact h2 { font-size: clamp(1.8rem, 4.6vw, 4rem); text-transform: uppercase; max-width: 16ch; hyphens: manual; }
+.contact h2 em { font-style: italic; color: var(--acid); }
+.contact__lead { margin-top: 1.25rem; color: var(--mute); max-width: 46ch; }
+
+.contact__cols { margin-top: clamp(2.5rem, 6vh, 4.5rem); display: grid; gap: clamp(2.5rem, 5vw, 4rem); }
+@media (min-width: 960px) { .contact__cols { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); } }
+
+.field { display: grid; gap: .5rem; margin-bottom: 1.35rem; }
+.field label { font-size: var(--micro); color: var(--paper); }
+.field input, .field textarea {
+  width: 100%; padding: .9rem 1.1rem;
+  background: var(--ink-2); border: 1px solid var(--line); border-radius: var(--r-input);
+  transition: border-color .25s var(--ease);
+}
+.field input::placeholder, .field textarea::placeholder { color: #8B8781; }  /* 4.6:1 auf --ink-2 */
+.field input:focus, .field textarea:focus { border-color: var(--acid); outline: none; }
+.field textarea { min-height: 130px; resize: vertical; }
+.field__hint { font-size: var(--micro); color: var(--mute); }
+.field__err { font-size: var(--micro); color: #FF8A7A; min-height: 1.2em; }
+.field[data-invalid="true"] input, .field[data-invalid="true"] textarea { border-color: #FF8A7A; }
+
+/* Das Kaestchen selbst misst 24px, die Tippflaeche ist die Beschriftung: das
+   ganze Label ist anklickbar und mindestens 44px hoch (Abnahme 05.09.2026). */
+.consent { display: flex; gap: .75rem; align-items: start; margin-bottom: 1.5rem; min-height: 44px; font-size: var(--micro); color: var(--mute); cursor: pointer; }
+.consent input { width: 24px; height: 24px; accent-color: var(--acid); flex: none; margin-top: 0; }
+
+.form__note { margin-top: 1rem; font-size: var(--micro); min-height: 1.4em; }
+.form__note[data-state="ok"] { color: var(--acid); }
+.form__note[data-state="bad"] { color: #FF8A7A; }
+
+.contact__meta { display: grid; gap: 2.25rem; align-content: start; }
+.contact__meta h3 { font-family: Poppins, sans-serif; font-weight: 500; font-size: var(--micro); color: var(--mute); text-transform: uppercase; letter-spacing: .1em; }
+.contact__meta ul { list-style: none; margin: .9rem 0 0; padding: 0; display: grid; gap: .55rem; }
+.contact__meta a:hover { color: var(--acid); }
+.contact__big { font-family: Syne, sans-serif; font-weight: 700; font-size: clamp(1.25rem, 2vw, 1.75rem); }
+
+.foot {
+  margin-top: clamp(3rem, 8vh, 6rem); padding-top: 2rem; border-top: 1px solid var(--line-soft);
+  display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between;
+  font-size: var(--micro); color: var(--mute);
+}
+.foot nav { display: flex; gap: 1.5rem; }
+.foot a:hover { color: var(--paper); }
+
+/* --- Tippziele: auf Touch mindestens 44px hoch ---------------------------
+   Die Grenze liegt bei 1180px, nicht bei 900: das quer gehaltene Tablet wird
+   ebenfalls mit dem Finger bedient, und die Zeigerabfrage laesst sich im
+   Chromium nicht nachstellen. Bei 900 blieben auf 1024 und 1180 vierunddreissig
+   Ziele unter 40px (gemessen 05.09.2026). */
+@media (pointer: coarse), (max-width: 1180px) {
+  .link { min-height: 44px; align-items: center; }
+  .contact__meta ul a, .foot a, .nav__logo, .nav__links a { display: inline-flex; align-items: center; min-height: 44px; }
+  .contact__meta ul { gap: .1rem; }
+}
+
+/* --- Auftritt beim Erreichen (nur ausserhalb des Streifens) -------------- */
+.js .rise { opacity: 0; transform: translateY(26px); }
+
+/* ==========================================================================
+   Schmale Bildschirme: der Streifen steht senkrecht, nichts wird gehalten
+   ========================================================================== */
+@media (max-width: 900px) {
+  :root { --nav-h: 64px; --pad: 1.25rem; }
+  .nav__links { display: none; }
+  .nav__burger { display: block; }
+  .nav .btn { display: none; }
+
+  .hero__title .line--2 { padding-left: 0; }
+  .hero__crystal { width: 46vw; right: -4vw; top: calc(var(--nav-h) + 1rem); }
+  .hero__in { grid-template-rows: .9fr auto .45fr auto; padding-bottom: clamp(1.5rem, 4vh, 2.5rem); }
+
+  /* Der Streifen laeuft jetzt senkrecht: die Perforation wandert an die Kante. */
+  .reel__stage { height: auto; padding: 0 0 0 26px; display: block; position: relative; }
+  .reel__stage::before {
+    content: ""; position: absolute; inset: 0 auto 0 0; width: 26px;
+    background: var(--film) var(--holes-y) repeat-y;
+    border-right: 1px solid rgba(255, 255, 255, .07);
+  }
+  .perf--top, .perf--bot { display: none; }
+  .reel__view { overflow: visible; }
+  .depth { display: none; }
+  .reel__track { display: block; width: auto; height: auto; transform: none !important; }
+  .grp { display: block; height: auto; }
+  .frame {
+    width: auto !important; height: auto; min-height: 0;
+    border-left: 0; border-top: 1px solid var(--line-soft);
+    padding-block: clamp(2rem, 6vh, 3rem);
+  }
+  /* Schmale Spalte: hier ist die deutsche Silbentrennung besser als ein
+     harter Wortbruch, den overflow-wrap sonst setzt. */
+  .frame--title h2, .clients__intro h2, .contact h2, .svc__top h3, .frame--card h2 { hyphens: auto; }
+  /* Ihr laengstes Heldenwort ("Professionelles") passt auf 360 nicht in die
+     Spalte: es stand 31px im Freien (gemessen 05.09.2026). Der untere Anschlag
+     der Grundregel (22px) ist dort zu gross, deshalb bindet die Zeile unter
+     415px an die Breite. Ab 415px bleibt alles wie zuvor. */
+  .hero--sub .hero__title { font-size: min(1.375rem, 5.3vw); }
+  .frame--title { padding-bottom: 1rem; }
+  .frame--title .rule { transform: scaleX(1); width: 40%; }
+  .frame--svc { display: grid; grid-template-rows: auto auto auto; }
+  /* Die Nummer steigt ueber den Titel: sonst bleiben der Ueberschrift 200px
+     und jedes zweite Wort wird getrennt. */
+  .svc__top { flex-direction: column-reverse; align-items: flex-start; gap: .3rem; }
+  .svc__shot { position: static; overflow: visible; }
+  /* Breite fest, Hoehe aus dem Seitenverhaeltnis der Datei: nur mit einer
+     festen Breite haelt der leere Kasten schon vor dem Laden seinen Platz.
+     Mit width:auto stand er auf 0 und die Seite wuchs beim Nachladen um rund
+     1200px unter dem Finger (gemessen 05.09.2026). object-position haelt das
+     Bild wie vorher an der linken Kante. */
+  .svc__shot img { position: static; width: 100%; max-width: 100%; max-height: 42vh; margin: 0; object-fit: contain; object-position: left center; }
+  .svc__foot .link { opacity: 1; transform: none; }
+  .frame--case { padding: 0; display: block; }
+  .case__media { position: relative; aspect-ratio: 16 / 9; }
+  .case__panel { width: auto; margin: -3.5rem 1rem 1.5rem; }
+  .frame--essay { padding: 0; display: block; }
+  .essay__media { position: relative; aspect-ratio: 4 / 3; }
+  .essay__media img { max-width: 78%; max-height: 78%; }
+  .essay__veil { display: none; }
+  .frame--reason { display: block; }
+  .reason__mark { margin-bottom: 1.25rem; }
+  .frame--clients { display: block; }
+  .clients__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); height: auto; margin-top: 1.75rem; }
+  .clients__cell { min-height: 96px; }
+  .voice__mark { width: 44%; right: -4%; }
+  .post__shot { flex: none; aspect-ratio: 16 / 9; }
+
+  /* Fortschritt wird zur Kopfzeile: der Name des Abschnitts sitzt als Plakette
+     im Kopfband, die Fortschrittslinie liegt auf dessen Unterkante.
+     Als eigene Leiste unter dem Kopfband lag sie auf der ersten Textzeile jedes
+     Kaders, auf der Unterseite sogar auf der gleichlautenden Ueberschrift
+     ("Warum uns waehlen?" ueber "Warum uns waehlen?", gesehen 05.09.2026).
+     Im Kopfband deckt sie keine Zeile zu, die das Band nicht ohnehin verdeckt,
+     und die Plakette ist selbst undurchsichtig: nichts scheint durch sie hindurch.
+     Kein transform auf .rail - sonst waere die Leiste der Bezugsrahmen fuer die
+     fest stehende Fortschrittslinie und diese liefe nicht mehr ueber die Breite. */
+  .rail {
+    position: fixed; inset: 0 calc(var(--gut) + 52px) auto auto; z-index: 81;
+    height: var(--nav-h); width: auto;
+    align-items: center; background: none; border: 0;
+    transform: none; pointer-events: none;
+  }
+  .reel-live .rail { transform: none; }
+  .rail__mark { display: none; }
+  .rail__mark[data-active="true"] {
+    display: inline-flex; flex: none; pointer-events: auto;
+    /* 50vw statt 46: bei 360px brauchte "Warum uns waehlen?" 141px, die
+       Plakette gab 138 und kuerzte mit Auslassungspunkten (gemessen 05.09.2026).
+       Zum Schriftzug links bleiben dabei immer noch acht Pixel Luft. */
+    max-width: min(50vw, 210px); min-height: 44px; padding: 0 .85rem;
+    border-left: 0; border-radius: var(--r-pill);
+    background: var(--ink-2); color: var(--acid);
+  }
+  .rail__fill { position: fixed; inset: calc(var(--nav-h) - 2px) 0 auto 0; height: 2px; }
+}
+
+/* ==========================================================================
+   Weniger Bewegung: der Streifen wird zur Liste, alles steht
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+  .curtain { display: none; }
+  .js .rise { opacity: 1 !important; transform: none !important; }
+  .hero { min-height: 0; padding-bottom: 3rem; }
+  .perf--lead, .perf--tail { display: none; }
+  .reel__stage { height: auto; padding: 0; display: block; }
+  .reel__view { overflow: visible; }
+  .reel__stage .perf, .depth, .rail { display: none; }
+  .reel__track { display: block; width: auto; height: auto; transform: none !important; }
+  .grp { display: block; height: auto; }
+  .frame {
+    width: auto !important; height: auto; min-height: 0;
+    border-left: 0; border-top: 1px solid var(--line-soft);
+    padding: 2.5rem var(--gut);
+  }
+  .svc__shot img { max-width: min(100%, 620px) !important; }
+  .frame--svc { display: grid; grid-template-rows: auto auto auto; }
+  .svc__shot { position: static; overflow: visible; }
+  .svc__shot img { position: static; max-width: 100%; max-height: 40vh; margin: 0; }
+  .svc__foot .link { opacity: 1 !important; transform: none !important; }
+  .frame--title .rule { transform: scaleX(1); width: 40%; }
+  .frame--case { padding: 0; display: block; }
+  .case__media { position: relative; aspect-ratio: 16 / 9; }
+  .case__panel { width: auto; margin: -3rem 1.25rem 1.5rem; }
+  .frame--essay { padding: 0; display: block; }
+  /* Ohne Deckelhoehe waere das Seitenverhaeltnis auf 1440 ein 810px hohes Bild;
+     ohne die volle Breite rechnet der Kasten seine Breite aus der gedeckelten
+     Hoehe zurueck (gemessen: 896 statt 1440) und steht dann links. */
+  .essay__media { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: 56vh; }
+  .essay__media img { max-width: 62%; max-height: 78%; }
+  .essay__veil, .essay__halo { display: none; }
+  .frame--reason { display: block; }
+  .reason__mark { margin-bottom: 1.25rem; }
+  .frame--clients { display: block; }
+  .clients__grid { height: auto; margin-top: 1.75rem; }
+  .post__shot { flex: none; aspect-ratio: 16 / 9; }
+  .contact__in { padding-top: 3rem; }
+}
+
+/* Weniger Transparenz: Glas wird zur Flaeche */
+@media (prefers-reduced-transparency: reduce) {
+  .nav, .case__panel { background: rgba(19, 17, 15, .97); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .rail { background: #0E0C0B; }
+  .frame { background: var(--ink); }
+  .frame--card { background: var(--film); }
+}
