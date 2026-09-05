@@ -139,11 +139,20 @@
     document.title = `${byId(cur.id).name} · ${cur.page === 'webdesign' ? 'Webdesign' : 'Startseite'} · V&M Design-Varianten`;
   }
 
-  let expected = '';
+  // Vergleich mit der Adresse, die im Rahmen wirklich geladen ist - nicht mit dem src-Attribut:
+  // nach eigener Navigation im Rahmen (Link im Menü) stimmen die beiden nicht mehr überein.
+  const norm = u => u.split('#')[0].replace(/index\.html$/, '');
   function load() {
+    if (document.body.dataset.mode !== 'frame') return;
     const href = hrefOf(byId(cur.id), cur.page);
-    expected = href;
-    if (document.body.dataset.mode === 'frame' && frame.getAttribute('src') !== href) frame.setAttribute('src', href);
+    const target = new URL(href, location.href).href;
+    let actual = null;
+    try { actual = frame.contentWindow.location.href; } catch (e) { /* fremder Ursprung */ }
+    if (actual && norm(actual) === norm(target)) return;
+    if (frame.getAttribute('src') === href) {
+      try { frame.contentWindow.location.replace(target); return; } catch (e) { /* weiter unten */ }
+    }
+    frame.setAttribute('src', href);
   }
   function go(patch) { cur = { ...cur, ...patch }; paint(); writeHash(); load(); }
 
