@@ -1,0 +1,593 @@
+/* ==========================================================================
+   V&M Werbeagentur - Scroll-Bühne
+   Marke: Farben, Schriften und Bildmaterial von vm-wa.de (Stand 04.09.2026).
+   Formsprache: dark-tech kinetic. Ein Theme (dunkel), ein Akzent (#D7F908).
+   Radien-System: Buttons = Pille, Flächen = 20px, Chips = Pille. Keine Ausnahmen.
+   ========================================================================== */
+
+@import url("../assets/fonts.css");
+
+/* --- Tokens ------------------------------------------------------------- */
+:root {
+  --ink:        #13110F;   /* Grundfläche, vom Live-Auftritt übernommen */
+  --ink-2:      #1A1714;   /* leicht erhöhte Fläche */
+  --ink-3:      #221E1A;   /* Karten */
+  --acid:       #D7F908;   /* Markenakzent, einziger Akzent der Seite */
+  --acid-dim:   #A8C206;
+  --paper:      #F4F4F4;
+  --mute:       #9A968F;
+  --line:       rgba(255, 255, 255, .12);
+  --line-soft:  rgba(255, 255, 255, .06);
+
+  --d1: clamp(1.95rem, 6.1vw, 5.75rem);
+  --d2: clamp(1.55rem, 5.4vw, 4.5rem);
+  --d3: clamp(1.35rem, 2.5vw, 2.25rem);
+  --d4: clamp(1.15rem, 1.5vw, 1.4rem);
+  /* Unterseiten-Held: eine Stufe leiser als die Startseite, damit die
+     lange Zeile auf 1440 zweizeilig bleibt. */
+  --d1-sub: clamp(1.8rem, 5.2vw, 4.6rem);
+  --body: clamp(1rem, 1.05vw, 1.0625rem);
+  --micro: .8125rem;
+
+  --r-panel: 20px;
+  --r-pill: 999px;
+
+  --gut: clamp(1.25rem, 4vw, 4.5rem);
+  --sec: clamp(6rem, 12vh, 11rem);
+
+  --ease: cubic-bezier(.16, 1, .3, 1);
+
+  --nav-h: 72px;
+}
+
+/* --- Reset -------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font: 400 var(--body)/1.75 Poppins, system-ui, sans-serif;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+img, video, svg { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button, input, textarea { font: inherit; color: inherit; }
+h1, h2, h3, h4 {
+  margin: 0; font-family: Syne, system-ui, sans-serif; font-weight: 800; line-height: 1.04;
+  /* Deutsche Komposita sind lang: brechen und trennen statt ueberlaufen. */
+  overflow-wrap: break-word; hyphens: auto;
+}
+p { margin: 0; }
+:focus-visible { outline: 2px solid var(--acid); outline-offset: 3px; border-radius: 4px; }
+
+.wrap { width: min(100% - var(--gut) * 2, 1440px); margin-inline: auto; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* --- Fläche über allem: Korn + Fortschritt ------------------------------ */
+.grain {
+  position: fixed; inset: 0; z-index: 90; pointer-events: none;
+  opacity: .32; mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+.progress {
+  position: fixed; inset: 0 auto auto 0; z-index: 95;
+  height: 2px; width: 100%; transform: scaleX(0); transform-origin: 0 50%;
+  background: var(--acid); pointer-events: none;
+}
+
+/* --- Vorhang beim Laden ------------------------------------------------- */
+html:not(.js) .curtain { display: none; }
+.curtain {
+  position: fixed; inset: 0; z-index: 100;
+  display: grid; place-items: center;
+  background: var(--ink);
+}
+.curtain__mark { width: clamp(120px, 18vw, 210px); opacity: 0; }
+.curtain__bar {
+  position: absolute; inset: auto 0 0 0; height: 3px;
+  background: var(--acid); transform: scaleX(0); transform-origin: 0 50%;
+}
+
+/* --- Navigation --------------------------------------------------------- */
+.nav {
+  position: fixed; inset: 0 0 auto 0; z-index: 80;
+  height: var(--nav-h);
+  display: flex; align-items: center;
+  background: rgba(19, 17, 15, .58);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border-bottom: 1px solid var(--line-soft);
+}
+.nav__in { display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+.nav__logo img { height: 26px; width: auto; }
+.nav__links { display: flex; gap: clamp(1rem, 2vw, 2.25rem); align-items: center; }
+.nav__links a {
+  font-size: var(--micro); letter-spacing: .04em; color: var(--mute);
+  transition: color .3s var(--ease);
+}
+.nav__links a:hover { color: var(--paper); }
+.nav__burger { display: none; background: none; border: 0; padding: .5rem; cursor: pointer; color: var(--paper); }
+.nav__burger svg { width: 26px; height: 26px; }
+
+/* --- Buttons ------------------------------------------------------------ */
+.btn {
+  display: inline-flex; align-items: center; gap: .6rem; white-space: nowrap;
+  padding: .85rem 1.5rem; border-radius: var(--r-pill); border: 1px solid transparent;
+  font-size: .9375rem; font-weight: 500; cursor: pointer;
+  transition: transform .25s var(--ease), background-color .25s var(--ease), color .25s var(--ease);
+}
+.btn svg { width: 18px; height: 18px; flex: none; }
+.btn--acid { background: var(--acid); color: #101010; }   /* Kontrast 15.4:1 */
+.btn--acid:hover { background: #E4FF2E; }
+.btn--ghost { border-color: var(--line); color: var(--paper); }
+.btn--ghost:hover { border-color: var(--acid); color: var(--acid); }
+.btn:active { transform: translateY(1px) scale(.985); }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+.link {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-size: .9375rem; color: var(--acid);
+  border-bottom: 1px solid rgba(215, 249, 8, .35); padding-bottom: 2px;
+  transition: border-color .3s var(--ease), gap .3s var(--ease);
+}
+.link svg { width: 15px; height: 15px; }
+.link:hover { border-color: var(--acid); gap: .8rem; }
+
+/* --- Vollbild-Menü (mobil) --------------------------------------------- */
+.menu {
+  position: fixed; inset: 0; z-index: 85;
+  display: none; flex-direction: column; justify-content: center; gap: 1rem;
+  padding: var(--gut);
+  background: var(--ink);
+}
+.menu[data-open="true"] { display: flex; }
+.menu a { font-family: Syne, sans-serif; font-weight: 700; font-size: clamp(2rem, 9vw, 3.5rem); text-transform: uppercase; }
+.menu__close { position: absolute; top: 1.5rem; right: var(--gut); background: none; border: 0; color: var(--paper); cursor: pointer; }
+.menu__close svg { width: 30px; height: 30px; }
+
+/* ==========================================================================
+   1. Bühne: Held
+   ========================================================================== */
+.hero { position: relative; min-height: 100dvh; }
+.hero__stage {
+  position: relative; min-height: 100dvh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: calc(var(--nav-h) + 3rem) 0 3rem;
+}
+.hero__glow {
+  position: absolute; left: 50%; top: 46%; translate: -50% -50%;
+  width: min(120vw, 1100px); aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(215, 249, 8, .12), transparent 58%);
+  filter: blur(46px); pointer-events: none;
+}
+.hero__obj { position: absolute; pointer-events: none; will-change: transform; }
+.hero__obj--a { width: clamp(150px, 22vw, 330px); right: 4vw;  top: 14vh; }
+/* Nach unten aus dem Textfeld geschoben: der Fliesstext lag sonst auf dem Objekt. */
+.hero__obj--b { width: clamp(130px, 17vw, 250px); left: -4vw;  bottom: -15vh; }
+.hero__obj--c { width: clamp(90px, 11vw, 170px);  right: 16vw; bottom: 9vh; opacity: .85; }
+
+.hero__title {
+  position: relative; z-index: 2;
+  font-size: var(--d1); text-transform: uppercase; letter-spacing: -.02em;
+  hyphens: none;   /* die Markenzeile wird nicht getrennt */
+}
+.hero__title .line { display: block; will-change: transform; }
+.hero__title .line--2 { padding-left: min(14vw, 190px); color: var(--acid); }
+.hero__title .w { display: inline-block; overflow: hidden; vertical-align: bottom; }
+.hero__title .w > span { display: inline-block; }
+
+.hero__foot {
+  position: relative; z-index: 2;
+  margin-top: clamp(2rem, 5vh, 4rem);
+  display: flex; flex-wrap: wrap; align-items: end; gap: 2rem 3rem;
+}
+.hero__sub { max-width: 46ch; color: var(--mute); }
+
+/* ==========================================================================
+   2. Band: Leistungen als Laufschrift (einziges Marquee der Seite)
+   ========================================================================== */
+.band {
+  position: relative; z-index: 3;
+  background: var(--acid); color: #101010;
+  rotate: -1.6deg; margin: clamp(2rem, 8vh, 6rem) -4vw; padding: 1.1rem 0;
+  overflow: hidden; user-select: none;
+}
+.band__track { display: flex; width: max-content; will-change: transform; }
+.band__set { display: flex; flex: none; }
+.band__set span {
+  font-family: Syne, sans-serif; font-weight: 800; text-transform: uppercase;
+  font-size: clamp(1.1rem, 2.4vw, 2rem); letter-spacing: -.01em;
+  padding-inline: clamp(1rem, 2vw, 2rem);
+}
+
+/* ==========================================================================
+   3. Leistungen: waagerechte Fahrt
+   ========================================================================== */
+.svcs { position: relative; }
+.svcs__head { padding: var(--sec) 0 clamp(2rem, 5vh, 4rem); }
+.svcs__head h2 { font-size: var(--d2); text-transform: uppercase; }
+.svcs__head h2 em { font-style: italic; color: var(--acid); }
+
+.svcs__view { position: relative; overflow: hidden; min-height: 100dvh;
+  display: flex; flex-direction: column; justify-content: center; }
+.svcs__track { display: flex; align-items: stretch; gap: clamp(1.5rem, 3vw, 3.5rem); padding-inline: var(--gut); will-change: transform; }
+
+.svc {
+  flex: none; width: min(80vw, 940px); min-height: 62vh;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .5fr);
+  align-items: center; gap: clamp(1.5rem, 3vw, 3rem);
+  padding: clamp(2rem, 4vw, 3.5rem);
+  background: var(--ink-2); border: 1px solid var(--line-soft); border-radius: var(--r-panel);
+}
+.svc__body { display: grid; gap: 1.15rem; align-content: center; }
+/* Gerade Tafeln drehen die Anordnung: sechs gleiche Tafeln waeren eintoenig. */
+.svc:nth-child(even) .svc__obj { order: -1; }
+.svc__num {
+  font-family: Syne, sans-serif; font-weight: 800; font-size: clamp(3rem, 7vw, 6.5rem);
+  line-height: 1; color: transparent; -webkit-text-stroke: 1px rgba(215, 249, 8, .55);
+}
+.svc h3 { font-size: var(--d3); max-width: 18ch; }
+.svc p { max-width: 58ch; color: var(--mute); }
+.svc__obj {
+  width: 100%; max-width: 300px; justify-self: center; pointer-events: none;
+  filter: drop-shadow(0 24px 60px rgba(0, 0, 0, .55));
+}
+
+.svcs__rail { position: relative; height: 2px; background: var(--line-soft); margin: 2.5rem var(--gut) 0; }
+.svcs__rail i { position: absolute; inset: 0 auto 0 0; display: block; width: 100%; background: var(--acid); transform: scaleX(0); transform-origin: 0 50%; }
+
+/* ==========================================================================
+   4. Projekte: Filmszenen
+   ========================================================================== */
+.cases { position: relative; padding-top: var(--sec); }
+.cases__head { padding-bottom: clamp(2rem, 5vh, 4rem); }
+.cases__head h2 { font-size: var(--d2); text-transform: uppercase; }
+.cases__head h2 em { font-style: italic; color: var(--acid); }
+
+.case {
+  position: sticky; top: 0; min-height: 100dvh;
+  display: grid; place-items: center; overflow: clip;
+  background: var(--ink);
+}
+.case__media { position: absolute; inset: 0; background: var(--ink-2); }
+.case__media video, .case__media img {
+  width: 100%; height: 100%; object-fit: cover; will-change: transform;
+}
+.case__media::after {
+  content: ""; position: absolute; inset: 0;
+  /* Oben kraeftiger, damit die Kopfzeile ueber hellem Bildmaterial lesbar bleibt. */
+  background: linear-gradient(180deg, rgba(19, 17, 15, .78) 0%, rgba(19, 17, 15, .30) 26%, rgba(19, 17, 15, .80) 72%, var(--ink) 100%);
+}
+/* Vuaille: die weichende Szene wird abgedunkelt statt durchsichtig gemacht.
+   Durchsichtig hiesse, die vorige Szene scheint durch. */
+.case__veil { position: absolute; inset: 0; z-index: 4; background: var(--ink); opacity: 0; pointer-events: none; }
+.case__panel {
+  position: relative; z-index: 2;
+  width: min(100% - var(--gut) * 2, 620px);
+  margin-left: auto; margin-right: clamp(1rem, 6vw, 7rem);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border-radius: var(--r-panel);
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(19, 17, 15, .74);   /* deckt auch helles Filmmaterial ab, AA bleibt sicher */
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 30px 80px rgba(0, 0, 0, .5);
+}
+.case__meta { display: block; font-size: var(--micro); color: var(--acid); margin-bottom: .9rem; }
+/* Projekttitel tragen Eigennamen: nicht trennen, nur umbrechen. */
+.case__panel h3 { font-size: var(--d3); margin-bottom: .9rem; hyphens: manual; }
+.case__panel p { color: rgba(244, 244, 244, .82); margin-bottom: 1.4rem; }
+
+/* ==========================================================================
+   5. Kunden: Zeichenfeld
+   ========================================================================== */
+.clients { padding: var(--sec) 0; }
+.clients h2 { font-size: var(--d2); text-transform: uppercase; }
+.clients h2 em { font-style: italic; color: var(--acid); }
+.clients__lead { max-width: 52ch; margin-top: 1.25rem; color: var(--mute); }
+.clients__grid {
+  margin-top: clamp(2.5rem, 6vh, 5rem);
+  display: grid; grid-template-columns: repeat(12, 1fr); gap: 1px;
+  background: var(--line-soft); border: 1px solid var(--line-soft); border-radius: var(--r-panel); overflow: hidden;
+}
+.clients__cell {
+  grid-column: span 3; display: grid; place-items: center;
+  min-height: clamp(110px, 13vw, 165px); padding: 1.5rem;
+  background: var(--ink); transition: background-color .35s var(--ease);
+}
+.clients__cell:nth-child(1), .clients__cell:nth-child(8)  { grid-column: span 6; }
+.clients__cell:nth-child(5), .clients__cell:nth-child(12) { grid-column: span 6; }
+.clients__cell img { width: clamp(80px, 9vw, 130px); opacity: .68; transition: opacity .35s var(--ease), filter .35s var(--ease); }
+.clients__cell:hover { background: var(--ink-2); }
+.clients__cell:hover img { opacity: 1; }
+
+/* ==========================================================================
+   6. Stimmen: Kartenstapel
+   ========================================================================== */
+.voices { padding-top: var(--sec); }
+.voices__head h2 { font-size: var(--d2); text-transform: uppercase; }
+.voices__head h2 em { font-style: italic; color: var(--acid); }
+.voices__stack { margin-top: clamp(2rem, 5vh, 4rem); }
+.voice {
+  position: sticky; overflow: hidden; top: calc(var(--nav-h) + 4vh);
+  min-height: 42vh;
+  display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, .7fr);
+  align-items: center; gap: clamp(1.5rem, 4vw, 3.5rem);
+  padding: clamp(1.75rem, 4vw, 3.25rem);
+  margin-bottom: 2.25rem;
+  border-radius: var(--r-panel); border: 1px solid var(--line);
+  background: var(--ink-3);
+  will-change: transform;
+}
+.voice__body { display: grid; gap: 1.6rem; align-content: center; }
+/* Das Kundenzeichen gross und leise: fuellt die Flaeche mit Substanz statt mit Luft. */
+.voice__mark { width: clamp(110px, 13vw, 190px); justify-self: center; opacity: .16; }
+.voice__veil { position: absolute; inset: 0; z-index: 2; border-radius: inherit; background: var(--ink); opacity: 0; pointer-events: none; }
+.voice blockquote { margin: 0; font-family: Syne, sans-serif; font-weight: 700; font-size: var(--d4); line-height: 1.45; max-width: 40ch; }
+.voice__who { display: grid; gap: .15rem; }
+.voice__name { font-size: .9375rem; }
+.voice__firm { font-size: var(--micro); color: var(--mute); }
+
+/* ==========================================================================
+   7. Aktuelles: versetzte Beiträge
+   ========================================================================== */
+.news { padding: var(--sec) 0; }
+.news h2 { font-size: var(--d2); text-transform: uppercase; }
+.news__list { margin-top: clamp(2.5rem, 6vh, 5rem); display: grid; gap: clamp(2.5rem, 6vh, 5rem); }
+.post { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+.post__shot { overflow: hidden; border-radius: var(--r-panel); }
+.post__shot img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; transition: transform .8s var(--ease); }
+.js .post__shot img { clip-path: inset(0 0 100% 0); }
+.post:hover .post__shot img { transform: scale(1.04); }
+.post h3 { font-size: var(--d3); max-width: 22ch; hyphens: manual; }
+.post p { color: var(--mute); max-width: 56ch; margin: 1rem 0 1.4rem; }
+
+@media (min-width: 900px) {
+  .post { grid-template-columns: 1.05fr .95fr; align-items: center; gap: clamp(2rem, 4vw, 4rem); }
+  .post:nth-child(2) { margin-left: 12%; }
+  .post:nth-child(2) .post__shot { order: 2; }
+  .post:nth-child(3) { margin-right: 10%; }
+}
+
+/* ==========================================================================
+   8. Kontakt: Abschluss
+   ========================================================================== */
+.contact { position: relative; padding: var(--sec) 0 clamp(3rem, 8vh, 6rem); overflow: clip; }
+.contact__sweep {
+  position: absolute; inset: 0 0 auto 0; height: 100%;
+  z-index: 3; background: var(--acid); transform-origin: 50% 0; transform: scaleY(0); pointer-events: none;
+}
+.contact__in { position: relative; z-index: 2; }
+.contact h2 { font-size: var(--d2); text-transform: uppercase; max-width: 16ch; }
+.contact h2 em { font-style: italic; color: var(--acid); }
+.contact__lead { margin-top: 1.25rem; color: var(--mute); max-width: 46ch; }
+
+.contact__cols { margin-top: clamp(2.5rem, 6vh, 4.5rem); display: grid; gap: clamp(2.5rem, 5vw, 4rem); }
+@media (min-width: 960px) { .contact__cols { grid-template-columns: 1.15fr .85fr; } }
+
+.field { display: grid; gap: .5rem; margin-bottom: 1.35rem; }
+.field label { font-size: var(--micro); color: var(--paper); }
+.field input, .field textarea {
+  width: 100%; padding: .9rem 1.1rem;
+  background: var(--ink-2); border: 1px solid var(--line); border-radius: 12px;
+  transition: border-color .25s var(--ease);
+}
+.field input::placeholder, .field textarea::placeholder { color: #8B8781; }  /* 4.6:1 auf --ink-2 */
+.field input:focus, .field textarea:focus { border-color: var(--acid); outline: none; }
+.field textarea { min-height: 130px; resize: vertical; }
+.field__hint { font-size: var(--micro); color: var(--mute); }
+.field__err { font-size: var(--micro); color: #FF8A7A; min-height: 1.2em; }
+.field[data-invalid="true"] input, .field[data-invalid="true"] textarea { border-color: #FF8A7A; }
+
+.consent { display: flex; gap: .75rem; align-items: start; margin-bottom: 1.5rem; font-size: var(--micro); color: var(--mute); }
+.consent input { width: 18px; height: 18px; accent-color: var(--acid); flex: none; margin-top: .2rem; }
+
+.form__note { margin-top: 1rem; font-size: var(--micro); min-height: 1.4em; }
+.form__note[data-state="ok"] { color: var(--acid); }
+.form__note[data-state="bad"] { color: #FF8A7A; }
+
+.contact__meta { display: grid; gap: 2.25rem; align-content: start; }
+.contact__meta h3 { font-family: Poppins, sans-serif; font-weight: 500; font-size: var(--micro); color: var(--mute); text-transform: uppercase; letter-spacing: .1em; }
+.contact__meta ul { list-style: none; margin: .9rem 0 0; padding: 0; display: grid; gap: .55rem; }
+.contact__meta a:hover { color: var(--acid); }
+.contact__big { font-family: Syne, sans-serif; font-weight: 700; font-size: clamp(1.25rem, 2vw, 1.75rem); }
+
+.foot {
+  margin-top: clamp(3rem, 8vh, 6rem); padding-top: 2rem; border-top: 1px solid var(--line-soft);
+  display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between;
+  font-size: var(--micro); color: var(--mute);
+}
+.foot nav { display: flex; gap: 1.5rem; }
+.foot a:hover { color: var(--paper); }
+
+/* ==========================================================================
+   Unterseite "Professionelles Webdesign"
+   Gleiche Bühne, gleiche Bewegungen, eine Stufe leiser als die Startseite.
+   ========================================================================== */
+
+/* --- Held der Unterseite ------------------------------------------------ */
+/* Eine Stufe leiser als die Startseite: Held 75 statt 88, Abschnitte 58 statt 72.
+   Die Rangfolge bleibt dieselbe, die Unterseite spricht nur nicht so laut.  */
+.page-sub { --d2: clamp(1.45rem, 4vw, 3.4rem); }
+.hero--sub .hero__title { font-size: var(--d1-sub); }
+.hero--sub .hero__title .line--2 { padding-left: min(10vw, 130px); }
+.hero--sub .hero__obj--a { width: clamp(120px, 17vw, 250px); right: 5vw; top: 13vh; }
+.hero--sub .hero__obj--c { width: clamp(70px, 8vw, 125px); right: 27vw; bottom: 12vh; opacity: .8; }
+.hero--sub .hero__sub { max-width: 44ch; }
+
+/* --- Angebot: die Markenfläche liegt bereits, die Decke wischt fort ------
+   Nicht die Schrift einblenden, sondern die Abdeckung wegziehen: so ist der
+   dunkle Text nie unsichtbar, auch wenn das Skript ausbleibt.               */
+.offer { position: relative; overflow: clip; background: var(--acid); }
+.offer__plane {
+  position: absolute; inset: 0; z-index: 1;
+  background: var(--ink); transform: scaleX(0); transform-origin: 100% 50%;
+  pointer-events: none;
+}
+.js .offer__plane { transform: scaleX(1); }
+.offer__in {
+  position: relative; z-index: 2;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 1.25rem 2.5rem; padding: clamp(2rem, 5vh, 3.25rem) 0;
+}
+.offer h2 { color: #101010; font-size: var(--d3); text-transform: uppercase; max-width: 22ch; }
+.btn--ink { background: var(--ink); color: var(--paper); }
+.btn--ink:hover { background: #000; }
+
+/* --- Zwei Szenen: Kamera kommt zur Ruhe, Glastafel fährt herein --------- */
+.scenes { position: relative; padding-top: var(--sec); }
+.scene {
+  position: sticky; top: 0; min-height: 100dvh; overflow: clip;
+  background: var(--ink);
+  display: grid; align-items: center; align-content: center;
+  grid-template-columns: minmax(0, 1fr);
+  /* Wie .wrap: ab 1440 bleibt die Szene in derselben Spalte wie der Rest. */
+  padding: calc(var(--nav-h) + 2rem) max(var(--gut), (100% - 1440px) / 2) 3rem; gap: 2rem;
+}
+.scene__media { position: relative; display: grid; place-items: center; min-width: 0; }
+.scene__halo {
+  position: absolute; width: min(90vw, 820px); aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(215, 249, 8, .12), transparent 60%);
+  filter: blur(48px); pointer-events: none;
+}
+.scene__media img {
+  position: relative; width: min(70vw, 620px); max-height: 34vh; object-fit: contain;
+  will-change: transform; filter: drop-shadow(0 34px 80px rgba(0, 0, 0, .6));
+}
+/* Vuaille wie bei den Projekten: die weichende Szene wird abgedunkelt,
+   nicht durchsichtig gemacht. */
+.scene__veil { position: absolute; inset: 0; z-index: 4; background: var(--ink); opacity: 0; pointer-events: none; }
+.scene__panel {
+  position: relative; z-index: 2; width: min(100%, 620px); min-width: 0;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border-radius: var(--r-panel); border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(19, 17, 15, .74);
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 30px 80px rgba(0, 0, 0, .5);
+}
+/* Wie bei den Projekttafeln: umbrechen ja, trennen nein - "Bran-ding" liest sich schlecht. */
+.scene__panel h2 { font-size: var(--d3); margin-bottom: .9rem; hyphens: manual; }
+.scene__panel p { color: rgba(244, 244, 244, .82); margin-bottom: 1.4rem; }
+
+@media (min-width: 900px) {
+  .scene { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(2rem, 5vw, 5rem); }
+  .scene__media { grid-area: 1 / 2; }
+  .scene__panel { grid-area: 1 / 1; justify-self: start; }
+  .scene:nth-child(even) .scene__media { grid-area: 1 / 1; }
+  .scene:nth-child(even) .scene__panel { grid-area: 1 / 2; justify-self: end; }
+  .scene__media img { max-height: 62vh; width: min(38vw, 560px); }
+}
+
+/* --- Warum uns wählen: ihre vier Ziffern -------------------------------- */
+.reasons { padding: var(--sec) 0; }
+.reasons__head { display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+.reasons h2 { font-size: var(--d2); text-transform: uppercase; }
+.reasons h2 em { font-style: italic; color: var(--acid); }
+.reasons__deco { width: clamp(42px, 5vw, 78px); flex: none; opacity: .55; }
+.reasons__grid {
+  margin-top: clamp(2.5rem, 6vh, 5rem);
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px;
+  background: var(--line-soft); border: 1px solid var(--line-soft);
+  border-radius: var(--r-panel); overflow: hidden;
+}
+.reason {
+  min-width: 0; background: var(--ink);
+  padding: clamp(1.6rem, 3vw, 2.6rem);
+  display: grid; align-content: start; gap: .9rem;
+}
+/* Ihre Ziffern sind in #222 gezeichnet - auf dunklem Grund umgekehrt. */
+.reason__num { width: clamp(60px, 6.5vw, 88px); filter: invert(1); opacity: .82; }
+.reason h3 { font-size: var(--d4); }
+.reason p { color: var(--mute); max-width: 46ch; }
+
+/* --- Tippziele: auf Touch mindestens 44px hoch --------------------------- */
+@media (pointer: coarse), (max-width: 900px) {
+  .link { min-height: 44px; align-items: center; }
+  .contact__meta ul a, .foot a, .nav__logo { display: inline-flex; align-items: center; min-height: 44px; }
+  .contact__meta ul { gap: .1rem; }
+}
+
+/* --- Auftritt beim Erreichen ------------------------------------------- */
+.js .rise { opacity: 0; transform: translateY(26px); }
+
+/* ==========================================================================
+   Schmale Bildschirme
+   ========================================================================== */
+@media (max-width: 900px) {
+  :root { --nav-h: 64px; }
+  .nav__links { display: none; }
+  .nav__burger { display: block; }
+  .nav .btn { display: none; }
+
+  .hero__title .line--2 { padding-left: 0; }
+  .hero__obj--a { width: 44vw; right: -6vw; top: 11vh; }
+  .hero__obj--b { width: 34vw; left: -7vw; bottom: 1vh; }
+  .hero__obj--c { display: none; }
+
+  /* Waagerechte Fahrt wird auf dem Telefon zum Stapel: kein Scroll-Entzug */
+  .svcs__view { overflow: visible; min-height: 0; display: block; }
+  .svcs__track { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; transform: none !important; padding-inline: 0; }
+  /* min-width:0, sonst sprengt das laengste Wort die Spalte auf. */
+  .svc { width: 100%; min-width: 0; min-height: 0; grid-template-columns: minmax(0, 1fr); }
+  .svc__obj { width: 46vw; justify-self: start; }
+  .svc:nth-child(even) .svc__obj { order: 0; }
+  .svcs__rail { display: none; }
+
+  .case__panel { margin-inline: auto; }
+  .clients__cell,
+  .clients__cell:nth-child(1), .clients__cell:nth-child(5),
+  .clients__cell:nth-child(8), .clients__cell:nth-child(12) { grid-column: span 6; }
+  .voice { position: static; min-height: 0; grid-template-columns: 1fr; }
+  .voice__mark { justify-self: start; width: 90px; }
+
+  /* Unterseite */
+  .hero--sub .hero__title .line--2 { padding-left: 0; }
+  /* "Professionelles" ist 16 em breit: bei 375 passt es in keine Zeile.
+     Auf schmalen Schirmen darf die Zeile getrennt werden, die Wortmaske
+     bekommt dafuer eine Breitengrenze. */
+  .hero--sub .hero__title { hyphens: auto; }
+  .hero--sub .hero__title .w { max-width: 100%; }
+  .hero--sub .hero__obj--a { width: 42vw; right: -5vw; top: 12vh; }
+  .scene { padding-block: calc(var(--nav-h) + 1.5rem) 2.5rem; }
+  .scene__media img { max-height: 26vh; }
+  .reasons__grid { grid-template-columns: minmax(0, 1fr); }
+  .reasons__deco { width: 42px; }
+}
+
+/* ==========================================================================
+   Weniger Bewegung: alles steht, nichts verschwindet
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+  .curtain { display: none; }
+  .js .rise { opacity: 1 !important; transform: none !important; }
+  .band { rotate: 0deg; }
+  .band__track { transform: none !important; }
+  .svcs__view { overflow: visible; }
+  .svcs__track { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; transform: none !important; }
+  .svc { width: 100%; min-width: 0; min-height: 0; grid-template-columns: minmax(0, 1fr); }
+  .svcs__view { min-height: 0; display: block; }
+  .svcs__rail { display: none; }
+  .case { position: static; min-height: 0; padding: 3rem 0; }
+  .case__media { position: relative; height: 46vh; }
+  .case__panel { margin: -4rem auto 0; }
+  .voice { position: static; min-height: 0; grid-template-columns: 1fr; }
+  .voice__mark { justify-self: start; width: 90px; }
+  .post__shot img { clip-path: none !important; }
+  .contact__sweep { display: none; }
+  .progress { display: none; }
+
+  /* Unterseite: nichts klebt, nichts deckt ab */
+  .js .offer__plane { transform: scaleX(0) !important; }
+  .scene { position: static; min-height: 0; padding-block: 3rem; }
+  .scene__veil { opacity: 0 !important; }
+  .scene__media img { transform: none !important; }
+}
+
+/* Weniger Transparenz: Glas wird zur Fläche */
+@media (prefers-reduced-transparency: reduce) {
+  .nav, .case__panel, .scene__panel { background: rgba(19, 17, 15, .96); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}

@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Professionelles Webdesign - V&amp;M Werbeagentur</title>
+<meta name="description" content="V&amp;M Professionelles Webdesign - Kreative, maßgeschneiderte Webseiten für eine optimale Online-Präsenz und Nutzererfahrung.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preload" as="font" type="font/woff2" href="assets/font/syne-800-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="assets/font/poppins-400-latin.woff2" crossorigin>
+<link rel="stylesheet" href="css/vmwa.css">
+</head>
+<body class="page-sub">
+
+<!-- Vorhang: dreht sich weg, sobald Schriften und erstes Bild stehen -->
+<div class="curtain" id="curtain" aria-hidden="true">
+  <img class="curtain__mark" src="assets/logo/vm-logo.svg" alt="">
+  <span class="curtain__bar"></span>
+</div>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="nav__in wrap">
+    <a class="nav__logo" href="index.html" aria-label="V&amp;M Werbeagentur, zur Startseite">
+      <img src="assets/logo/vm-logo.svg" alt="V&amp;M Werbeagentur">
+    </a>
+    <nav class="nav__links" aria-label="Hauptnavigation">
+      <a href="index.html#leistungen">Leistungen</a>
+      <a href="webdesign.html" aria-current="page">Webdesign</a>
+      <a href="index.html#projekte">Projekte</a>
+      <a href="index.html#kunden">Kunden</a>
+      <a href="index.html#aktuelles">Aktuelles</a>
+    </nav>
+    <a class="btn btn--acid" href="#kontakt">Projekt starten
+      <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path></svg>
+    </a>
+    <button class="nav__burger" id="burger" aria-label="Menü öffnen" aria-expanded="false">
+      <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path></svg>
+    </button>
+  </div>
+</header>
+
+<div class="menu" id="menu" data-open="false">
+  <button class="menu__close" id="menuClose" aria-label="Menü schließen">
+    <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>
+  </button>
+  <a href="index.html">Startseite</a>
+  <a href="webdesign.html" aria-current="page">Webdesign</a>
+  <a href="index.html#projekte">Projekte</a>
+  <a href="index.html#kunden">Kunden</a>
+  <a href="#kontakt">Kontakt</a>
+</div>
+
+<main>
+
+<!-- ================= 1. Held: dieselbe Kamerafahrt, eine Stufe leiser ================= -->
+<section class="hero hero--sub" id="hero">
+  <div class="hero__stage" id="heroStage">
+    <span class="hero__glow" aria-hidden="true"></span>
+    <img class="hero__obj hero__obj--a" fetchpriority="high" data-depth="0.24" src="assets/img/obj-glass-4.png" alt="" aria-hidden="true">
+    <img class="hero__obj hero__obj--c" data-depth="0.34" src="assets/img/obj-c.webp" alt="" aria-hidden="true">
+
+    <div class="wrap">
+      <h1 class="hero__title">
+        <span class="line line--1" data-split>Professionelles</span>
+        <span class="line line--2" data-split>Webdesign</span>
+      </h1>
+      <div class="hero__foot">
+        <p class="hero__sub">Lassen Sie Ihr professionelles Webdesign von Experten erstellen.</p>
+        <a class="btn btn--acid" href="#kontakt">Angebot einholen
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2. Angebot: die Markenfläche wischt herein ================= -->
+<section class="offer" id="angebot" aria-labelledby="offerTitle">
+  <span class="offer__plane" id="offerPlane" aria-hidden="true"></span>
+  <div class="offer__in wrap">
+    <h2 id="offerTitle">Erhalten Sie jetzt Ihr personalisiertes Angebot!</h2>
+    <a class="btn btn--ink" href="#kontakt">Angebot einholen
+      <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path></svg>
+    </a>
+  </div>
+</section>
+
+<!-- ================= 3. Zwei Szenen: Kamera kommt zur Ruhe, Tafel fährt herein ================= -->
+<div class="scenes" id="leistung">
+
+  <article class="scene" data-scene>
+    <div class="scene__media">
+      <span class="scene__halo" aria-hidden="true"></span>
+      <img src="assets/img/svc-02-webdesign.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+    </div>
+    <span class="scene__veil" aria-hidden="true"></span>
+    <div class="scene__panel">
+      <h2>Professionelles Webdesign für Ihr Unternehmen</h2>
+      <p>Die V&amp;M Werbeagentur bietet daher professionelle Webdesign-Lösungen für Landingpages, Unternehmensseiten und Onlineshops. Unser Team erstellt somit maßgeschneiderte Internetseiten, die Ihre Marke optimal präsentieren.</p>
+      <a class="link" href="#kontakt">Angebot einholen
+        <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+      </a>
+    </div>
+  </article>
+
+  <article class="scene" data-scene>
+    <div class="scene__media">
+      <span class="scene__halo" aria-hidden="true"></span>
+      <img src="assets/img/svc-01-grafik.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+    </div>
+    <span class="scene__veil" aria-hidden="true"></span>
+    <div class="scene__panel">
+      <h2>Professionelles Webdesign: Branding, das wirkt</h2>
+      <p>Bei der V&amp;M Werbeagentur entwickeln wir einprägsame Branding-Strategien, die Ihre Marke unverwechselbar machen. Dann bieten wir umfassendes Webdesign zur Stärkung Ihrer Online-Präsenz.</p>
+      <a class="link" href="#kontakt">Angebot einholen
+        <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
+      </a>
+    </div>
+  </article>
+
+</div>
+
+<!-- ================= 4. Warum uns wählen: vier Gründe mit ihren Ziffern ================= -->
+<section class="reasons wrap" id="warum">
+  <div class="reasons__head rise">
+    <h2>Warum Uns <em>Wählen?</em></h2>
+    <img class="reasons__deco" src="assets/img/deco-432.svg" alt="" aria-hidden="true" loading="lazy">
+  </div>
+  <div class="reasons__grid">
+
+    <article class="reason">
+      <img class="reason__num" src="assets/img/num-01.svg" alt="" aria-hidden="true" loading="lazy">
+      <h3>Kreativität und Innovation:</h3>
+      <p>Wir setzen Ihre Ideen in kreative und innovative Designs um, sodass Sie sich von der Konkurrenz abheben.</p>
+    </article>
+
+    <article class="reason">
+      <img class="reason__num" src="assets/img/num-02.svg" alt="" aria-hidden="true" loading="lazy">
+      <h3>Erfahrung und Fachwissen:</h3>
+      <p>Unser Team verfügt über jahrelange Erfahrung in Grafikdesign und Webgestaltung. Daher können Sie auf unsere Expertise vertrauen.</p>
+    </article>
+
+    <article class="reason">
+      <img class="reason__num" src="assets/img/num-03.svg" alt="" aria-hidden="true" loading="lazy">
+      <h3>Kundenzufriedenheit:</h3>
+      <p>Ihre Zufriedenheit steht für uns an erster Stelle. Wir arbeiten deshalb eng mit Ihnen zusammen, um Ihre Vision zu verwirklichen.</p>
+    </article>
+
+    <article class="reason">
+      <img class="reason__num" src="assets/img/num-04.svg" alt="" aria-hidden="true" loading="lazy">
+      <h3>Zuverlässigkeit:</h3>
+      <p>Pünktliche Lieferung und hohe Qualitätsstandards sind für uns selbstverständlich, sodass Sie stets den besten Service erhalten.</p>
+    </article>
+
+  </div>
+</section>
+
+<!-- ================= 5. Kunden: Namen aus ihren eigenen Flip-Karten ================= -->
+<section class="clients wrap" id="kunden" aria-label="Kundenlogos">
+  <h2 class="rise">Unsere <em>Kunden</em></h2>
+  <p class="clients__lead rise">Eine Agentur, die eine breite Palette hochwertiger Dienstleistungen zu angemessenen Preisen anbietet.</p>
+  <div class="clients__grid">
+    <div class="clients__cell"><img src="assets/logo/cl-Frame-31.svg" alt="BeFaMed" loading="lazy"></div>
+    <div class="clients__cell"><img src="assets/logo/cl-28.svg" alt="Innova Consult" loading="lazy"></div>
+    <div class="clients__cell"><img src="assets/logo/cl-25.svg" alt="FC Lion's Ransbach" loading="lazy"></div>
+    <div class="clients__cell"><img src="assets/logo/cl-24.svg" alt="Allerhand Gartencenter" loading="lazy"></div>
+    <div class="clients__cell"><img src="assets/logo/cl-R1R3.svg" alt="Rent 1 Ride" loading="lazy"></div>
+    <div class="clients__cell"><img src="assets/logo/cl-21.svg" alt="Maurer Engineering" loading="lazy"></div>
+    <div class="clients__cell"><img src="assets/logo/cl-piqo.svg" alt="PIQO Shop" loading="lazy"></div>
+    <div class="clients__cell"><img src="assets/logo/cl-ssz.svg" alt="Schiess-Sportzentrum Westerwald" loading="lazy"></div>
+    <div class="clients__cell"><img src="assets/logo/cl-ick.svg" alt="Autotechnik Ickert" loading="lazy"></div>
+    <div class="clients__cell"><img src="assets/logo/cl-bs2.svg" alt="Barber Siwo" loading="lazy"></div>
+    <div class="clients__cell"><img src="assets/logo/cl-mk2.svg" alt="MK-haustechnik" loading="lazy"></div>
+    <div class="clients__cell"><img src="assets/logo/cl-piqo-3.svg" alt="PIQO Shop" loading="lazy"></div>
+  </div>
+</section>
+
+<!-- ================= 6. Stimmen: drei Webseiten-Kunden ================= -->
+<section class="voices wrap" id="stimmen">
+  <div class="voices__head rise">
+    <h2>Was unsere Kunden <em>über uns sagen</em></h2>
+  </div>
+  <div class="voices__stack">
+
+    <article class="voice" data-voice>
+      <span class="voice__veil" aria-hidden="true"></span>
+      <div class="voice__body">
+      <blockquote>„Sie entwickelten eine übersichtliche, leicht navigierbare und professionelle Webseite, die unsere Erwartungen übertraf.“</blockquote>
+      <div class="voice__who">
+        <span class="voice__name">Alexander Meyhöfer</span>
+        <span class="voice__firm">BeFaMed</span>
+      </div>
+      </div>
+      <img class="voice__mark" src="assets/logo/av-004.svg" alt="" loading="lazy" aria-hidden="true">
+    </article>
+
+    <article class="voice" data-voice>
+      <span class="voice__veil" aria-hidden="true"></span>
+      <div class="voice__body">
+      <blockquote>„Das Design ist modern und benutzerfreundlich und spiegelt unsere professionelle Haltung perfekt wider.“</blockquote>
+      <div class="voice__who">
+        <span class="voice__name">Nevzat Aydin</span>
+        <span class="voice__firm">Innova Consult</span>
+      </div>
+      </div>
+      <img class="voice__mark" src="assets/logo/av-005.svg" alt="" loading="lazy" aria-hidden="true">
+    </article>
+
+    <article class="voice" data-voice>
+      <span class="voice__veil" aria-hidden="true"></span>
+      <div class="voice__body">
+      <blockquote>„Dank der kreativen und technischen Expertise haben wir nun eine benutzerfreundliche Webseite, die unsere Kunden lieben.“</blockquote>
+      <div class="voice__who">
+        <span class="voice__name">Christian Aller</span>
+        <span class="voice__firm">Allerhand Gartencenter</span>
+      </div>
+      </div>
+      <img class="voice__mark" src="assets/logo/av-002.svg" alt="" loading="lazy" aria-hidden="true">
+    </article>
+
+  </div>
+</section>
+
+<!-- ================= 7. Kontakt ================= -->
+<section class="contact" id="kontakt">
+  <span class="contact__sweep" id="sweep" aria-hidden="true"></span>
+  <div class="contact__in wrap">
+    <h2 class="rise">Nehmen Sie <em>Kontakt auf</em></h2>
+    <p class="contact__lead rise">Und wir werden eine einzigartige Website für Sie erstellen.</p>
+
+    <div class="contact__cols">
+      <form id="form" novalidate>
+        <div class="field" data-field>
+          <label for="f-name">Name</label>
+          <input id="f-name" name="name" type="text" autocomplete="name" required placeholder="Ihr Name">
+          <span class="field__err" data-err></span>
+        </div>
+        <div class="field" data-field>
+          <label for="f-mail">E-Mail</label>
+          <input id="f-mail" name="email" type="email" autocomplete="email" required placeholder="name@firma.de">
+          <span class="field__err" data-err></span>
+        </div>
+        <div class="field" data-field>
+          <label for="f-tel">Telefon</label>
+          <input id="f-tel" name="tel" type="tel" autocomplete="tel" placeholder="+49">
+          <span class="field__hint">Optional. Wir rufen nur zurück, wenn Sie es wünschen.</span>
+          <span class="field__err" data-err></span>
+        </div>
+        <div class="field" data-field>
+          <label for="f-msg">Nachricht</label>
+          <textarea id="f-msg" name="message" required placeholder="Worum geht es in Ihrem Projekt?"></textarea>
+          <span class="field__err" data-err></span>
+        </div>
+        <label class="consent">
+          <input type="checkbox" id="f-ok" name="consent" required>
+          <span>Ich willige ein, dass diese Website meine übermittelten Informationen speichert, sodass meine Anfrage beantwortet werden kann.*</span>
+        </label>
+        <button class="btn btn--acid" type="submit" id="send">Senden
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path></svg>
+        </button>
+        <p class="form__note" id="note" role="status" aria-live="polite"></p>
+        <!-- Anbindung: hier den echten Endpunkt des Formulars eintragen (WPForms, CF7 oder eigener Handler). -->
+      </form>
+
+      <div class="contact__meta">
+        <div>
+          <h3>Unsere Kontakte</h3>
+          <ul>
+            <li class="contact__big"><a href="tel:+491635154355">+49 163 5154355</a></li>
+            <li class="contact__big"><a href="mailto:info@vm-wa.de">info@vm-wa.de</a></li>
+            <li><a href="https://wa.me/491635154355">WhatsApp</a></li>
+            <li><a href="https://www.instagram.com/">Instagram</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Navigation</h3>
+          <ul>
+            <li><a href="index.html">Startseite</a></li>
+            <li><a href="index.html#projekte">Unsere Projekte</a></li>
+            <li><a href="index.html#kunden">Kunden</a></li>
+            <li><a href="index.html#aktuelles">Aktuelles</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Unsere Dienstleistungen</h3>
+          <ul>
+            <li><a href="index.html#leistungen">Grafikdesign</a></li>
+            <li><a href="webdesign.html" aria-current="page">Webdesign</a></li>
+            <li><a href="index.html#leistungen">Webentwicklung</a></li>
+            <li><a href="index.html#leistungen">Foto- und Videoproduktion</a></li>
+            <li><a href="index.html#leistungen">Soziale Netzwerke</a></li>
+            <li><a href="index.html#leistungen">360-Grad-Marketing</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <nav aria-label="Rechtliches">
+        <a href="https://vm-wa.de/datenschutz/">Datenschutz</a>
+        <a href="https://vm-wa.de/impressum/">Impressum</a>
+      </nav>
+      <span>© 2026 V&amp;M Werbeagentur</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script src="assets/lib/gsap.min.js"></script>
+<script src="assets/lib/ScrollTrigger.min.js"></script>
+<script src="assets/lib/lenis.min.js"></script>
+<script src="js/vmwa.js"></script>
+</body>
+</html>
