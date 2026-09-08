@@ -8,23 +8,22 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="preload" as="font" type="font/woff2" href="assets/font/syne-800-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="assets/font/poppins-400-latin.woff2" crossorigin>
+<link rel="icon" href="assets/img/frame-1-2023.png">
 <link rel="stylesheet" href="css/vmwa.css">
 </head>
 <body class="page-sub">
 
-<!-- Vorhang: dreht sich weg, sobald Schriften und erstes Bild stehen -->
-<div class="curtain" id="curtain" aria-hidden="true">
-  <img class="curtain__mark" src="assets/logo/vm-logo.svg" alt="">
-  <span class="curtain__bar"></span>
-</div>
-
 <div class="grain" aria-hidden="true"></div>
-<div class="progress" id="progress" aria-hidden="true"></div>
+<span class="frame" aria-hidden="true"></span>
+
+<!-- Fluchtpunkt der Unterseite: dasselbe Prinzip, ihr zweites Objekt -->
+<span class="vanish__glow" aria-hidden="true"></span>
+<img class="vanish" id="vanish" src="assets/img/obj-glass-4.png" alt="" aria-hidden="true" fetchpriority="high" width="442" height="601">
 
 <header class="nav">
-  <div class="nav__in wrap">
+  <div class="nav__in">
     <a class="nav__logo" href="index.html" aria-label="V&amp;M Werbeagentur, zur Startseite">
-      <img src="assets/logo/vm-logo.svg" alt="V&amp;M Werbeagentur">
+      <img src="assets/logo/vm-logo.svg" alt="V&amp;M Werbeagentur" width="839" height="272">
     </a>
     <nav class="nav__links" aria-label="Hauptnavigation">
       <a href="index.html#leistungen">Leistungen</a>
@@ -33,7 +32,7 @@
       <a href="index.html#kunden">Kunden</a>
       <a href="index.html#aktuelles">Aktuelles</a>
     </nav>
-    <a class="btn btn--acid" href="#kontakt">Projekt starten
+    <a class="btn btn--acid" href="#kontakt">Angebot einholen
       <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path></svg>
     </a>
     <button class="nav__burger" id="burger" aria-label="Menü öffnen" aria-expanded="false">
@@ -53,183 +52,183 @@
   <a href="#kontakt">Kontakt</a>
 </div>
 
-<main>
+<nav class="index" id="index" aria-label="Abschnitte">
+  <a class="index__item" href="index.html">Startseite</a>
+  <a class="index__item" href="#hero" data-for="hero">Webdesign</a>
+  <a class="index__item" href="#angebot" data-for="angebot">Angebot</a>
+  <a class="index__item" href="#leistung" data-for="leistung">Leistung</a>
+  <a class="index__item" href="#warum" data-for="warum">Warum</a>
+  <a class="index__item" href="#kunden" data-for="kunden">Kunden</a>
+  <a class="index__item" href="#stimmen" data-for="stimmen">Stimmen</a>
+  <a class="index__item" href="#kontakt" data-for="kontakt">Kontakt</a>
+  <a class="index__item" href="#rechtliches" data-for="rechtliches">Rechtliches</a>
+</nav>
 
-<!-- ================= 1. Held: dieselbe Kamerafahrt, eine Stufe leiser ================= -->
-<section class="hero hero--sub" id="hero">
-  <div class="hero__stage" id="heroStage">
-    <span class="hero__glow" aria-hidden="true"></span>
-    <img class="hero__obj hero__obj--a" fetchpriority="high" data-depth="0.24" src="assets/img/obj-glass-4.png" alt="" aria-hidden="true">
-    <img class="hero__obj hero__obj--c" data-depth="0.34" src="assets/img/obj-c.webp" alt="" aria-hidden="true">
+<main class="deck" id="deck">
 
-    <div class="wrap">
-      <h1 class="hero__title">
-        <span class="line line--1" data-split>Professionelles</span>
-        <span class="line line--2" data-split>Webdesign</span>
-      </h1>
-      <div class="hero__foot">
-        <p class="hero__sub">Lassen Sie Ihr professionelles Webdesign von Experten erstellen.</p>
-        <a class="btn btn--acid" href="#kontakt">Angebot einholen
-          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path></svg>
-        </a>
+<!-- ============ 1. Held der Unterseite ======================================== -->
+<section class="chapter chapter--hero hero hero--sub" id="hero" data-chapter="hero">
+  <div class="lens">
+    <div class="tile" data-tile="hero">
+      <div class="hero__in" id="heroIn">
+        <h1 class="hero__title">
+          <span class="line line--1">Professionelles</span>
+          <span class="line line--2">Webdesign</span>
+        </h1>
+        <div class="hero__foot">
+          <p class="hero__sub">Lassen Sie Ihr professionelles Webdesign von Experten erstellen.</p>
+          <a class="btn btn--acid" href="#kontakt">Angebot einholen
+            <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path></svg>
+          </a>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ================= 2. Angebot: die Markenfläche wischt herein ================= -->
-<section class="offer" id="angebot" aria-labelledby="offerTitle">
-  <span class="offer__plane" id="offerPlane" aria-hidden="true"></span>
-  <div class="offer__in wrap">
-    <h2 id="offerTitle">Erhalten Sie jetzt Ihr personalisiertes Angebot!</h2>
+<!-- ============ 2. Angebot: die Markenflaeche ist selbst eine Platte ========== -->
+<section class="chapter" id="angebot" data-chapter="angebot">
+  <div class="lens"><div class="tile plate offer" data-tile>
+    <h2>Erhalten Sie jetzt Ihr personalisiertes Angebot!</h2>
     <a class="btn btn--ink" href="#kontakt">Angebot einholen
       <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path></svg>
     </a>
-  </div>
+  </div></div>
 </section>
 
-<!-- ================= 3. Zwei Szenen: Kamera kommt zur Ruhe, Tafel fährt herein ================= -->
-<div class="scenes" id="leistung">
-
-  <article class="scene" data-scene>
-    <div class="scene__media">
-      <span class="scene__halo" aria-hidden="true"></span>
-      <img src="assets/img/svc-02-webdesign.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
-    </div>
-    <span class="scene__veil" aria-hidden="true"></span>
-    <div class="scene__panel">
+<!-- ============ 3. Zwei Platten Text und Objekt ============================== -->
+<section class="chapter" id="leistung" data-chapter="leistung">
+  <div class="lens"><article class="tile plate scene" data-tile>
+    <div class="scene__body">
       <h2>Professionelles Webdesign für Ihr Unternehmen</h2>
       <p>Die V&amp;M Werbeagentur bietet daher professionelle Webdesign-Lösungen für Landingpages, Unternehmensseiten und Onlineshops. Unser Team erstellt somit maßgeschneiderte Internetseiten, die Ihre Marke optimal präsentieren.</p>
       <a class="link" href="#kontakt">Angebot einholen
         <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
       </a>
     </div>
-  </article>
-
-  <article class="scene" data-scene>
     <div class="scene__media">
-      <span class="scene__halo" aria-hidden="true"></span>
-      <img src="assets/img/svc-01-grafik.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
+      <img src="assets/img/svc-02-webdesign.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="650" height="570">
     </div>
-    <span class="scene__veil" aria-hidden="true"></span>
-    <div class="scene__panel">
+  </article></div>
+
+  <div class="lens"><article class="tile plate scene scene--flip" data-tile>
+    <div class="scene__body">
       <h2>Professionelles Webdesign: Branding, das wirkt</h2>
       <p>Bei der V&amp;M Werbeagentur entwickeln wir einprägsame Branding-Strategien, die Ihre Marke unverwechselbar machen. Dann bieten wir umfassendes Webdesign zur Stärkung Ihrer Online-Präsenz.</p>
       <a class="link" href="#kontakt">Angebot einholen
         <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"></path></svg>
       </a>
     </div>
-  </article>
-
-</div>
-
-<!-- ================= 4. Warum uns wählen: vier Gründe mit ihren Ziffern ================= -->
-<section class="reasons wrap" id="warum">
-  <div class="reasons__head rise">
-    <h2>Warum Uns <em>Wählen?</em></h2>
-    <img class="reasons__deco" src="assets/img/deco-432.svg" alt="" aria-hidden="true" loading="lazy">
-  </div>
-  <div class="reasons__grid">
-
-    <article class="reason">
-      <img class="reason__num" src="assets/img/num-01.svg" alt="" aria-hidden="true" loading="lazy">
-      <h3>Kreativität und Innovation:</h3>
-      <p>Wir setzen Ihre Ideen in kreative und innovative Designs um, sodass Sie sich von der Konkurrenz abheben.</p>
-    </article>
-
-    <article class="reason">
-      <img class="reason__num" src="assets/img/num-02.svg" alt="" aria-hidden="true" loading="lazy">
-      <h3>Erfahrung und Fachwissen:</h3>
-      <p>Unser Team verfügt über jahrelange Erfahrung in Grafikdesign und Webgestaltung. Daher können Sie auf unsere Expertise vertrauen.</p>
-    </article>
-
-    <article class="reason">
-      <img class="reason__num" src="assets/img/num-03.svg" alt="" aria-hidden="true" loading="lazy">
-      <h3>Kundenzufriedenheit:</h3>
-      <p>Ihre Zufriedenheit steht für uns an erster Stelle. Wir arbeiten deshalb eng mit Ihnen zusammen, um Ihre Vision zu verwirklichen.</p>
-    </article>
-
-    <article class="reason">
-      <img class="reason__num" src="assets/img/num-04.svg" alt="" aria-hidden="true" loading="lazy">
-      <h3>Zuverlässigkeit:</h3>
-      <p>Pünktliche Lieferung und hohe Qualitätsstandards sind für uns selbstverständlich, sodass Sie stets den besten Service erhalten.</p>
-    </article>
-
-  </div>
+    <div class="scene__media">
+      <img src="assets/img/svc-01-grafik.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="601" height="517">
+    </div>
+  </article></div>
 </section>
 
-<!-- ================= 5. Kunden: Namen aus ihren eigenen Flip-Karten ================= -->
-<section class="clients wrap" id="kunden" aria-label="Kundenlogos">
-  <h2 class="rise">Unsere <em>Kunden</em></h2>
-  <p class="clients__lead rise">Eine Agentur, die eine breite Palette hochwertiger Dienstleistungen zu angemessenen Preisen anbietet.</p>
-  <div class="clients__grid">
-    <div class="clients__cell"><img src="assets/logo/cl-Frame-31.svg" alt="BeFaMed" loading="lazy"></div>
-    <div class="clients__cell"><img src="assets/logo/cl-28.svg" alt="Innova Consult" loading="lazy"></div>
-    <div class="clients__cell"><img src="assets/logo/cl-25.svg" alt="FC Lion's Ransbach" loading="lazy"></div>
-    <div class="clients__cell"><img src="assets/logo/cl-24.svg" alt="Allerhand Gartencenter" loading="lazy"></div>
-    <div class="clients__cell"><img src="assets/logo/cl-R1R3.svg" alt="Rent 1 Ride" loading="lazy"></div>
-    <div class="clients__cell"><img src="assets/logo/cl-21.svg" alt="Maurer Engineering" loading="lazy"></div>
-    <div class="clients__cell"><img src="assets/logo/cl-piqo.svg" alt="PIQO Shop" loading="lazy"></div>
-    <div class="clients__cell"><img src="assets/logo/cl-ssz.svg" alt="Schiess-Sportzentrum Westerwald" loading="lazy"></div>
-    <div class="clients__cell"><img src="assets/logo/cl-ick.svg" alt="Autotechnik Ickert" loading="lazy"></div>
-    <div class="clients__cell"><img src="assets/logo/cl-bs2.svg" alt="Barber Siwo" loading="lazy"></div>
-    <div class="clients__cell"><img src="assets/logo/cl-mk2.svg" alt="MK-haustechnik" loading="lazy"></div>
-    <div class="clients__cell"><img src="assets/logo/cl-piqo-3.svg" alt="PIQO Shop" loading="lazy"></div>
-  </div>
+<!-- ============ 4. Warum uns waehlen: vier Gruende aus der Tiefe ============== -->
+<section class="chapter" id="warum" data-chapter="warum">
+  <div class="lens"><div class="tile" data-tile>
+    <div class="reasons__head">
+      <h2 class="kap">Warum Uns <em>Wählen?</em></h2>
+      <img class="reasons__deco" src="assets/img/deco-432.svg" alt="" aria-hidden="true" loading="lazy" width="145" height="146">
+    </div>
+  </div></div>
+
+  <div class="lens"><div class="tile" data-tile>
+    <div class="reasons__grid" data-wave>
+      <article class="reason plate">
+        <img class="reason__num" src="assets/img/num-01.svg" alt="" aria-hidden="true" loading="lazy" width="100" height="50">
+        <h3>Kreativität und Innovation:</h3>
+        <p>Wir setzen Ihre Ideen in kreative und innovative Designs um, sodass Sie sich von der Konkurrenz abheben.</p>
+      </article>
+      <article class="reason plate">
+        <img class="reason__num" src="assets/img/num-02.svg" alt="" aria-hidden="true" loading="lazy" width="100" height="50">
+        <h3>Erfahrung und Fachwissen:</h3>
+        <p>Unser Team verfügt über jahrelange Erfahrung in Grafikdesign und Webgestaltung. Daher können Sie auf unsere Expertise vertrauen.</p>
+      </article>
+      <article class="reason plate">
+        <img class="reason__num" src="assets/img/num-03.svg" alt="" aria-hidden="true" loading="lazy" width="100" height="50">
+        <h3>Kundenzufriedenheit:</h3>
+        <p>Ihre Zufriedenheit steht für uns an erster Stelle. Wir arbeiten deshalb eng mit Ihnen zusammen, um Ihre Vision zu verwirklichen.</p>
+      </article>
+      <article class="reason plate">
+        <img class="reason__num" src="assets/img/num-04.svg" alt="" aria-hidden="true" loading="lazy" width="100" height="50">
+        <h3>Zuverlässigkeit:</h3>
+        <p>Pünktliche Lieferung und hohe Qualitätsstandards sind für uns selbstverständlich, sodass Sie stets den besten Service erhalten.</p>
+      </article>
+    </div>
+  </div></div>
 </section>
 
-<!-- ================= 6. Stimmen: drei Webseiten-Kunden ================= -->
-<section class="voices wrap" id="stimmen">
-  <div class="voices__head rise">
-    <h2>Was unsere Kunden <em>über uns sagen</em></h2>
-  </div>
-  <div class="voices__stack">
+<!-- ============ 5. Kunden ==================================================== -->
+<section class="chapter" id="kunden" data-chapter="kunden" aria-label="Kundenlogos">
+  <div class="lens"><div class="tile plate" data-tile>
+    <div class="stack">
+      <div>
+        <h2 class="kap">Unsere <em>Kunden</em></h2>
+        <p class="clients__lead">Eine Agentur, die eine breite Palette hochwertiger Dienstleistungen zu angemessenen Preisen anbietet.</p>
+      </div>
+      <div class="clients__grid" data-wave>
+        <div class="clients__cell"><img src="assets/logo/cl-Frame-31.svg" alt="" loading="lazy" width="300" height="150"></div>
+        <div class="clients__cell"><img src="assets/logo/cl-28.svg" alt="" loading="lazy" width="300" height="150"></div>
+        <div class="clients__cell"><img src="assets/logo/cl-25.svg" alt="" loading="lazy" width="300" height="150"></div>
+        <div class="clients__cell"><img src="assets/logo/cl-24.svg" alt="" loading="lazy" width="300" height="150"></div>
+        <div class="clients__cell"><img src="assets/logo/cl-R1R3.svg" alt="" loading="lazy" width="300" height="150"></div>
+        <div class="clients__cell"><img src="assets/logo/cl-21.svg" alt="" loading="lazy" width="300" height="150"></div>
+        <div class="clients__cell"><img src="assets/logo/cl-piqo.svg" alt="" loading="lazy" width="300" height="150"></div>
+        <div class="clients__cell"><img src="assets/logo/cl-ssz.svg" alt="" loading="lazy" width="300" height="150"></div>
+        <div class="clients__cell"><img src="assets/logo/cl-ick.svg" alt="" loading="lazy" width="300" height="150"></div>
+        <div class="clients__cell"><img src="assets/logo/cl-bs2.svg" alt="" loading="lazy" width="300" height="150"></div>
+        <div class="clients__cell"><img src="assets/logo/cl-mk2.svg" alt="" loading="lazy" width="300" height="150"></div>
+        <div class="clients__cell"><img src="assets/logo/cl-piqo-3.svg" alt="" loading="lazy" width="300" height="150"></div>
+      </div>
+    </div>
+  </div></div>
+</section>
 
-    <article class="voice" data-voice>
-      <span class="voice__veil" aria-hidden="true"></span>
-      <div class="voice__body">
+<!-- ============ 6. Stimmen =================================================== -->
+<section class="chapter" id="stimmen" data-chapter="stimmen">
+  <div class="lens"><div class="tile" data-tile><h2 class="kap">Was unsere Kunden <em>über uns sagen</em></h2></div></div>
+
+  <div class="lens"><article class="tile plate voice" data-tile="soft">
+    <div>
       <blockquote>„Sie entwickelten eine übersichtliche, leicht navigierbare und professionelle Webseite, die unsere Erwartungen übertraf.“</blockquote>
       <div class="voice__who">
         <span class="voice__name">Alexander Meyhöfer</span>
         <span class="voice__firm">BeFaMed</span>
       </div>
-      </div>
-      <img class="voice__mark" src="assets/logo/av-004.svg" alt="" loading="lazy" aria-hidden="true">
-    </article>
+    </div>
+    <img class="voice__mark" src="assets/logo/av-004.svg" alt="" loading="lazy" aria-hidden="true" width="200" height="201">
+  </article></div>
 
-    <article class="voice" data-voice>
-      <span class="voice__veil" aria-hidden="true"></span>
-      <div class="voice__body">
+  <div class="lens"><article class="tile plate voice" data-tile="soft">
+    <div>
       <blockquote>„Das Design ist modern und benutzerfreundlich und spiegelt unsere professionelle Haltung perfekt wider.“</blockquote>
       <div class="voice__who">
         <span class="voice__name">Nevzat Aydin</span>
         <span class="voice__firm">Innova Consult</span>
       </div>
-      </div>
-      <img class="voice__mark" src="assets/logo/av-005.svg" alt="" loading="lazy" aria-hidden="true">
-    </article>
+    </div>
+    <img class="voice__mark" src="assets/logo/av-005.svg" alt="" loading="lazy" aria-hidden="true" width="200" height="201">
+  </article></div>
 
-    <article class="voice" data-voice>
-      <span class="voice__veil" aria-hidden="true"></span>
-      <div class="voice__body">
+  <div class="lens"><article class="tile plate voice" data-tile="soft">
+    <div>
       <blockquote>„Dank der kreativen und technischen Expertise haben wir nun eine benutzerfreundliche Webseite, die unsere Kunden lieben.“</blockquote>
       <div class="voice__who">
         <span class="voice__name">Christian Aller</span>
         <span class="voice__firm">Allerhand Gartencenter</span>
       </div>
-      </div>
-      <img class="voice__mark" src="assets/logo/av-002.svg" alt="" loading="lazy" aria-hidden="true">
-    </article>
-
-  </div>
+    </div>
+    <img class="voice__mark" src="assets/logo/av-002.svg" alt="" loading="lazy" aria-hidden="true" width="200" height="201">
+  </article></div>
 </section>
 
-<!-- ================= 7. Kontakt ================= -->
-<section class="contact" id="kontakt">
-  <span class="contact__sweep" id="sweep" aria-hidden="true"></span>
-  <div class="contact__in wrap">
-    <h2 class="rise">Nehmen Sie <em>Kontakt auf</em></h2>
-    <p class="contact__lead rise">Und wir werden eine einzigartige Website für Sie erstellen.</p>
+<!-- ============ 7. Kontakt und Fusszeile ===================================== -->
+<section class="chapter contact" id="kontakt" data-chapter="kontakt">
+  <div class="lens"><div class="tile plate" data-tile="hold">
+    <h2>Nehmen Sie <em>Kontakt auf</em></h2>
+    <p class="contact__lead">Und wir werden eine einzigartige Website für Sie erstellen.</p>
 
     <div class="contact__cols">
       <form id="form" novalidate>
@@ -298,14 +297,14 @@
       </div>
     </div>
 
-    <div class="foot">
+    <div class="foot" id="rechtliches">
       <nav aria-label="Rechtliches">
         <a href="https://vm-wa.de/datenschutz/">Datenschutz</a>
         <a href="https://vm-wa.de/impressum/">Impressum</a>
       </nav>
       <span>© 2026 V&amp;M Werbeagentur</span>
     </div>
-  </div>
+  </div></div>
 </section>
 
 </main>

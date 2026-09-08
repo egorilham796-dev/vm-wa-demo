@@ -1,0 +1,462 @@
+/* ==========================================================================
+   V&M Werbeagentur - V8 "Tiefe": eine Kamerafahrt durch neun Platten.
+   Marke: Farben, Schriften und Bildmaterial von vm-wa.de (Stand 04.09.2026).
+   Eine Kamera (--cam), eine Achse (Z), ein Akzent (#D7F908), ein Radiensystem
+   (Platte 20px, Knopf Pille). Nichts klebt, nichts wischt, nichts faehrt quer.
+   ========================================================================== */
+
+@import url("../assets/fonts.css");
+
+/* --- Tokens ------------------------------------------------------------- */
+:root {
+  --ink:        #13110F;   /* Grundfläche, vom Live-Auftritt übernommen */
+  --ink-2:      #1A1714;   /* Platte */
+  --ink-3:      #221E1A;   /* erhöhte Platte */
+  --acid:       #D7F908;   /* Markenakzent, einziger Akzent der Seite */
+  --paper:      #F4F4F4;
+  --mute:       #9A968F;
+  --line:       rgba(255, 255, 255, .12);
+  --line-soft:  rgba(255, 255, 255, .06);
+
+  --d1: clamp(1.9rem, 4.1vw, 4rem);
+  --d2: clamp(1.5rem, 4.4vw, 3.75rem);
+  --d3: clamp(1.3rem, 2.2vw, 2rem);
+  --d4: clamp(1.05rem, 1.35vw, 1.3rem);
+  --d1-sub: clamp(1.8rem, 4vw, 3.9rem);
+  --body: clamp(1rem, 1.05vw, 1.0625rem);
+  --micro: .8125rem;
+
+  --r-plate: 20px;
+  --r-pill: 999px;
+
+  --gut: clamp(1.25rem, 4vw, 4.5rem);
+  --sec: clamp(2.5rem, 7vh, 5.5rem);
+
+  --ease: cubic-bezier(.16, 1, .3, 1);
+
+  --nav-h: 72px;
+  --rail: 0px;          /* Index-Spalte links, erst ab 1024 */
+  --vanish-zone: 0px;   /* rechter Streifen fuer den Fluchtpunkt, ab 900 */
+  --cam: 1400px;        /* Brennweite: eine Kamera fuer die ganze Seite */
+}
+
+/* --- Reset -------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; scroll-behavior: auto; }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font: 400 var(--body)/1.75 Poppins, system-ui, sans-serif;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+img, video, svg { display: block; max-width: 100%; }
+img { height: auto; }   /* Breite/Hoehe stehen im Markup: kein Nachwachsen der Seite */
+a { color: inherit; text-decoration: none; }
+button, input, textarea { font: inherit; color: inherit; }
+h1, h2, h3, h4 {
+  margin: 0; font-family: Syne, system-ui, sans-serif; font-weight: 800; line-height: 1.05;
+  overflow-wrap: break-word; hyphens: auto;
+  /* Nur lange Komposita werden getrennt: "PROJEK-TE" und "KUN-DEN" sahen wie ein Fehler aus,
+     "Dienstleistungen" braucht die Trennung weiterhin. */
+  hyphenate-limit-chars: 12 6 4;
+}
+p { margin: 0; }
+:focus-visible { outline: 2px solid var(--acid); outline-offset: 3px; border-radius: 4px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* --- Feste Ebenen ueber dem Deck ---------------------------------------- */
+.grain {
+  position: fixed; inset: 0; z-index: 90; pointer-events: none;
+  opacity: .3; mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+/* Der Rahmen des Kamerabildes: eine Haarlinie, sonst nichts. */
+.frame {
+  position: fixed; inset: 10px; z-index: 88; pointer-events: none;
+  border: 1px solid var(--line-soft); border-radius: var(--r-plate);
+}
+
+/* --- Navigation --------------------------------------------------------- */
+.nav {
+  position: fixed; inset: 0 0 auto 0; z-index: 80;
+  height: var(--nav-h);
+  display: flex; align-items: center;
+  background: rgba(19, 17, 15, .58);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border-bottom: 1px solid var(--line-soft);
+}
+.nav__in {
+  width: min(100% - var(--gut) * 2, 1680px); margin-inline: auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 2rem;
+}
+.nav__logo img { height: 26px; width: auto; }
+.nav__links { display: flex; gap: clamp(1rem, 2vw, 2.25rem); align-items: center; }
+.nav__links a {
+  display: inline-flex; align-items: center; min-height: 24px;
+  font-size: var(--micro); letter-spacing: .04em; color: var(--mute);
+  transition: color .3s var(--ease);
+}
+.nav__links a:hover, .nav__links a[aria-current="page"] { color: var(--paper); }
+.nav__burger { display: none; background: none; border: 0; padding: .5rem; cursor: pointer; color: var(--paper); }
+.nav__burger svg { width: 26px; height: 26px; }
+
+/* --- Knoepfe ------------------------------------------------------------ */
+.btn {
+  display: inline-flex; align-items: center; gap: .6rem; white-space: nowrap;
+  padding: .85rem 1.5rem; border-radius: var(--r-pill); border: 1px solid transparent;
+  font-size: .9375rem; font-weight: 500; cursor: pointer;
+  transition: transform .25s var(--ease), background-color .25s var(--ease);
+}
+.btn svg { width: 18px; height: 18px; flex: none; }
+.btn--acid { background: var(--acid); color: #101010; }
+.btn--acid:hover { background: #E4FF2E; }
+.btn--ink { background: var(--ink); color: var(--paper); }
+.btn--ink:hover { background: #000; }
+.btn:active { transform: translateY(1px) scale(.985); }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+.link {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-size: .9375rem; color: var(--acid);
+  border-bottom: 1px solid rgba(215, 249, 8, .35); padding-bottom: 2px;
+  transition: border-color .3s var(--ease), gap .3s var(--ease);
+}
+.link svg { width: 15px; height: 15px; }
+.link:hover { border-color: var(--acid); gap: .8rem; }
+
+/* --- Vollbild-Menue (schmale Schirme) ----------------------------------- */
+.menu {
+  position: fixed; inset: 0; z-index: 85;
+  display: none; flex-direction: column; justify-content: center; gap: 1rem;
+  padding: var(--gut);
+  background: var(--ink);
+}
+.menu[data-open="true"] { display: flex; }
+.menu a { font-family: Syne, sans-serif; font-weight: 700; font-size: clamp(2rem, 9vw, 3.5rem); text-transform: uppercase; }
+/* Querformat-Telefon: sechs Zeilen passen nicht in 390 px Hoehe.
+   Niedriger Schirm bekommt kleineren Grad, Anfang oben und eigenen Lauf. */
+@media (max-height: 560px) {
+  .menu { justify-content: flex-start; gap: .25rem; padding: calc(var(--nav-h) + .25rem) var(--gut) 1rem; overflow-y: auto; }
+  .menu a { font-size: clamp(1.15rem, 5.5vh, 1.9rem); min-height: 44px; display: flex; align-items: center; }
+  .menu__close { top: .75rem; }
+}
+.menu__close { position: absolute; top: 1.5rem; right: var(--gut); background: none; border: 0; color: var(--paper); cursor: pointer; }
+.menu__close svg { width: 30px; height: 30px; }
+
+/* ==========================================================================
+   Fluchtpunkt: das Kristallobjekt steht fest im Bild, die Platten ziehen vorbei
+   ========================================================================== */
+.vanish {
+  position: absolute; z-index: 60; pointer-events: none;
+  right: 0; top: 10vh; width: clamp(96px, 38vmin, 300px);
+  filter: drop-shadow(0 30px 70px rgba(0, 0, 0, .6));
+}
+.vanish__glow {
+  position: absolute; z-index: 1; pointer-events: none;
+  right: 0; top: 2vh; width: min(88vw, 560px); aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(215, 249, 8, .13), transparent 60%);
+  filter: blur(44px);
+}
+
+/* ==========================================================================
+   Index: duenne Spalte am linken Rand, ab 1024
+   ========================================================================== */
+.index { display: none; }
+
+/* ==========================================================================
+   Deck: die Stapelachse. Jede Platte liegt in ihrer eigenen Linse,
+   damit der Fluchtpunkt in ihrer Mitte sitzt und nicht 15 000 px daneben.
+   ========================================================================== */
+.deck { padding-left: var(--rail); }
+.chapter {
+  position: relative;
+  padding: var(--sec) calc(var(--gut) + var(--vanish-zone)) var(--sec) var(--gut);
+}
+.chapter--hero { padding: 0 var(--gut); }
+.lens { perspective: var(--cam); perspective-origin: 50% 50%; width: min(100%, 1180px); }
+.lens + .lens { margin-top: clamp(1.25rem, 5vh, 4rem); }
+.tile { position: relative; width: 100%; will-change: transform, opacity; }
+/* Deutsche Komposita: ein Rasterkind darf nicht auf sein laengstes Wort wachsen
+   (min-width:auto), sonst sprengt es die Platte. Erst 0, dann bricht das Wort. */
+.tile :where(h1, h2, h3, h4, p, span, blockquote, div, form, article, label, ul, li) { min-width: 0; }
+/* Platte = deckende Flaeche. Text liegt nie auf blankem Bild. */
+.plate {
+  background: var(--ink-2);
+  border: 1px solid var(--line-soft); border-radius: var(--r-plate);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05), 0 40px 90px rgba(0, 0, 0, .55);
+  padding: clamp(1.5rem, 3.2vw, 3rem);
+}
+.stack { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(1.5rem, 3.5vh, 3rem); }
+.stack--tight { gap: clamp(1rem, 2.2vh, 1.75rem); }
+
+/* Kapitelzeile: freier Text, schmal genug, um den Fluchtpunkt nie zu treffen */
+.kap { max-width: 26ch; font-size: var(--d2); text-transform: uppercase; }
+.kap em { font-style: italic; color: var(--acid); }
+
+/* ==========================================================================
+   1. Held
+   ========================================================================== */
+.hero { min-height: 100dvh; display: flex; align-items: center; }
+.hero .lens { width: min(100%, 1320px); }
+.hero__in {
+  padding: calc(var(--nav-h) + 4vh) 0 6vh;
+  display: grid; gap: clamp(1.5rem, 4vh, 3rem); align-content: center;
+}
+.hero__title {
+  font-size: var(--d1); text-transform: uppercase; letter-spacing: -.02em; hyphens: none;
+}
+.hero__title .line { display: block; }
+.hero__title .line--2 { padding-left: min(4vw, 64px); color: var(--acid); }
+.hero__foot { display: flex; flex-wrap: wrap; align-items: end; gap: 1.5rem 3rem; }
+.hero__sub { max-width: 44ch; color: var(--mute); }
+@media (max-height: 480px) and (orientation: landscape) {
+  .hero__in { padding: calc(var(--nav-h) + 1.25rem) 0 2rem; gap: 1.1rem; }
+}
+
+/* ==========================================================================
+   2. Leistungen: sechs Platten hintereinander in die Tiefe
+   ========================================================================== */
+.svc { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(1.25rem, 3vw, 2.5rem); align-items: center; }
+.svc__body { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; gap: 1rem; }
+.svc__num {
+  font-family: Syne, sans-serif; font-weight: 800; font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1; color: transparent; -webkit-text-stroke: 1px rgba(215, 249, 8, .55);
+}
+.svc h3 { font-size: var(--d3); max-width: 24ch; }
+.svc p { max-width: 56ch; color: var(--mute); }
+.svc__obj { width: min(58%, 230px); justify-self: start; pointer-events: none; filter: drop-shadow(0 22px 50px rgba(0, 0, 0, .55)); }
+@media (min-width: 901px) {
+  .svc { grid-template-columns: minmax(0, 1fr) minmax(0, .38fr); }
+  .svc__obj { width: 100%; max-width: 260px; justify-self: center; }
+}
+
+/* ==========================================================================
+   3. Projekte: drei Platten mit Film
+   ========================================================================== */
+.case { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; padding: 0; overflow: hidden; }
+.case__media { position: relative; aspect-ratio: 16 / 9; background: var(--ink-3); }
+.case__media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.case__media::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(19, 17, 15, .25) 0%, rgba(19, 17, 15, .55) 62%, var(--ink-2) 100%);
+}
+.case__body { position: relative; z-index: 2; display: grid; gap: .9rem; padding: clamp(1.4rem, 3vw, 2.5rem); }
+/* Eigennamen werden nicht getrennt (hyphens: manual), also braucht die Zeile Platz:
+   kleinerer Grad und die breitere Spalte, sonst bricht "Talentgewinnung" mitten im Wort. */
+.case__body h3 { font-size: clamp(1.15rem, 1.7vw, 1.6rem); hyphens: manual; max-width: 26ch; }
+.case__body p { color: rgba(244, 244, 244, .82); max-width: 60ch; }
+.case__meta { font-size: var(--micro); color: var(--acid); }
+@media (min-width: 901px) {
+  .case { grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); align-items: stretch; }
+  .case__media { height: 100%; aspect-ratio: auto; min-height: 42vh; }
+  .case__body { align-content: center; }
+}
+
+/* ==========================================================================
+   4. Kunden: eine Platte, zwoelf Zeichen kommen aus der Tiefe
+   ========================================================================== */
+.clients__lead { max-width: 52ch; color: var(--mute); }
+.clients__grid {
+  perspective: var(--cam);
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px;
+  background: var(--line-soft); border: 1px solid var(--line-soft);
+  border-radius: var(--r-plate); overflow: hidden;
+}
+.clients__cell {
+  display: grid; place-items: center; min-height: clamp(84px, 10vw, 130px);
+  padding: 1rem; background: var(--ink-2);
+  transition: background-color .35s var(--ease);
+}
+.clients__cell img { width: clamp(64px, 7vw, 110px); opacity: .7; transition: opacity .35s var(--ease); }
+.clients__cell:hover { background: var(--ink-3); }
+.clients__cell:hover img { opacity: 1; }
+
+/* ==========================================================================
+   5. Stimmen: fuenf flache Platten, eine im Fokus
+   ========================================================================== */
+.voice { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; align-items: center; background: var(--ink-3); }
+.voice > div { min-width: 0; }
+.voice blockquote { margin: 0; font-family: Syne, sans-serif; font-weight: 700; font-size: var(--d4); line-height: 1.45; max-width: 46ch; }
+.voice__who { display: grid; gap: .1rem; margin-top: 1.2rem; }
+.voice__name { font-size: .9375rem; }
+.voice__firm { font-size: var(--micro); color: var(--mute); }
+.voice__mark { width: clamp(72px, 8vw, 120px); opacity: .16; justify-self: start; }
+@media (min-width: 901px) {
+  .voice { grid-template-columns: minmax(0, 1fr) auto; gap: clamp(2rem, 4vw, 3.5rem); }
+  .voice__mark { justify-self: center; }
+}
+
+/* ==========================================================================
+   6. Aktuelles: drei Platten
+   ========================================================================== */
+.post { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(1.25rem, 3vw, 2.25rem); align-items: center; }
+.post__shot { display: block; overflow: hidden; border-radius: 14px; }
+.post__shot img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; transition: transform .8s var(--ease); }
+.post:hover .post__shot img { transform: scale(1.04); }
+.post__body { display: grid; gap: .9rem; min-width: 0; }
+.post h3 { font-size: var(--d4); max-width: 26ch; }
+.post p { color: var(--mute); max-width: 52ch; }
+@media (min-width: 901px) { .post { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); } }
+
+/* ==========================================================================
+   7. Kontakt und Fusszeile: die letzte Platte steht und faehrt nicht weiter
+   ========================================================================== */
+.contact h2 { font-size: var(--d2); text-transform: uppercase; max-width: 16ch; }
+.contact h2 em { font-style: italic; color: var(--acid); }
+.contact__lead { margin-top: 1rem; color: var(--mute); max-width: 46ch; }
+.contact__cols { margin-top: clamp(2rem, 5vh, 3.5rem); display: grid; gap: clamp(2rem, 5vw, 3.5rem); }
+@media (min-width: 960px) { .contact__cols { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); } }
+
+.field { display: grid; gap: .5rem; margin-bottom: 1.2rem; }
+.field label { font-size: var(--micro); color: var(--paper); }
+.field input, .field textarea {
+  width: 100%; padding: .9rem 1.1rem;
+  background: var(--ink); border: 1px solid var(--line); border-radius: 12px;
+  transition: border-color .25s var(--ease);
+}
+.field input::placeholder, .field textarea::placeholder { color: #8B8781; }
+.field input:focus, .field textarea:focus { border-color: var(--acid); outline: none; }
+/* Maus faerbt nur den Rand, die Tastatur bekommt den Ring zurueck */
+.field input:focus-visible, .field textarea:focus-visible { outline: 2px solid var(--acid); outline-offset: 3px; }
+.field textarea { min-height: 130px; resize: vertical; }
+.field__hint { font-size: var(--micro); color: var(--mute); }
+.field__err { font-size: var(--micro); color: #FF8A7A; min-height: 1.2em; }
+.field[data-invalid="true"] input, .field[data-invalid="true"] textarea { border-color: #FF8A7A; }
+
+.consent { display: flex; gap: .75rem; align-items: center; min-height: 44px; margin-bottom: 1.35rem; font-size: var(--micro); color: var(--mute); }
+.consent input { width: 24px; height: 24px; accent-color: var(--acid); flex: none; }
+.form__note { margin-top: 1rem; font-size: var(--micro); min-height: 1.4em; }
+.form__note[data-state="ok"] { color: var(--acid); }
+.form__note[data-state="bad"] { color: #FF8A7A; }
+
+.contact__meta { display: grid; gap: 2rem; align-content: start; }
+.contact__meta h3 { font-family: Poppins, sans-serif; font-weight: 500; font-size: var(--micro); color: var(--mute); text-transform: uppercase; letter-spacing: .1em; }
+.contact__meta ul { list-style: none; margin: .8rem 0 0; padding: 0; display: grid; gap: .5rem; }
+.contact__meta a:hover { color: var(--acid); }
+.contact__big { font-family: Syne, sans-serif; font-weight: 700; font-size: clamp(1.2rem, 1.8vw, 1.6rem); }
+
+.foot {
+  margin-top: clamp(2.5rem, 6vh, 4.5rem); padding-top: 1.75rem; border-top: 1px solid var(--line-soft);
+  display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between;
+  font-size: var(--micro); color: var(--mute);
+}
+.foot nav { display: flex; gap: 1.5rem; }
+.foot a:hover { color: var(--paper); }
+
+/* ==========================================================================
+   Unterseite "Professionelles Webdesign": dieselbe Kamera, eine Stufe leiser
+   ========================================================================== */
+.page-sub { --d2: clamp(1.4rem, 3.8vw, 3.2rem); }
+.hero--sub .hero__title { font-size: var(--d1-sub); }
+.hero--sub .hero__title .line--2 { padding-left: min(3vw, 48px); }
+.hero--sub .hero__sub { max-width: 42ch; }
+
+/* Angebot: die Markenflaeche selbst ist die Platte */
+.offer {
+  background: var(--acid); color: #101010;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 1.25rem 2.5rem;
+}
+.offer h2 { color: #101010; font-size: var(--d3); text-transform: uppercase; max-width: 22ch; }
+
+/* Zwei Textszenen */
+.scene { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(1.5rem, 3vw, 2.5rem); align-items: center; }
+.scene__media { position: relative; display: grid; place-items: center; min-width: 0; }
+.scene__media img { width: min(70%, 320px); object-fit: contain; filter: drop-shadow(0 30px 70px rgba(0, 0, 0, .6)); }
+.scene__body { display: grid; gap: 1rem; min-width: 0; }
+.scene__body h2 { font-size: var(--d3); hyphens: manual; max-width: 24ch; }
+.scene__body p { color: rgba(244, 244, 244, .82); max-width: 58ch; }
+@media (min-width: 901px) {
+  .scene { grid-template-columns: minmax(0, 1fr) minmax(0, .5fr); }
+  .scene--flip .scene__media { order: -1; }
+  .scene__media img { width: 100%; max-width: 320px; }
+}
+
+/* Warum uns waehlen */
+.reasons__grid {
+  perspective: var(--cam); perspective-origin: 50% 50%;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(.75rem, 1.4vw, 1.25rem);
+}
+.reason { display: grid; align-content: start; gap: .8rem; background: var(--ink-3); }
+.reason__num { width: clamp(56px, 6vw, 80px); filter: invert(1); opacity: .8; }
+.reason h3 { font-size: var(--d4); }
+.reason p { color: var(--mute); max-width: 46ch; }
+.reasons__deco { width: clamp(42px, 5vw, 72px); opacity: .55; }
+.reasons__head { display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+
+/* --- Tippziele: auf Touch und bis 1180 px mindestens 44 px --------------- */
+@media (pointer: coarse), (max-width: 1180px) {
+  .link { min-height: 44px; align-items: center; }
+  .contact__meta ul a, .foot a, .nav__logo, .nav__links a, .index__item { display: inline-flex; align-items: center; min-height: 44px; }
+  .contact__meta ul { gap: .1rem; }
+}
+
+/* ==========================================================================
+   Ab 900: die Kamera bekommt ihren rechten Streifen, der Fluchtpunkt steht fest
+   ========================================================================== */
+@media (min-width: 900px) {
+  :root { --vanish-zone: calc(clamp(150px, 15vw, 250px) + 2.4vw + 28px - var(--gut)); }
+  .vanish { position: fixed; right: 2.4vw; top: calc(var(--nav-h) + 4vh); width: clamp(150px, 15vw, 250px); }
+  .vanish__glow { position: fixed; right: 0; top: 2vh; width: min(42vw, 620px); }
+  /* Der Held bekommt den Streifen NICHT: seine Zeilen sollen hinter dem Kristall durchlaufen. */
+}
+
+/* ==========================================================================
+   Ab 1024: Index-Spalte am linken Rand
+   ========================================================================== */
+@media (min-width: 1024px) {
+  :root { --rail: clamp(132px, 11vw, 168px); }
+  .index {
+    position: fixed; z-index: 70; left: 0; top: 50%; transform: translateY(-50%);
+    display: grid; width: var(--rail); padding-left: max(18px, 1.6vw);
+  }
+  .index__item {
+    display: flex; align-items: center; min-height: 44px;
+    border-top: 1px solid var(--line-soft);
+    font-size: .78rem; letter-spacing: .06em; color: var(--mute);
+    transition: color .35s var(--ease);
+  }
+  .index__item:last-child { border-bottom: 1px solid var(--line-soft); }
+  .index__item:hover { color: var(--paper); }
+  .index__item[data-current="true"] { color: var(--acid); }
+}
+
+/* ==========================================================================
+   Schmale Schirme: die Kamera ist aus, die Platten sind ein Stapel
+   ========================================================================== */
+@media (max-width: 900px) {
+  :root { --nav-h: 64px; }
+  .nav__links { display: none; }
+  .nav__burger { display: block; }
+  .nav .btn { display: none; }
+  .lens { perspective: none; }
+  .hero__title .line--2 { padding-left: 0; }
+  /* "Professionelles" ist 16 em breit: auf schmalen Schirmen darf getrennt werden. */
+  .hero--sub .hero__title { hyphens: auto; }
+  .clients__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .reasons__grid { grid-template-columns: minmax(0, 1fr); }
+  .voice__mark { width: 84px; }
+  .case__media::after { background: linear-gradient(180deg, rgba(19, 17, 15, .2) 0%, rgba(19, 17, 15, .5) 60%, var(--ink-2) 100%); }
+}
+
+/* ==========================================================================
+   Weniger Bewegung: kein ScrollTrigger, keine Tiefe, alles sofort sichtbar
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+  .lens { perspective: none !important; }
+  .tile { transform: none !important; opacity: 1 !important; will-change: auto; }
+  .clients__cell, [data-wave] > * { transform: none !important; opacity: 1 !important; }
+  .vanish { position: absolute !important; right: 0; top: 10vh; width: clamp(96px, 36vmin, 280px); }
+  .vanish__glow { position: absolute !important; }
+  .hero { padding-right: 0; }
+}
+
+/* Weniger Transparenz: Glas wird Flaeche */
+@media (prefers-reduced-transparency: reduce) {
+  .nav { background: rgba(19, 17, 15, .96); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .grain { display: none; }
+}
