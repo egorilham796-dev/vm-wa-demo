@@ -36,7 +36,9 @@
   }
   .seg button:hover { color: var(--fg); }
   .seg button[aria-pressed="true"] { background: var(--acid); color: #13110F; font-weight: 700; }
-  .seg--var { margin-left: 6px; }
+  .seg--var { margin-left: 6px; min-width: 0; flex: 0 1 auto; overflow-x: auto; scrollbar-width: none; }
+  .seg--var::-webkit-scrollbar { display: none; }
+  .seg--var button, .seg--page button { flex: 0 0 auto; }
   .bar__open { margin-left: auto; color: var(--mute); text-decoration: none; white-space: nowrap; padding: 6px 4px; }
   .bar__open:hover { color: var(--fg); }
   .frame {
@@ -60,6 +62,7 @@
   .card__row a.primary { background: var(--acid); color: #13110F; border-color: var(--acid); }
   .list__note { color: var(--mute); font-size: 13px; margin-top: 26px; }
 
+  .seg button[hidden] { display: none !important; }
   body[data-mode="frame"] .list { display: none; }
   body[data-mode="list"] .bar, body[data-mode="list"] .frame { display: none; }
 </style>
@@ -80,7 +83,7 @@
 <main class="list" id="list">
   <div class="list__eyebrow">V&amp;M Werbeagentur</div>
   <h1>Design-Varianten für vm-wa.de</h1>
-  <p class="list__lead">Jede Variante hat eine Startseite und die Unterseite „Webdesign“. Zurück zu dieser Übersicht: Zurück-Taste des Browsers.</p>
+  <p class="list__lead">V1 bis V8 haben eine Startseite und die Unterseite „Webdesign“, V9 und V10 zeigen die Startseite als Kamerafahrt. Zurück zu dieser Übersicht: Zurück-Taste des Browsers.</p>
   <div id="cards"></div>
   <p class="list__note">Am Desktop erscheint dieselbe Übersicht als Leiste mit Umschalter über der Vorschau.</p>
 </main>
@@ -97,6 +100,8 @@
     { id: 'v6', dir: 'vm-wa-v6', name: 'V6 · Film',    ready: true,  desc: 'Ein Filmstreifen: Held und Kontakt als Vorsätze, alles dazwischen fährt als horizontale Spur hinter perforierten Rändern.' },
     { id: 'v7', dir: 'vm-wa-v7', name: 'V7 · Kacheln', ready: true,  desc: 'Bento-Raster mit lebenden Kacheln: jede fliegt in ihr Fach, neigt sich unter dem Cursor, nimmt sich ihre Reihe.' },
     { id: 'v8', dir: 'vm-wa-v8', name: 'V8 · Tiefe',   ready: true,  desc: 'Eine Kamera fährt nach vorn durch einen Stapel von Ebenen: die vordere Ebene liest sich, die nächste steht schon dahinter. Der Kristall bleibt als Fluchtpunkt im Bild stehen.' },
+    { id: 'v9', dir: 'vm-wa-v9', name: 'V9 · Westerwald', ready: true, noWeb: true, desc: 'Kamerafahrt wie beim Mostar-Vorbild: Nacht über dem Westerwald, das Glasband vor dem Wort, Glasvorhänge öffnen sich zu den Projekten, am Ende die Leistungen als Galerie.' },
+    { id: 'v10', dir: 'vm-wa-v10', name: 'V10 · Glasraum', ready: true, noWeb: true, desc: 'Dieselbe Kamerafahrt ohne Landschaft: ein dunkler Raum mit den Glasobjekten von V&M in mehreren Tiefen.' },
   ].filter(v => v.ready);
 
   const PAGES = { start: '', webdesign: 'webdesign.html' };
@@ -112,12 +117,13 @@
   let cur = { id: VARIANTS[0].id, page: 'start' };
 
   const byId = id => VARIANTS.find(v => v.id === id);
-  const hrefOf = (v, page) => `${BASE}${v.dir}/${PAGES[page]}`;
+  const hrefOf = (v, page) => `${BASE}${v.dir}/${v.noWeb ? '' : PAGES[page]}`;
 
   // ---- Zustand aus dem Hash: #v4 oder #v4/webdesign ----
   function readHash() {
     const [id, page] = location.hash.replace(/^#/, '').split('/');
-    return { id: byId(id) ? id : VARIANTS[0].id, page: page === 'webdesign' ? 'webdesign' : 'start' };
+    const v = byId(id) || VARIANTS[0];
+    return { id: v.id, page: page === 'webdesign' && !v.noWeb ? 'webdesign' : 'start' };
   }
   function writeHash() {
     const h = '#' + cur.id + (cur.page === 'webdesign' ? '/webdesign' : '');
@@ -136,6 +142,8 @@
   function paint() {
     segVar.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.id === cur.id)));
     segPage.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.page === cur.page)));
+    segPage.querySelector('[data-page="webdesign"]').hidden = !!byId(cur.id).noWeb;
+    const act = segVar.querySelector('[aria-pressed="true"]'); if (act && segVar.scrollWidth > segVar.clientWidth) segVar.scrollLeft = act.offsetLeft - (segVar.clientWidth - act.offsetWidth) / 2;
     openRaw.href = hrefOf(byId(cur.id), cur.page);
     document.title = `${byId(cur.id).name} · ${cur.page === 'webdesign' ? 'Webdesign' : 'Startseite'} · V&M Design-Varianten`;
   }
@@ -155,7 +163,7 @@
     }
     frame.setAttribute('src', href);
   }
-  function go(patch) { cur = { ...cur, ...patch }; paint(); writeHash(); load(); }
+  function go(patch) { cur = { ...cur, ...patch }; if (byId(cur.id).noWeb) cur.page = 'start'; paint(); writeHash(); load(); }
 
   // Navigiert der Besucher im Rahmen selbst (Link im Menü), folgt die Leiste nach.
   frame.addEventListener('load', () => {
@@ -174,7 +182,7 @@
   VARIANTS.forEach(v => {
     const c = document.createElement('article'); c.className = 'card';
     c.innerHTML = `<h2>${v.name}</h2><p>${v.desc}</p>
-      <div class="card__row"><a class="primary" href="${hrefOf(v, 'start')}">Startseite</a><a href="${hrefOf(v, 'webdesign')}">Webdesign</a></div>`;
+      <div class="card__row"><a class="primary" href="${hrefOf(v, 'start')}">Startseite</a>${v.noWeb ? '' : `<a href="${hrefOf(v, 'webdesign')}">Webdesign</a>`}</div>`;
     cards.appendChild(c);
   });
 

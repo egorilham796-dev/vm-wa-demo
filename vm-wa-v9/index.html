@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V&amp;M Werbeagentur - V9 Prototyp</title>
+<meta name="description" content="Kinematische Scroll-Geschichte für V&amp;M Werbeagentur.">
+<link rel="icon" href="assets/img/favicon.png">
+<link rel="preload" as="image" href="assets/img/m-sky.webp">
+<link rel="preload" as="image" href="assets/img/m-ribbon.webp">
+<style>
+@font-face{font-family:Syne;font-weight:800;font-display:swap;src:url(assets/font/syne-800-latin.woff2) format('woff2')}
+@font-face{font-family:Syne;font-weight:700;font-display:swap;src:url(assets/font/syne-700-latin.woff2) format('woff2')}
+@font-face{font-family:Poppins;font-weight:400;font-display:swap;src:url(assets/font/poppins-400-latin.woff2) format('woff2')}
+@font-face{font-family:Poppins;font-weight:500;font-display:swap;src:url(assets/font/poppins-500-latin.woff2) format('woff2')}
+:root{--ink:#13110F;--paper:#F4F4F4;--lime:#D7F908;--mu:#9A968F;--hdr:96px;--slider-top:130px;font-family:Poppins,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--paper);background:#13110F}
+*{box-sizing:border-box}
+html{min-height:100%;background:#13110F}
+body{min-height:100%;margin:0;overflow-x:clip;background:#13110F}
+button{border:0;font:inherit}
+img{display:block}
+
+/* Scroll-Strecke: Mostar x2 plus Halt am Ende */
+.cinema-scroll{position:relative;height:calc(100vh + 8200px)}
+.stage{position:sticky;top:0;height:100vh;min-height:620px;overflow:hidden;isolation:isolate;background:#13110F}
+.world{position:absolute;inset:0;overflow:hidden}
+.L{position:absolute;user-select:none;-webkit-user-drag:none;pointer-events:none;will-change:transform,opacity;backface-visibility:hidden}
+
+.sky{inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.sky-css{position:absolute;inset:0;z-index:0;display:none;background:radial-gradient(120% 70% at 50% 100%,rgba(215,249,8,.14) 0%,rgba(215,249,8,.035) 36%,rgba(19,17,15,0) 62%),linear-gradient(180deg,#0c0b0a 0%,#13110F 60%,#171511 100%)}
+.back-stack{position:absolute;z-index:1;top:0;bottom:0;left:-3vw;right:-3vw;transform-origin:50% 100%;will-change:transform,opacity}
+.back-img{position:absolute;bottom:0;left:50%;height:auto;pointer-events:none;will-change:transform,opacity;backface-visibility:hidden}
+.four{width:160%;z-index:1}
+.bazaar{width:145%;z-index:3}
+.shade{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;will-change:opacity;
+  background:linear-gradient(180deg,rgba(19,17,15,.62) 0%,rgba(19,17,15,.56) 48%,rgba(19,17,15,.70) 100%)}
+
+.hero-title{position:absolute;z-index:3;left:50%;top:clamp(118px,19vh,205px);margin:0;width:max-content;white-space:nowrap;font-family:Syne;font-weight:800;text-transform:uppercase;line-height:.86;letter-spacing:-.01em;
+  background:linear-gradient(180deg,rgba(244,244,244,.98) 0%,rgba(244,244,244,.82) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;will-change:transform,opacity}
+.bridge{z-index:4;left:50%;bottom:13vh;width:72vw;max-width:2400px;height:auto;transform-origin:50% 80%}
+.frame2{z-index:5;left:50%;top:50%;width:max(122vw,196vh);max-width:none;height:auto;opacity:0;transform-origin:50% 48%}
+.f2-dim{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0;will-change:opacity;background:radial-gradient(70% 60% at 50% 55%,rgba(19,17,15,.72) 0%,rgba(19,17,15,.5) 60%,rgba(19,17,15,.35) 100%)}
+.split{z-index:6;left:50%;bottom:-2vh;width:min(118vw,2240px);height:auto}
+.split-l{transform-origin:21% 52%}.split-r{transform-origin:79% 52%}
+
+.header-scrim{position:absolute;z-index:9;top:0;left:0;right:0;height:180px;pointer-events:none;background:linear-gradient(180deg,rgba(19,17,15,.78) 0%,rgba(19,17,15,.42) 45%,rgba(19,17,15,0) 100%)}
+.site-header{position:absolute;z-index:10;top:0;left:0;right:0;display:grid;grid-template-columns:minmax(180px,1fr) auto minmax(180px,1fr);align-items:center;gap:32px;padding:28px 32px}
+.site-logo img{height:34px;width:auto}
+.site-nav{display:flex;justify-content:center;gap:clamp(24px,2.2vw,44px)}
+.site-nav a{color:rgba(244,244,244,.92);font-size:17px;line-height:1;text-decoration:none;text-shadow:0 1px 12px rgba(0,0,0,.6)}
+.header-cta{justify-self:end;font-weight:500;font-size:15px;line-height:1;background:var(--lime);color:var(--ink);border-radius:999px;padding:13px 22px;text-decoration:none}
+
+/* Slider ueber allen Ebenen, unter dem Header */
+.sights-slider{position:absolute;z-index:7;left:0;right:0;top:var(--slider-top);visibility:hidden;will-change:transform}
+.sights-track{--lead:max(20px,4vw);display:flex;gap:clamp(16px,1.15vw,24px);transform:translate3d(calc(var(--shift,0px) + var(--lead)),0,0);transition:transform 640ms cubic-bezier(.22,1,.36,1);touch-action:pan-y}
+.sights-track.is-jumping{transition:none}
+.sight-card{position:relative;flex:0 0 clamp(340px,21vw,430px);height:228px;padding:24px;overflow:hidden;border-radius:24px;color:var(--ink);background:var(--paper);box-shadow:0 18px 52px rgba(0,0,0,.35);cursor:pointer;user-select:none;transition:height .35s ease}
+.sight-card:focus-visible{outline:3px solid var(--lime);outline-offset:3px}
+.sight-kicker{display:block;margin-bottom:56px;font-size:12px;font-weight:500;line-height:1.05;text-transform:uppercase;color:#4a4640}
+.sight-pin{position:absolute;top:16px;right:16px;width:82px;height:82px;object-fit:contain;pointer-events:none}
+.sight-card h3{position:absolute;left:24px;right:24px;bottom:calc(24px + 15px*1.25*2 + 12px);max-width:calc(100% - 60px);margin:0;font-family:Syne;font-size:23px;font-weight:700;line-height:1.05;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sight-card p{position:absolute;left:24px;right:24px;bottom:24px;margin:0;color:#2a2723;font-size:15px;line-height:1.25;display:-webkit-box;max-height:calc(2em*1.25);overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.sight-card .go{position:absolute;right:20px;bottom:20px;width:34px;height:34px;border-radius:999px;background:var(--ink);color:var(--lime);display:flex;align-items:center;justify-content:center;font-size:16px}
+.sight-card.has-link p{right:64px}
+.sight-card.is-open{height:330px}
+.sight-card.is-open p{-webkit-line-clamp:unset;max-height:none}
+.sight-card.is-open h3{bottom:auto;top:96px;white-space:normal}
+.sights-controls{position:absolute;z-index:7;left:max(20px,4vw);top:calc(var(--slider-top) + 228px + 18px);display:flex;gap:14px;opacity:0;pointer-events:none}
+.sights-controls.is-ready{pointer-events:auto}
+.sight-nav{width:54px;height:54px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;color:var(--ink);background:var(--paper);box-shadow:0 18px 36px rgba(0,0,0,.35);cursor:pointer;font-size:20px}
+
+/* Text: eigener Abdunkler unten, Panels im Feld unter dem Header */
+.intro-scrim{position:absolute;z-index:8;left:0;right:0;bottom:0;height:52vh;pointer-events:none;background:linear-gradient(0deg,rgba(19,17,15,.88) 0%,rgba(19,17,15,.62) 38%,rgba(19,17,15,0) 100%);will-change:opacity}
+.intro-copy{position:absolute;z-index:9;left:50%;bottom:clamp(40px,8vh,96px);width:min(600px,calc(100vw - 40px));text-align:center;will-change:transform,opacity}
+.intro-copy p{margin:0 auto;color:var(--paper);font-size:1.16rem;font-weight:500;line-height:1.38;text-shadow:0 2px 14px rgba(0,0,0,.85),0 0 2px rgba(0,0,0,.9)}
+.hero-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:22px}
+.hero-tags span{min-height:44px;display:inline-flex;align-items:center;padding:0 24px;color:var(--ink);border-radius:999px;background:var(--paper);font-size:.96rem;font-weight:500;box-shadow:0 12px 30px rgba(0,0,0,.3)}
+.panel-area{position:absolute;z-index:10;left:0;right:0;top:var(--hdr);bottom:0;pointer-events:none}
+.story-panel{position:absolute;left:50%;top:50%;width:min(800px,calc(100vw - 40px));text-align:center;opacity:0;will-change:transform,opacity}
+.story-panel::before{content:"";position:absolute;inset:-18% -14%;z-index:-1;background:radial-gradient(closest-side,rgba(19,17,15,.78),rgba(19,17,15,0));pointer-events:none}
+.story-panel h2{margin:0;font-family:Syne;font-size:clamp(2rem,3.9vw,3.8rem);font-weight:800;line-height:1.02;text-transform:uppercase;text-shadow:0 6px 30px rgba(0,0,0,.7)}
+.story-panel p{width:min(560px,100%);margin:24px auto 0;font-size:1.12rem;font-weight:500;line-height:1.38;text-shadow:0 2px 14px rgba(0,0,0,.85),0 0 2px rgba(0,0,0,.9)}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:72px;width:min(470px,100%);margin:52px auto 0}
+.facts dt{color:var(--lime);font-family:Syne;font-size:4rem;font-weight:800;line-height:.9;text-shadow:0 10px 30px rgba(0,0,0,.6)}
+.facts dd{margin:16px 0 0;font-size:1rem;font-weight:500;line-height:1.2;text-shadow:0 2px 14px rgba(0,0,0,.85)}
+.note-button{margin-top:26px;min-height:50px;display:inline-flex;align-items:center;gap:12px;padding:0 28px;border-radius:999px;color:var(--ink);background:var(--lime);pointer-events:auto;text-decoration:none;font-weight:500;box-shadow:0 16px 34px rgba(0,0,0,.3)}
+
+.kontakt{padding:120px 24px;text-align:center}
+.kontakt h2{font-family:Syne;font-weight:800;text-transform:uppercase;font-size:clamp(24px,5vw,64px);line-height:1.05;margin:0 0 24px}
+.kontakt p{color:#cfccc7;margin:0 0 28px;font-size:1.05rem}
+.kontakt a.big{display:inline-flex;min-height:52px;align-items:center;padding:0 30px;border-radius:999px;background:var(--lime);color:var(--ink);font-weight:500;text-decoration:none}
+
+.proto-switch{position:fixed;z-index:50;left:16px;bottom:16px;display:none;gap:6px;padding:6px;border-radius:999px;background:rgba(19,17,15,.8);border:1px solid rgba(255,255,255,.16);font-size:13px}
+.proto-switch a{padding:8px 14px;border-radius:999px;color:#ddd;text-decoration:none}
+.proto-switch a.on{background:var(--paper);color:var(--ink)}
+
+@media (max-width:1100px){.bridge{width:110vw}.facts{gap:34px;margin-top:40px}.facts dt{font-size:3.2rem}}
+@media (max-width:640px){
+  .stage{min-height:640px}
+  .site-header{grid-template-columns:1fr auto;gap:14px;padding:18px 18px 12px}
+  .site-nav{grid-column:1/-1;grid-row:2;justify-content:flex-start;gap:18px;overflow-x:auto;scrollbar-width:none}
+  .site-nav::-webkit-scrollbar{display:none}
+  .site-nav a{font-size:15px}
+  .header-cta{padding:11px 16px;font-size:14px}
+  .hero-title{top:22vh}
+  .bridge{width:150vw;bottom:20vh}
+  .four,.bazaar{width:max(160%,200vh)}
+  .intro-copy{bottom:48px}
+  .intro-copy p,.story-panel p{font-size:1rem}
+  .hero-tags{gap:8px}.hero-tags span{padding:0 16px;font-size:.88rem}
+  .story-panel h2{font-size:clamp(1.55rem,7.6vw,2.3rem)}
+  .facts{gap:18px;margin-top:30px}.facts dt{font-size:2.6rem}
+  .sight-card{flex-basis:min(82vw,330px)}
+  .sights-track{--lead:calc((100vw - min(82vw,330px)) / 2)}
+  .sight-card h3{max-width:68%}
+  .sight-pin{width:66px;height:66px}
+  .proto-switch{bottom:10px;left:10px}
+}
+</style>
+</head>
+<body>
+<main class="site-shell">
+<section class="cinema-scroll" id="cinema" aria-label="V&amp;M Scroll-Geschichte">
+  <div class="stage">
+    <div class="world">
+      <img class="L sky" id="sky" src="assets/img/m-sky.webp" alt="" width="2560" height="1440">
+      <img class="L sky" id="skyBlur" src="assets/img/m-sky-blur.webp" alt="" width="960" height="540" style="opacity:0">
+      <div class="sky-css" id="skyCss" aria-hidden="true"></div>
+      <div class="back-stack" id="back">
+        <img class="back-img four" id="four" alt="" width="2560" height="1440" style="display:none">
+        <img class="back-img four" id="fourBlur" alt="" width="960" height="540" style="display:none;opacity:0">
+        <img class="back-img bazaar" id="bazaar" src="assets/img/m-valley.webp" alt="" width="2560" height="1440">
+        <img class="back-img bazaar" id="bazaarBlur" src="assets/img/m-valley-blur.webp" alt="" width="960" height="540" style="opacity:0">
+      </div>
+      <div class="shade" id="shade"></div>
+      <h1 class="hero-title" id="title">Motivation</h1>
+      <img class="L bridge" id="bridge" src="assets/img/m-ribbon.webp" alt="" width="2560" height="1440">
+      <img class="L frame2" id="frame2" src="assets/img/m-frame2.webp" alt="" width="2560" height="1440">
+      <div class="f2-dim" id="f2dim"></div>
+      <img class="L split split-l" id="splitL" src="assets/img/m-split-left.webp" alt="" width="2560" height="1440">
+      <img class="L split split-r" id="splitR" src="assets/img/m-split-right.webp" alt="" width="2560" height="1440">
+      <section class="sights-slider" id="leistungen" aria-label="Unsere Dienstleistungen">
+        <div class="sights-track">
+          <article class="sight-card has-link" tabindex="0" role="link" data-href="https://vm-wa.de/grafikdesign/" aria-label="Grafikdesign - mehr erfahren"><span class="sight-kicker">Leistung 01</span><img class="sight-pin" src="assets/img/svc-01-grafik.webp" alt=""><h3>Grafikdesign</h3><p>Grafikdesign ist essenziell für eine erfolgreiche Online-Präsenz, denn es zieht Kunden an und stärkt die Markenidentität.</p><span class="go" aria-hidden="true">&#8599;</span></article>
+          <article class="sight-card has-link" tabindex="0" role="link" data-href="https://vm-wa.de/webdesign/" aria-label="Webdesign - mehr erfahren"><span class="sight-kicker">Leistung 02</span><img class="sight-pin" src="assets/img/svc-02-webdesign.webp" alt=""><h3>Webdesign</h3><p>Ein professionelles Webdesign mit WordPress bietet unzählige Möglichkeiten.</p><span class="go" aria-hidden="true">&#8599;</span></article>
+          <article class="sight-card has-link" tabindex="0" role="link" data-href="https://vm-wa.de/webentwicklung-und-technische-umsetzung/" aria-label="Webentwicklung - mehr erfahren"><span class="sight-kicker">Leistung 03</span><img class="sight-pin" src="assets/img/svc-03-dev.webp" alt=""><h3>Webentwicklung</h3><p>Von der Landingpage bis zur komplexen Webanwendung, zu transparenten Preisen.</p><span class="go" aria-hidden="true">&#8599;</span></article>
+          <article class="sight-card" tabindex="0" role="button" aria-expanded="false" aria-label="Foto und Video - Details"><span class="sight-kicker">Leistung 04</span><img class="sight-pin" src="assets/img/svc-04-foto.webp" alt=""><h3>Foto und Video</h3><p>Ein Business-Fotoshooting hebt die Marke hervor und schafft Vertrauen. Hochwertige Bilder tragen Ihre Botschaft auf Webseiten, in Marketingmaterialien und in sozialen Medien.</p></article>
+          <article class="sight-card has-link" tabindex="0" role="link" data-href="https://vm-wa.de/soziale-netzwerke/" aria-label="Soziale Netzwerke - mehr erfahren"><span class="sight-kicker">Leistung 05</span><img class="sight-pin" src="assets/img/svc-05-social.webp" alt=""><h3>Soziale Netzwerke</h3><p>Gezielte Instagram Werbung, Meta Business Suite, Facebook und Google Ads.</p><span class="go" aria-hidden="true">&#8599;</span></article>
+          <article class="sight-card" tabindex="0" role="button" aria-expanded="false" aria-label="360-Grad-Marketing - Details"><span class="sight-kicker">Leistung 06</span><img class="sight-pin" src="assets/img/svc-06-360.webp" alt=""><h3>360-Grad-Marketing</h3><p>Lösungen, die alle Aspekte des modernen Marketings abdecken, von SEO bis Influencer Marketing. Maßgeschneiderte Strategien für Ihre Sichtbarkeit im Netz.</p></article>
+        </div>
+      </section>
+      <div class="sights-controls" id="controls" aria-label="Slider-Steuerung">
+        <button class="sight-nav" id="prev" aria-label="Vorherige Leistung">&larr;</button>
+        <button class="sight-nav" id="next" aria-label="Nächste Leistung">&rarr;</button>
+      </div>
+      <div class="header-scrim"></div>
+      <header class="site-header" id="hdr" aria-label="Hauptnavigation">
+        <a class="site-logo" href="#cinema"><img src="assets/img/vm-logo.svg" alt="V&amp;M Werbeagentur" width="120" height="34"></a>
+        <nav class="site-nav" aria-label="Hauptmenü"><a href="#cinema">Intro</a><a href="#leistungen">Leistungen</a><a href="#projekte">Projekte</a><a href="#kontakt">Kontakt</a></nav>
+        <a class="header-cta" href="#kontakt">Projekt starten</a>
+      </header>
+    </div>
+    <div class="intro-scrim" id="introScrim"></div>
+    <section class="intro-copy" id="intro" aria-label="Über V&amp;M">
+      <p>Eine Agentur, die eine breite Palette hochwertiger Dienstleistungen zu angemessenen Preisen anbietet.</p>
+      <div class="hero-tags" aria-label="Leistungen"><span>Webdesign</span><span>Foto und Video</span><span>Social Media</span></div>
+    </section>
+    <div class="panel-area" id="panelArea">
+      <section class="story-panel" id="panel2" aria-label="Ihre Intension">
+        <h2>Ihre Intension, unsere Motivation</h2>
+        <p>Grafikdesign, Webdesign, Webentwicklung, Foto und Video, Social Media und 360-Grad-Marketing aus einer Hand.</p>
+        <dl class="facts"><div><dt>06</dt><dd>Leistungen aus einer Hand</dd></div><div><dt>360°</dt><dd>Marketinglösungen</dd></div></dl>
+      </section>
+      <section class="story-panel" id="panel3" aria-label="Projekt Allerhand">
+        <h2 id="projekte">Digitale Blütezeit für Allerhand</h2>
+        <p>Ein benutzerfreundlicher Online-Shop, der das umfangreiche Sortiment digital zugänglich macht und den Kunden ein nahtloses Einkaufserlebnis bietet.</p>
+        <a class="note-button" href="#kontakt"><span aria-hidden="true">&#8599;</span><span>Projekt ansehen</span></a>
+      </section>
+    </div>
+  </div>
+</section>
+<section class="kontakt" id="kontakt">
+  <h2>Nehmen Sie Kontakt auf</h2>
+  <p>+49 163 5154355 · info@vm-wa.de</p>
+  <a class="big" href="mailto:info@vm-wa.de">Projekt starten</a>
+</section>
+</main>
+<nav class="proto-switch" aria-label="Prototyp-Variante"><a href="?v=natur" data-v="natur">Natur</a><a href="?v=studio" data-v="studio">Studio</a></nav>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  // Variante (nur Prototyp)
+  const DEFAULT_V = 'natur';
+  const q = new URLSearchParams(location.search), qv = q.get('v');
+  const v = qv === 'studio' || qv === 'natur' ? qv : DEFAULT_V;
+  if (q.get('proto') === '1') { const sw = document.querySelector('.proto-switch'); sw.style.display = 'flex'; sw.querySelectorAll('a').forEach(a => { a.href = '?proto=1&v=' + a.dataset.v; a.classList.toggle('on', a.dataset.v === v); }); }
+  if (v === 'studio') {
+    $('four').style.display = ''; $('fourBlur').style.display = '';
+    $('sky').style.display = 'none'; $('skyBlur').style.display = 'none'; $('skyCss').style.display = 'block';
+    $('four').src = 'assets/img/s-far.webp'; $('fourBlur').src = 'assets/img/s-far-blur.webp';
+    $('bazaar').src = 'assets/img/s-mid.webp'; $('bazaarBlur').src = 'assets/img/s-mid-blur.webp';
+  }
+
+  const section = document.querySelector('.cinema-scroll'), root = document.documentElement;
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const E = { skyBlur:$('skyBlur'), back:$('back'), four:$('four'), fourBlur:$('fourBlur'), bazaar:$('bazaar'), bazaarBlur:$('bazaarBlur'),
+    shade:$('shade'), f2dim:$('f2dim'), title:$('title'), bridge:$('bridge'), frame2:$('frame2'), splitL:$('splitL'), splitR:$('splitR'),
+    slider:document.querySelector('.sights-slider'), track:document.querySelector('.sights-track'), controls:$('controls'),
+    intro:$('intro'), introScrim:$('introScrim'), panel2:$('panel2'), panel3:$('panel3'), hdr:$('hdr') };
+
+  // Mostar-Choreografie, Strecke x2 (K), Zoom gedämpft (Z)
+  const K = 2, Z = 0.75;
+  let tMX = 0, tMY = 0, mx = 0, my = 0, target = 0, smooth = 0, init = false, raf = false;
+  const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const ss = (e0, e1, x) => { const t = clamp((x - e0) / (e1 - e0)); return t * t * (3 - 2 * t); };
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const seg = (s, a, b, c, d) => { const en = ss(a*K, b*K, s), ex = ss(c*K, d*K, s); return { enter: en, exit: ex, active: en * (1 - ex) }; };
+  const dist = () => clamp(-section.getBoundingClientRect().top, 0, section.offsetHeight - innerHeight);
+  const f = (n, d = 3) => n.toFixed(d);
+
+  function layout(){
+    const t = E.title; t.style.fontSize = '100px';
+    t.style.fontSize = (100 * Math.min(innerWidth * 0.92, 1780) / t.scrollWidth) + 'px';
+    const h = E.hdr.offsetHeight; root.style.setProperty('--hdr', h + 'px');
+    root.style.setProperty('--slider-top', (h + (innerWidth <= 640 ? 22 : 30)) + 'px');
+  }
+
+  function update(){
+    raf = false;
+    target = dist();
+    if (!init || reduceMotion.matches) { smooth = target; init = true; } else smooth = lerp(smooth, target, 0.14);
+    if (Math.abs(smooth - target) < 0.08) smooth = target;
+    mx = lerp(mx, tMX, 0.12); my = lerp(my, tMY, 0.12);
+    const MX = reduceMotion.matches ? 0 : mx, MY = reduceMotion.matches ? 0 : my;
+    const s = smooth, vh = innerHeight / 100, vw = innerWidth / 100;
+
+    const frame2 = seg(s, 560, 900, 1300, 1620);
+    const frame3 = seg(s, 1760, 2140, 2540, 2700);
+    const progress = clamp(s / (2700 * K));
+    const introExit = ss(90 * K, 650 * K, s);
+    const sightsEnter = Math.pow(ss(2760 * K, 3560 * K, s), 1.55);
+    const ctrl = ss(3200 * K, 3450 * K, s);
+    const blur = clamp(frame2.active + frame3.active);
+    const f2op = frame2.active * (1 - frame3.enter);
+    const drift = Math.pow(frame2.enter, 1.5);
+    const p2 = frame2.active * (1 - frame2.exit);
+    const p3 = frame3.active * (1 - frame3.exit);
+    const backScale = 0.76 + Z * (progress * 0.2 + frame2.enter * 0.18 + frame3.enter * 0.16);
+    const heroY = progress * -74, heroS = progress * 0.23;
+
+    E.back.style.transform = `translate3d(${f(MX * -12, 2)}px,${f(MY * -4, 2)}px,0) scale(${f(backScale, 4)})`;
+    E.back.style.opacity = f(1 - frame2.active * 0.06, 4);
+    const fourT = `translate3d(-50%,${f((10 + progress * 10) * vh - 110, 2)}px,0) scale(${f(0.78 + progress * 0.16, 4)})`;
+    E.four.style.transform = fourT; E.fourBlur.style.transform = fourT;
+    E.four.style.opacity = f(1 - blur, 4); E.fourBlur.style.opacity = f(blur, 4);
+    const bazT = `translate3d(-50%,${f((20 - progress * 8) * vh, 2)}px,0) scale(.86)`;
+    E.bazaar.style.transform = bazT; E.bazaarBlur.style.transform = bazT;
+    E.bazaar.style.opacity = f(1 - frame2.active, 4); E.bazaarBlur.style.opacity = f(frame2.active, 4);
+    E.skyBlur.style.opacity = f(blur, 4);
+    E.shade.style.opacity = f(blur, 4); E.shade.style.zIndex = frame2.active > 0.02 ? '2' : '0';
+
+    E.title.style.transform = `translate3d(-50%,${f(introExit * -210, 2)}px,0) scale(${f(1 - introExit * 0.08, 4)})`;
+    E.title.style.opacity = f(1 - introExit, 4);
+
+    const bw = 1 + frame2.enter * 0.5625, bs = (1.02 + heroS + frame2.exit * 0.46) * bw;
+    const by = MY * 8 + heroY - frame2.exit * Math.max(760, innerHeight * 1.35) + frame2.enter * 13 * vh;
+    E.bridge.style.transform = `translate3d(calc(-50% + ${f(MX * 18, 2)}px),${f(by, 2)}px,0) scale(${f(bs, 4)})`;
+
+    const sy = MY * 10 + heroY - drift * 180, sS = 1 + heroS + frame2.enter * 0.74;
+    E.splitL.style.transform = `translate3d(calc(-50% + ${f(-drift * 46 * vw + MX * 22, 2)}px),${f(sy, 2)}px,0) scale(${f(sS, 4)})`;
+    E.splitR.style.transform = `translate3d(calc(-50% + ${f(drift * 46 * vw + MX * 22, 2)}px),${f(sy, 2)}px,0) scale(${f(sS, 4)})`;
+
+    E.frame2.style.opacity = f(f2op, 4); E.f2dim.style.opacity = f(f2op, 4);
+    E.frame2.style.transform = `translate3d(calc(-50% + ${f(MX * 10, 2)}px),calc(-50% + ${f(MY * 8 - frame2.exit * 150, 2)}px),0) scale(${f(1.06 + frame2.enter * 0.08 + frame2.exit * 0.08, 4)})`;
+
+    E.intro.style.transform = `translate3d(-50%,${f(introExit * 90, 2)}px,0)`;
+    E.intro.style.opacity = f(1 - introExit, 4);
+    E.introScrim.style.opacity = f(1 - introExit, 4);
+    E.panel2.style.opacity = f(p2, 4);
+    E.panel2.style.transform = `translate3d(-50%,calc(-50% + ${f(-frame2.exit * 86 + (1 - frame2.enter) * 58, 2)}px),0)`;
+    E.panel3.style.opacity = f(p3, 4);
+    E.panel3.style.transform = `translate3d(-50%,calc(-50% + ${f(-frame3.exit * 86 + (1 - frame3.enter) * 58, 2)}px),0)`;
+
+    E.slider.style.visibility = sightsEnter > 0.01 ? 'visible' : 'hidden';
+    E.slider.style.transform = `translate3d(${f((1 - sightsEnter) * 420, 3)}vw,0,0)`;
+    E.controls.style.opacity = f(ctrl, 4);
+    E.controls.classList.toggle('is-ready', ctrl > 0.5);
+
+    if (Math.abs(smooth - target) > 0.08 || Math.abs(mx - tMX) > 0.001 || Math.abs(my - tMY) > 0.001) tick();
+  }
+  function tick(){ if (!raf) { raf = true; requestAnimationFrame(update); } }
+
+  // Endloser Slider: Karte mit Seite öffnet die Seite, sonst klappt der Text auf
+  const originals = [...E.track.children], N = originals.length; let cards = [], active = N;
+  function setupSlider(){
+    E.track.replaceChildren();
+    for (let set = 0; set < 3; set++) originals.forEach((c, i) => { const k = c.cloneNode(true); k.dataset.i = set * N + i; if (set !== 1) { k.setAttribute('aria-hidden', 'true'); k.tabIndex = -1; } E.track.appendChild(k); });
+    cards = [...E.track.children];
+    cards.forEach(c => {
+      c.addEventListener('click', () => activate(c));
+      c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(c); } });
+    });
+    E.track.addEventListener('transitionend', e => { if (e.target === E.track) normalize(); });
+    let x0 = null;
+    E.track.addEventListener('pointerdown', e => { x0 = e.clientX; });
+    E.track.addEventListener('pointerup', e => { if (x0 !== null && Math.abs(e.clientX - x0) > 40) { move(e.clientX < x0 ? 1 : -1); E.track.dataset.swiped = '1'; setTimeout(() => delete E.track.dataset.swiped, 50); } x0 = null; });
+    place();
+  }
+  function place(){
+    const w = cards[0].offsetWidth, gap = parseFloat(getComputedStyle(E.track).columnGap || '0');
+    E.track.style.setProperty('--shift', `${-(w + gap) * active}px`);
+    cards.forEach((c, i) => c.classList.toggle('is-active', i === active));
+  }
+  function activate(c){
+    if (E.track.dataset.swiped) return;
+    const i = Number(c.dataset.i);
+    if (c.dataset.href) { window.open(c.dataset.href, '_blank', 'noopener'); return; }
+    const open = !c.classList.contains('is-open');
+    cards.forEach(k => { k.classList.remove('is-open'); if (k.hasAttribute('aria-expanded')) k.setAttribute('aria-expanded', 'false'); });
+    if (open) { c.classList.add('is-open'); c.setAttribute('aria-expanded', 'true'); }
+    if (Number.isFinite(i)) { active = i; place(); }
+  }
+  const move = d => { active += d; place(); };
+  function jump(i){ E.track.classList.add('is-jumping'); active = i; place(); requestAnimationFrame(() => requestAnimationFrame(() => E.track.classList.remove('is-jumping'))); }
+  function normalize(){ if (active >= N * 2) jump(active - N); else if (active < N) jump(active + N); }
+
+  addEventListener('scroll', tick, { passive: true });
+  addEventListener('resize', () => { layout(); place(); tick(); });
+  addEventListener('pointermove', e => { if (e.pointerType === 'touch') return; tMX = e.clientX / innerWidth - 0.5; tMY = e.clientY / innerHeight - 0.5; tick(); }, { passive: true });
+  $('prev').addEventListener('click', () => move(-1));
+  $('next').addEventListener('click', () => move(1));
+  setupSlider(); layout(); tick();
+  // nur fuer Tests: ?y=1234 scrollt nach dem Laden
+  const yq = +new URLSearchParams(location.search).get('y'); if (yq) setTimeout(() => scrollTo(0, yq), 1500);
+  document.fonts.ready.then(() => { layout(); place(); tick(); });
+})();
+</script>
+</body>
+</html>
