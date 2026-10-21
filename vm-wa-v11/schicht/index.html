@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V&amp;M Werbeagentur - C Schicht für Schicht</title>
+<meta name="description" content="Die Szene entsteht beim Scrollen: Skizze, Gestaltung, Raster, Foto, Code. Jede Ebene ist eine Leistung.">
+<link rel="icon" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/v11.css">
+<link rel="preload" as="image" href="img/sketch.webp">
+<link rel="preload" as="image" href="img/sketch-fg.webp">
+<style>
+/* «экран»: сцена + сетка + элементы сайта; в финале уменьшается в ноутбук */
+.screen{position:absolute;inset:0;overflow:hidden;transform-origin:50% 50%;will-change:transform,opacity;background:#13110F}
+.screen.dev{border-radius:26px;box-shadow:0 0 0 30px #0b0a09,0 0 0 32px rgba(255,255,255,.14),0 70px 140px rgba(0,0,0,.65)}
+.set{position:absolute;inset:0}
+.wipe{position:absolute;inset:0;overflow:hidden;will-change:transform}
+.wipe-in{position:absolute;inset:0;will-change:transform}
+.plate .L{transform-origin:50% 40%}
+#wA{color:#F7F5F0}
+#wB{color:#13110F}
+#wC{background:linear-gradient(180deg,#fff 0%,rgba(247,245,240,.92) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.edge{position:absolute;left:0;top:0;background:var(--lime);opacity:0;visibility:hidden;will-change:transform,opacity;pointer-events:none;box-shadow:0 0 18px rgba(215,249,8,.55)}
+#edgeV{width:3px;height:100%}
+#edgeH{height:3px;width:100%}
+
+/* сетка макета (Webdesign) */
+#grid{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;visibility:hidden;will-change:opacity}
+.gc{position:absolute;top:0;height:100%;background:rgba(215,249,8,.075);border-left:1px solid rgba(215,249,8,.5);border-right:1px solid rgba(215,249,8,.5);transform-origin:50% 0;transform:scaleY(0);will-change:transform}
+.fe{position:absolute;background:var(--lime);will-change:transform}
+.fe.h{height:1.5px}.fe.v{width:1.5px}
+.gbar{position:absolute;height:10px;border-radius:5px;background:rgba(215,249,8,.38);transform-origin:0 50%;transform:scaleX(0);will-change:transform}
+.gtag{position:absolute;font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em;color:var(--ink);background:var(--lime);padding:4px 7px;border-radius:4px;white-space:nowrap;opacity:0;visibility:hidden;will-change:opacity}
+
+/* элементы живого сайта (Webentwicklung) */
+#mScrim{position:absolute;inset:auto 0 0 0;height:48%;z-index:4;pointer-events:none;opacity:0;visibility:hidden;background:linear-gradient(0deg,rgba(19,17,15,.86) 0%,rgba(19,17,15,.5) 45%,rgba(19,17,15,0) 100%)}
+#mSub{position:absolute;z-index:5;margin:0;text-align:center;font-size:1.14rem;font-weight:500;line-height:1.42;color:#F4F4F4;text-shadow:0 2px 14px rgba(0,0,0,.8);opacity:0;visibility:hidden;will-change:transform,opacity}
+#mBtn{position:absolute;z-index:5;display:flex;align-items:center;justify-content:center;gap:10px;border-radius:999px;background:var(--lime);color:var(--ink);font-weight:500;font-size:15px;box-shadow:0 16px 34px rgba(0,0,0,.3);opacity:0;visibility:hidden;will-change:transform,opacity}
+#cur{position:absolute;left:0;top:0;z-index:6;width:30px;height:30px;opacity:0;visibility:hidden;will-change:transform,opacity;filter:drop-shadow(0 3px 6px rgba(0,0,0,.45))}
+.m-nav{position:absolute;z-index:5;top:0;left:0;right:0;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:26px 36px;opacity:0;visibility:hidden;will-change:opacity;background:linear-gradient(180deg,rgba(19,17,15,.7),rgba(19,17,15,0))}
+.m-nav img{height:34px;width:auto}
+.m-nav nav{display:flex;gap:40px;font-size:16px;color:#F4F4F4}
+.m-nav b{justify-self:end;font-weight:500;font-size:15px;background:var(--lime);color:var(--ink);border-radius:999px;padding:13px 22px}
+
+/* панель слоёв */
+#layers{position:absolute;z-index:13;left:4vw;bottom:6vh;width:330px;padding:16px 18px 8px;border-radius:18px;background:rgba(19,17,15,.9);border:1px solid rgba(255,255,255,.1);box-shadow:0 20px 50px rgba(0,0,0,.4);opacity:0;visibility:hidden;will-change:transform,opacity}
+#layers .lh{display:flex;justify-content:space-between;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mu);margin-bottom:6px}
+.lr{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,.07);opacity:.36;will-change:opacity}
+.lr .n{font-family:Syne;font-weight:700;color:var(--lime);font-size:15px;width:24px}
+.lr .t{flex:1;font-size:15px;font-weight:500;line-height:1.2}
+.lr .t small{display:block;color:var(--mu);font-size:12px;font-weight:400}
+.lr .st{position:relative;width:22px;height:22px}
+.lr .st i,.lr .st em{position:absolute;inset:0;border-radius:50%;opacity:0;will-change:opacity}
+.lr .st i{background:var(--lime);box-shadow:0 0 14px rgba(215,249,8,.6);inset:5px}
+.lr .st em{font-style:normal;color:var(--lime);font-size:15px;line-height:22px;text-align:center}
+
+/* ноутбук */
+#base{position:absolute;z-index:1;opacity:0;visibility:hidden;will-change:transform,opacity;height:18px;border-radius:0 0 16px 16px;background:linear-gradient(180deg,#8d8780 0%,#5a5550 30%,#34302c 70%,#1d1a17 100%);box-shadow:0 30px 60px rgba(0,0,0,.55)}
+#base::after{content:"";position:absolute;left:50%;top:0;width:130px;height:7px;margin-left:-65px;border-radius:0 0 8px 8px;background:#100e0c}
+#fin{left:66vw;top:50%;width:min(30vw,500px);text-align:left}
+#fin p{margin-left:0}
+#fin h2{font-size:clamp(2rem,3vw,3.1rem)}
+</style>
+</head>
+<body>
+<main>
+<section class="cinema-scroll" id="cinema" aria-label="V&amp;M Scroll-Geschichte">
+  <div class="stage">
+    <div class="world">
+      <div class="screen" id="screen">
+        <div class="plate" id="P" data-plate="2880x1920" data-fx=".5" data-fy="0">
+          <div class="set" id="setA">
+            <img class="L bgL" src="img/sketch.webp" alt="" width="2880" height="1920">
+            <h1 class="word" id="wA" data-word=".84" data-wx=".47" data-wy=".11">Motivation</h1>
+            <img class="L fgL" src="img/sketch-fg.webp" alt="" width="2880" height="1920">
+          </div>
+          <div class="wipe" id="wipeB" style="visibility:hidden"><div class="wipe-in" id="wipeBin">
+            <img class="L bgL" src="img/poster.webp" alt="" width="2880" height="1920">
+            <div class="word" id="wB" data-word=".84" data-wx=".47" data-wy=".11" aria-hidden="true">Motivation</div>
+            <img class="L fgL" src="img/poster-fg.webp" alt="" width="2880" height="1920">
+          </div></div>
+          <div class="wipe" id="wipeC" style="visibility:hidden"><div class="wipe-in" id="wipeCin">
+            <img class="L bgL" src="img/photo.webp" alt="" width="2880" height="1920">
+            <div class="word" id="wC" data-word=".84" data-wx=".47" data-wy=".11" aria-hidden="true">Motivation</div>
+            <img class="L fgL" src="img/photo-fg.webp" alt="" width="2880" height="1920">
+          </div></div>
+          <div class="edge" id="edgeV"></div>
+          <div class="edge" id="edgeH"></div>
+        </div>
+
+        <div id="grid" aria-hidden="true"></div>
+
+        <div id="mScrim"></div>
+        <p id="mSub">Gestaltet, gebaut, fotografiert.<br>Ihre Website, Schicht für Schicht.</p>
+        <a id="mBtn" href="#kontakt" tabindex="-1"><span aria-hidden="true">&#8599;</span>Projekt starten</a>
+        <svg id="cur" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2l15 10.5-6.6 1.2 3.9 7.3-2.9 1.5-3.9-7.3L4.3 20z" fill="#fff" stroke="#13110F" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        <div class="m-nav" id="mNav" aria-hidden="true"><img src="../assets/img/vm-logo.svg" alt=""><nav><span>Start</span><span>Leistungen</span><span>Projekte</span><span>Kontakt</span></nav><b>Projekt starten</b></div>
+      </div>
+      <div id="base"></div>
+    </div>
+
+    <div class="intro-scrim" id="introScrim"></div>
+    <section class="intro-copy" id="intro" aria-label="Über V&amp;M">
+      <p>Eine Agentur, die eine breite Palette hochwertiger Dienstleistungen zu angemessenen Preisen anbietet.</p>
+      <div class="hero-tags"><span>Webdesign</span><span>Foto und Video</span><span>Social Media</span></div>
+    </section>
+
+    <aside id="layers" aria-label="Ebenen">
+      <div class="lh"><span>Ebenen</span><span>Ihre Website</span></div>
+      <div class="lr"><span class="n">01</span><span class="t">Grafikdesign<small>Skizze und Farben</small></span><span class="st"><i></i><em>&#10003;</em></span></div>
+      <div class="lr"><span class="n">02</span><span class="t">Webdesign<small>Raster und Layout</small></span><span class="st"><i></i><em>&#10003;</em></span></div>
+      <div class="lr"><span class="n">03</span><span class="t">Foto und Video<small>Echte Bilder</small></span><span class="st"><i></i><em>&#10003;</em></span></div>
+      <div class="lr"><span class="n">04</span><span class="t">Webentwicklung<small>Alles wird lebendig</small></span><span class="st"><i></i><em>&#10003;</em></span></div>
+    </aside>
+
+    <section class="panel" id="fin" aria-label="Schicht für Schicht">
+      <span class="kick">Ihre Website</span>
+      <h2 id="projekte">Schicht für Schicht zu Ihrer Website</h2>
+      <p>Skizze, Gestaltung, Raster, Foto und Code: alle Ebenen aus einer Hand, zu angemessenen Preisen.</p>
+      <a class="btn" href="#kontakt"><span aria-hidden="true">&#8599;</span><span>Projekt starten</span></a>
+    </section>
+
+    <div class="sights-head" id="sHead">Unsere <b>Leistungen</b></div>
+    <section class="sights-slider" id="leistungen" aria-label="Unsere Dienstleistungen"><div class="sights-track"></div></section>
+    <div class="sights-controls" id="controls"><button class="sight-nav" id="prev" aria-label="Vorherige Leistung">&larr;</button><button class="sight-nav" id="next" aria-label="Nächste Leistung">&rarr;</button></div>
+
+    <div class="header-scrim"></div>
+    <header class="site-header" aria-label="Hauptnavigation">
+      <a class="site-logo" href="#cinema" data-s="0"><img src="../assets/img/vm-logo.svg" alt="V&amp;M Werbeagentur" width="120" height="34"></a>
+      <nav class="site-nav" aria-label="Hauptmenü"><a href="#cinema" data-s="0">Intro</a><a href="#leistungen" data-s="9300">Leistungen</a><a href="#projekte" data-s="7900">Projekte</a><a href="#kontakt">Kontakt</a></nav>
+      <a class="header-cta" href="#kontakt">Projekt starten</a>
+    </header>
+  </div>
+</section>
+<section class="kontakt" id="kontakt">
+  <h2>Nehmen Sie Kontakt auf</h2>
+  <p>+49 163 5154355 · info@vm-wa.de</p>
+  <a class="big" href="mailto:info@vm-wa.de">Projekt starten</a>
+</section>
+<footer class="foot"><span>V&amp;M Werbeagentur · Entwurf C «Schicht für Schicht»</span><a href="../">Alle Entwürfe</a></footer>
+</main>
+<script src="../assets/v11.js"></script>
+<script>
+(function(){
+  const { T, X, O, ss, seg, lerp } = VM, $ = id => document.getElementById(id);
+  const E = {}; ['screen','setA','wipeB','wipeBin','wipeC','wipeCin','edgeV','edgeH','grid','mScrim','mSub','mBtn','cur','mNav','base','intro','introScrim','layers','fin','sHead','controls'].forEach(k => E[k] = $(k));
+  E.slider = document.querySelector('.sights-slider');
+  const bgs = VM.$$('.bgL'), fgs = VM.$$('.fgL'), words = [$('wA'), $('wB'), $('wC')];
+  const rows = VM.$$('.lr').map(r => ({ r, dot: r.querySelector('i'), ok: r.querySelector('em') }));
+
+  // сетка: 12 колонок, 4 рамки (шапка, H1, текст, кнопка), 2 строки текста, подписи
+  const cols = [], frames = [], bars = [], tags = [];
+  for (let i = 0; i < 12; i++) { const d = document.createElement('div'); d.className = 'gc'; E.grid.appendChild(d); cols.push(d); }
+  const TAGS = ['HEADER', 'H1 · SYNE 800', 'TEXT · POPPINS', 'BUTTON · #D7F908', 'GRID · 12 COL'];
+  for (let k = 0; k < 4; k++) {
+    const f = ['h', 'h', 'v', 'v'].map((o, j) => { const d = document.createElement('div'); d.className = 'fe ' + o; d.dataset.j = j; E.grid.appendChild(d); return d; });
+    frames.push(f);
+  }
+  for (let k = 0; k < 2; k++) { const d = document.createElement('div'); d.className = 'gbar'; E.grid.appendChild(d); bars.push(d); }
+  TAGS.forEach(t => { const d = document.createElement('div'); d.className = 'gtag'; d.textContent = t; E.grid.appendChild(d); tags.push(d); });
+
+  const R = {};   // геометрия из layout
+  const px = (el, x, y, w, h) => Object.assign(el.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px' });
+  function sx(el, v, axis){ const t = (axis === 'y' ? 'scaleY(' : 'scaleX(') + v.toFixed(4) + ')'; if (el._t !== t) { el.style.transform = t; el._t = t; } }
+
+  VM.run({
+    length: 9700,
+    layout(G){
+      const P = G.plates.P, W = G.W, H = G.H, w = words[0];
+      const hdr = document.querySelector('.site-header').offsetHeight;
+      R.wc = { x: w.offsetLeft + w.offsetWidth / 2, y: w.offsetTop + w.offsetHeight / 2 };
+      R.org = { x: 0.5 * P.w, y: 0.4 * P.h };
+      const m = Math.round(W * 0.04);
+      const gut = 20, cw = (W - 2 * m - 11 * gut) / 12;
+      cols.forEach((c, i) => { c.style.left = (m + i * (cw + gut)) + 'px'; c.style.width = cw + 'px'; });
+      const wb = { x: P.l + w.offsetLeft - 16, y: P.t + w.offsetTop - 12, w: w.offsetWidth + 32, h: w.offsetHeight + 24 };
+      const tw = Math.min(560, W * 0.4), tx = (W - tw) / 2, ty = H * 0.69, th = 70;
+      const bw = 214, bh = 54, by = ty + th + 22;
+      R.f = [ { x: m, y: 14, w: W - 2 * m, h: hdr - 28 }, wb, { x: tx, y: ty, w: tw, h: th }, { x: (W - bw) / 2, y: by, w: bw, h: bh } ];
+      R.f.forEach((r, k) => {
+        const [t, b, l, rr] = frames[k];
+        px(t, r.x, r.y, r.w, 1.5); t.style.transformOrigin = '0 50%';
+        px(b, r.x, r.y + r.h, r.w, 1.5); b.style.transformOrigin = '100% 50%';
+        px(l, r.x, r.y, 1.5, r.h); l.style.transformOrigin = '50% 100%';
+        px(rr, r.x + r.w, r.y, 1.5, r.h + 1.5); rr.style.transformOrigin = '50% 0';
+      });
+      px(bars[0], tx + 18, ty + 18, tw - 36, 10); px(bars[1], tx + 18 + (tw - 36) * 0.15, ty + 42, (tw - 36) * 0.7, 10);
+      const tp = [[m, hdr - 6], [wb.x, wb.y + wb.h + 8], [tx, ty - 26], [(W - bw) / 2, by + bh + 10], [W - m - 118, hdr + 12]];
+      tags.forEach((t, k) => { t.style.left = tp[k][0] + 'px'; t.style.top = tp[k][1] + 'px'; });
+      // живые элементы на месте рамок
+      Object.assign(E.mSub.style, { left: tx + 'px', top: (ty + 4) + 'px', width: tw + 'px' });
+      px(E.mBtn, (W - bw) / 2, by, bw, bh);
+      R.btn = { x: W / 2, y: by + bh / 2 };
+      // ноутбук: экран уменьшается до sc, центр слева от текста
+      R.sc = 0.56; R.cx = W * 0.34; R.cy = H * 0.52 + 6;
+      const sw = W * R.sc, sh = H * R.sc, bez = 30 * R.sc + 2;
+      px(E.base, R.cx - sw * 0.6, R.cy + sh / 2 + bez - 2, sw * 1.2, 18);
+    },
+    update(s, G){
+      const P = G.plates.P, W = G.W, H = G.H, mx = G.mx, my = G.my;
+      // шторки
+      const tB = ss(900, 2100, s), tC = ss(3700, 4900, s);
+      O(E.setA, tB < 0.999 ? 1 : 0);
+      O(E.wipeB, tB > 0.001 && tC < 0.999 ? 1 : 0);
+      T(E.wipeB, (tB - 1) * P.w, 0); T(E.wipeBin, (1 - tB) * P.w, 0);
+      O(E.wipeC, tC > 0.001 ? 1 : 0);
+      T(E.wipeC, 0, (1 - tC) * P.h); T(E.wipeCin, 0, -(1 - tC) * P.h);
+      T(E.edgeV, tB * P.w - 1.5, 0, 1, Math.min(1, tB * (1 - tB) * 7));
+      T(E.edgeH, 0, (1 - tC) * P.h - 1.5, 1, Math.min(1, tC * (1 - tC) * 7));
+      // глубина: слабая с начала, сцена «оживает» в слое 04
+      const live = ss(5000, 6000, s), cam = ss(5000, 6500, s), par = 0.3 + 0.7 * live;
+      const bS = 1 + 0.04 * cam, fS = 1 + 0.1 * cam, wS = 1 + 0.07 * cam;
+      bgs.forEach(e => T(e, -mx * 8 * par, -my * 4 * par, bS));
+      fgs.forEach(e => T(e, -mx * 24 * par, -my * 9 * par, fS));
+      const wx = (R.wc.x - R.org.x) * (wS - 1) - mx * 15 * par, wy = (R.wc.y - R.org.y) * (wS - 1) - my * 6 * par;
+      words.forEach(e => T(e, wx, wy, wS));
+      // сетка (Webdesign)
+      const gOn = ss(2250, 2400, s) * (1 - ss(5050, 5500, s));
+      O(E.grid, gOn * (1 - 0.25 * tC));
+      cols.forEach((c, i) => sx(c, ss(2300 + i * 45, 2750 + i * 45, s), 'y'));
+      frames.forEach((f, k) => { const t = ss(2650 + k * 140, 3100 + k * 140, s); f.forEach((e, j) => sx(e, t, j < 2 ? 'x' : 'y')); });
+      bars.forEach((b, k) => sx(b, ss(3150 + k * 120, 3550 + k * 120, s), 'x'));
+      tags.forEach((t, k) => O(t, ss(2950 + k * 110, 3200 + k * 110, s)));
+      // живой сайт (Webentwicklung)
+      O(E.mScrim, ss(5100, 5600, s));
+      const sub = ss(5250, 5750, s); T(E.mSub, 0, (1 - sub) * 18, 1, sub);
+      const click = seg(s, 6050, 6130, 6130, 6300).on;
+      const btn = ss(5400, 5850, s); T(E.mBtn, 0, (1 - btn) * 18, 1 - 0.06 * click, btn);
+      const cp = ss(5500, 6050, s), ce = ss(6450, 6750, s);
+      T(E.cur, lerp(W * 0.82, R.btn.x + 18, cp), lerp(H * 1.02, R.btn.y + 4, cp), 1 - 0.14 * click, ss(5450, 5600, s) * (1 - ce));
+      // ноутбук
+      const t = ss(6500, 7600, s), ex = ss(8150, 8650, s);
+      const sc = 1 - (1 - R.sc) * t;
+      E.screen.classList.toggle('dev', t > 0.004);
+      T(E.screen, (R.cx - W / 2) * t, (R.cy - H / 2) * t - ex * 140, sc, 1 - ex);
+      O(E.mNav, ss(6950, 7400, s));
+      const bs = ss(7150, 7600, s); T(E.base, 0, (1 - bs) * 26 - ex * 140, 1, bs * (1 - ex));
+      const fin = ss(7300, 7850, s); T(E.fin, 0, -E.fin.offsetHeight / 2 + (1 - fin) * 50 - ex * 90, 1, fin * (1 - ex));
+      // вступление и панель слоёв
+      const ie = ss(140, 900, s);
+      X(E.intro, 0, ie * 80, 1, 1 - ie); O(E.introScrim, 1 - ie);
+      const lp = ss(650, 1000, s) * (1 - ss(6300, 6650, s));
+      T(E.layers, 0, (1 - ss(650, 1000, s)) * 24, 1, lp);
+      const PH = [[900, 2250], [2250, 3650], [3650, 5000], [5000, 6400]];
+      rows.forEach((o, i) => {
+        const a = ss(PH[i][0] - 120, PH[i][0] + 80, s) * (1 - ss(PH[i][1] - 80, PH[i][1] + 120, s)), d = ss(PH[i][1] - 80, PH[i][1] + 120, s);
+        O(o.r, 0.36 + 0.64 * Math.max(a, d * 0.62)); O(o.dot, a); O(o.ok, d);
+      });
+      // услуги
+      const sl = Math.pow(ss(8350, 9150, s), 1.4);
+      E.slider.style.visibility = sl > 0.01 ? 'visible' : 'hidden';
+      E.slider.style.transform = 'translate3d(' + ((1 - sl) * 110).toFixed(3) + 'vw,0,0)';
+      O(E.sHead, ss(8700, 9100, s));
+      const c = ss(8900, 9200, s); O(E.controls, c); E.controls.classList.toggle('is-ready', c > 0.5);
+    }
+  });
+})();
+</script>
+</body>
+</html>

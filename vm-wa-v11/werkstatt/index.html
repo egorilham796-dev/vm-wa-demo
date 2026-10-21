@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V&amp;M Werbeagentur - D Werkstatt</title>
+<meta name="description" content="Nachts in der Werkstatt: die Kamera fährt in den Bildschirm, auf dem Ihre Website entsteht.">
+<link rel="icon" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/v11.css">
+<link rel="preload" as="image" href="img/bg.webp">
+<link rel="preload" as="image" href="img/fg.webp">
+<style>
+.grp{transform-origin:52.38% 46.18%}
+#w1{background:linear-gradient(180deg,#fff 0%,rgba(247,245,240,.88) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+#screen{position:absolute;left:37.43%;top:29.77%;width:29.9%;height:32.81%;overflow:hidden;border-radius:3px;background:#050505}
+#screen video{position:absolute;inset:1.6% 1.2%;width:97.6%;height:96.8%;object-fit:cover;opacity:0;will-change:opacity}
+#screen .glass{position:absolute;inset:0;background:linear-gradient(115deg,rgba(255,255,255,.07) 0%,rgba(255,255,255,0) 38%,rgba(255,255,255,0) 70%,rgba(255,255,255,.04) 100%);pointer-events:none}
+#spill{position:absolute;left:24%;top:58%;width:56%;height:42%;background:radial-gradient(50% 50% at 50% 40%,rgba(255,140,60,.28) 0%,rgba(255,140,60,0) 100%);opacity:0;will-change:opacity}
+#shade{z-index:3;background:radial-gradient(80% 70% at 50% 60%,rgba(19,17,15,.5) 0%,rgba(19,17,15,.85) 100%)}
+
+/* экран стал страницей: кейсы */
+.sp{position:absolute;inset:0;z-index:15;background:#13110F;opacity:0;visibility:hidden;will-change:opacity;overflow:hidden}
+.sp-track{position:absolute;inset:0;display:flex;will-change:transform}
+.sp-case{position:relative;flex:0 0 100vw;height:100%}
+.sp-media{position:absolute;overflow:hidden;border-radius:22px;background:#000;will-change:transform;transform-origin:50% 50%}
+.sp-media video,.sp-media img{width:100%;height:100%;object-fit:cover}
+.sp-media.big{border-radius:0}
+.sp-text{position:absolute;will-change:transform,opacity}
+.sp-text .kick{display:block;margin-bottom:16px;color:var(--lime);font-size:13px;font-weight:500;letter-spacing:.14em;text-transform:uppercase}
+.sp-text h2{margin:0;font-family:Syne;font-weight:800;text-transform:uppercase;font-size:clamp(1.45rem,1.85vw,2.05rem);line-height:1.08}
+.sp-text p{margin:18px 0 0;color:#cfccc6;font-size:1.05rem;line-height:1.42;max-width:440px}
+.sp-count{position:absolute;z-index:2;right:max(20px,4vw);bottom:34px;font-family:Syne;font-weight:700;font-size:15px;color:#9a968f;letter-spacing:.08em}
+.sp-count b{color:var(--lime)}
+</style>
+</head>
+<body>
+<main>
+<section class="cinema-scroll" id="cinema" aria-label="V&amp;M Scroll-Geschichte">
+  <div class="stage">
+    <div class="world">
+      <div class="plate" id="P" data-plate="2880x1646" data-fx=".5" data-fy=".4">
+        <div class="grp" id="bgG">
+          <img class="L" src="img/bg.webp" alt="" width="2880" height="1646">
+          <img class="L" id="bgBlur" src="img/bg-blur.webp" alt="" width="960" height="549" style="opacity:0;visibility:hidden">
+        </div>
+        <div class="grp" id="wordG">
+          <h1 class="word" id="w1" data-word=".72" data-wx=".585" data-wy=".2">Motivation</h1>
+        </div>
+        <div class="grp" id="fgG">
+          <img class="L" src="img/fg.webp" alt="" width="2880" height="1646">
+          <img class="L" src="img/mon-hi.webp" alt="" style="left:35.49%;top:27.47%;width:34%;height:54%">
+          <div id="screen"><video id="v0" src="../assets/video/case-innova.mp4" poster="../assets/video/case-innova.jpg" muted loop playsinline preload="auto"></video><div class="glass"></div></div>
+          <div id="spill"></div>
+        </div>
+      </div>
+      <div class="ov" id="shade"></div>
+    </div>
+
+    <div class="intro-scrim" id="introScrim"></div>
+    <section class="intro-copy" id="intro" aria-label="Über V&amp;M">
+      <p>Eine Agentur, die eine breite Palette hochwertiger Dienstleistungen zu angemessenen Preisen anbietet.</p>
+      <div class="hero-tags"><span>Webdesign</span><span>Foto und Video</span><span>Social Media</span></div>
+    </section>
+
+    <div class="sp" id="sp" aria-label="Projekte">
+      <div class="sp-track" id="spTrack">
+        <section class="sp-case"><div class="sp-media"><video src="../assets/video/case-innova.mp4" poster="../assets/video/case-innova.jpg" muted loop playsinline preload="auto"></video></div>
+          <div class="sp-text"><span class="kick">Projekt 01 · Innova Consult</span><h2 id="projekte">Bauberatung, Projektmanagement, Projektumsetzung</h2><p>Website für Innova Consult: Webdesign und Umsetzung aus einer Hand.</p></div></section>
+        <section class="sp-case"><div class="sp-media"><video src="../assets/video/case-allerhand.mp4" poster="../assets/video/case-allerhand.jpg" muted loop playsinline preload="auto"></video></div>
+          <div class="sp-text"><span class="kick">Projekt 02 · Allerhand Gartencenter</span><h2>Digitale Blütezeit für Allerhand</h2><p>Ein benutzerfreundlicher Online-Shop, der das umfangreiche Sortiment digital zugänglich macht und den Kunden ein nahtloses Einkaufserlebnis bietet.</p></div></section>
+        <section class="sp-case"><div class="sp-media"><video src="../assets/video/case-befamed.mp4" poster="../assets/video/case-befamed.jpg" muted loop playsinline preload="auto"></video></div>
+          <div class="sp-text"><span class="kick">Projekt 03 · BeFaMed</span><h2>Ihr Partner für professionelle Wundversorgung</h2><p>Website für BeFaMed: Webdesign und Umsetzung aus einer Hand.</p></div></section>
+      </div>
+      <div class="sp-count" id="spCount"><b>01</b> / 03</div>
+    </div>
+
+    <section class="panel" id="panel2" aria-label="Ihre Intension, unsere Motivation">
+      <span class="kick">Aus der Werkstatt</span>
+      <h2>Ihre Intension, unsere Motivation</h2>
+      <p>Grafikdesign, Webdesign, Webentwicklung, Foto und Video, Social Media und 360-Grad-Marketing aus einer Hand.</p>
+      <dl class="facts"><div><dt>06</dt><dd>Leistungen aus einer Hand</dd></div><div><dt>360°</dt><dd>Marketinglösungen</dd></div></dl>
+    </section>
+
+    <div class="sights-head" id="sHead">Unsere <b>Leistungen</b></div>
+    <section class="sights-slider" id="leistungen" aria-label="Unsere Dienstleistungen"><div class="sights-track"></div></section>
+    <div class="sights-controls" id="controls"><button class="sight-nav" id="prev" aria-label="Vorherige Leistung">&larr;</button><button class="sight-nav" id="next" aria-label="Nächste Leistung">&rarr;</button></div>
+
+    <div class="header-scrim"></div>
+    <header class="site-header" aria-label="Hauptnavigation">
+      <a class="site-logo" href="#cinema" data-s="0"><img src="../assets/img/vm-logo.svg" alt="V&amp;M Werbeagentur" width="120" height="34"></a>
+      <nav class="site-nav" aria-label="Hauptmenü"><a href="#cinema" data-s="0">Intro</a><a href="#leistungen" data-s="9300">Leistungen</a><a href="#projekte" data-s="3500">Projekte</a><a href="#kontakt">Kontakt</a></nav>
+      <a class="header-cta" href="#kontakt">Projekt starten</a>
+    </header>
+  </div>
+</section>
+<section class="kontakt" id="kontakt">
+  <h2>Nehmen Sie Kontakt auf</h2>
+  <p>+49 163 5154355 · info@vm-wa.de</p>
+  <a class="big" href="mailto:info@vm-wa.de">Projekt starten</a>
+</section>
+<footer class="foot"><span>V&amp;M Werbeagentur · Entwurf D «Werkstatt»</span><a href="../">Alle Entwürfe</a></footer>
+</main>
+<script src="../assets/v11.js"></script>
+<script>
+(function(){
+  const { T, X, C, O, ss, seg, lerp } = VM, $ = id => document.getElementById(id);
+  const E = {}; ['bgG','bgBlur','wordG','w1','fgG','v0','spill','shade','intro','introScrim','sp','spTrack','spCount','panel2','sHead','controls'].forEach(k => E[k] = $(k));
+  E.slider = document.querySelector('.sights-slider'); E.world = document.querySelector('.world');
+  const cases = [...document.querySelectorAll('.sp-case')].map(c => ({ el: c, media: c.querySelector('.sp-media'), video: c.querySelector('video'), text: c.querySelector('.sp-text') }));
+  const SX = 0.3743 + 0.299 / 2, SY = 0.2977 + 0.3281 / 2, SW = 0.299, SH = 0.3281;   // экран в долях пластины
+  let geo = null;
+
+  function layout(G){
+    const W = G.W, H = G.H, hdr = 96;
+    // карточка кейса 4:3 слева, текст справа
+    const cw = Math.min(W * 0.48, (H - hdr - 110) * 4 / 3), ch = cw * 3 / 4;
+    const cl = W * 0.07, ct = hdr + (H - hdr - ch) / 2;
+    cases.forEach(c => {
+      Object.assign(c.media.style, { left: cl + 'px', top: ct + 'px', width: cw + 'px', height: ch + 'px' });
+      Object.assign(c.text.style, { left: (cl + cw + W * 0.045) + 'px', top: '50%', width: Math.min(W * 0.36, 560) + 'px' });
+    });
+    // полноэкранное начало: карточка растянута «на обложку» и стоит по центру
+    const k = Math.max(W / cw, H / ch) * 1.002;
+    geo = { k, tx: W / 2 - (cl + cw / 2), ty: H / 2 - (ct + ch / 2) };
+  }
+
+  let playing = new Set();
+  function play(v, on){ if (on && !playing.has(v)) { playing.add(v); v.play().catch(() => {}); } else if (!on && playing.has(v)) { playing.delete(v); v.pause(); } }
+
+  VM.run({
+    length: 9700,
+    layout,
+    update(s, G){
+      const P = G.plates.P, mx = G.mx, my = G.my, W = G.W, H = G.H;
+      // въезд в экран: масштаб, при котором экран накрывает окно, и сдвиг центра экрана в центр окна
+      const back = ss(6850, 7900, s), cam = ss(950, 2750, s) * (1 - back), c2 = Math.pow(cam, 1.7);
+      const sw = SW * P.w, sh = SH * P.h, S = Math.max(W / sw, H / sh) * 1.03;
+      const cx0 = P.l + SX * P.w, cy0 = P.t + SY * P.h;
+      const tx = (W / 2 - cx0) * cam, ty = (H / 2 - cy0) * cam;
+      const par = 1 - cam;
+      T(E.bgG, -mx * 10 * par + tx * 0.5, -my * 5 * par + ty * 0.5, 1 + 0.32 * c2);
+      T(E.wordG, -mx * 16 * par + tx * 0.7, -my * 7 * par + ty * 0.7 - cam * 0.18 * H, 1 + 0.65 * c2, 1 - ss(1700, 2350, s));
+      T(E.fgG, -mx * 26 * par + tx, -my * 10 * par + ty, 1 + (S - 1) * c2);
+      O(E.bgBlur, ss(1200, 2200, s));
+      // экран включается
+      const on = ss(320, 820, s);
+      O(E.v0, on); O(E.spill, on * 0.9);
+      play(E.v0, on > 0.01 && (s < 2950 || s > 6700));
+      // вступление
+      const ie = ss(140, 900, s);
+      X(E.intro, 0, ie * 80, 1, 1 - ie); O(E.introScrim, 1 - ie);
+      // передача: экран стал страницей (резкая копия вместо растянутого слоя)
+      const hand = ss(2700, 2850, s), out = ss(6750, 7150, s);
+      O(E.sp, hand * (1 - out));
+      const hideWorld = hand * (1 - out) > 0.999 ? 'hidden' : 'visible';
+      if (E.world._v !== hideWorld) { E.world.style.visibility = hideWorld; E.world._v = hideWorld; }
+      // первый кейс: из полного экрана в карточку
+      const shrink = ss(2950, 3600, s);
+      const g = geo || { k: 1, tx: 0, ty: 0 };
+      // кейсы по горизонтали
+      const step = ss(4400, 5000, s) + ss(5700, 6300, s);
+      T(E.spTrack, -step * W, 0, 1);
+      cases.forEach((c, i) => {
+        if (i === 0) { T(c.media, g.tx * (1 - shrink), g.ty * (1 - shrink), lerp(g.k, 1, shrink)); const big = shrink < 0.85; if (c._big !== big) { c.media.classList.toggle('big', big); c._big = big; } }
+        const vis = 1 - Math.min(1, Math.abs(step - i));
+        const tin = i === 0 ? ss(3450, 3850, s) : vis;
+        T(c.text, (1 - tin) * 60, -c.text.offsetHeight / 2, 1, tin * (1 - out));
+        if (i === 0 && hand > 0.01 && !playing.has(c.video)) { try { c.video.currentTime = E.v0.currentTime; } catch (e) {} }
+        play(c.video, hand > 0.01 && out < 0.3 && vis > 0.05);
+      });
+      E.spCount.firstChild.textContent = '0' + (Math.round(step) + 1);
+      O(E.spCount, ss(3400, 3700, s));
+      // слоган
+      const p2 = seg(s, 7500, 7900, 8250, 8550);
+      C(E.panel2, 0, (1 - p2.en) * 50 - p2.ex * 70, 1, p2.on);
+      O(E.shade, ss(7300, 7900, s) * 0.8);
+      // услуги
+      const sl = Math.pow(ss(8350, 9050, s), 1.4);
+      E.slider.style.visibility = sl > 0.01 ? 'visible' : 'hidden';
+      E.slider.style.transform = 'translate3d(' + ((1 - sl) * 110).toFixed(3) + 'vw,0,0)';
+      O(E.sHead, ss(8650, 9000, s));
+      const cc = ss(8850, 9100, s); O(E.controls, cc); E.controls.classList.toggle('is-ready', cc > 0.5);
+    }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V&amp;M Werbeagentur - F Galerie</title>
+<meta name="description" content="Ihre Projekte als Ausstellung: die Kamera geht an der Wand entlang, Werk für Werk.">
+<link rel="icon" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/v11.css">
+<link rel="preload" as="image" href="img/bg.webp">
+<style>
+#bgG{transform-origin:0 0}
+.col{transform-origin:0 0}
+#w1{background:linear-gradient(180deg,#fff 0%,rgba(244,244,244,.86) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+/* холсты: их кейсы, освещённые софитом */
+.cv{position:absolute;overflow:hidden;background:#d9d7d2}
+.cv img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cv::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 85% 42% at 50% 0%,rgba(255,255,255,.26) 0%,rgba(255,255,255,0) 72%),linear-gradient(180deg,rgba(0,0,0,0) 55%,rgba(0,0,0,.28) 100%);
+  box-shadow:inset 0 0 30px rgba(0,0,0,.35)}
+#fill{z-index:4;background:#13110F}
+/* подписи к работам */
+.pcap{position:absolute;z-index:14;top:50%;width:min(440px,31vw);padding:28px 28px 26px;border-radius:22px;background:#1a1816;border:1px solid rgba(255,255,255,.09);box-shadow:0 30px 70px rgba(0,0,0,.5);opacity:0;visibility:hidden;will-change:transform,opacity}
+.pcap.r{right:6vw}.pcap.l{left:6vw}
+.pcap .k{display:block;margin-bottom:14px;color:var(--lime);font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase}
+.pcap h3{margin:0;font-family:Syne;font-weight:800;font-size:20px;line-height:1.1;text-transform:uppercase}
+.pcap p{margin:14px 0 0;color:#cfccc6;font-size:15px;line-height:1.4}
+.pcap .tag{display:inline-flex;margin-top:18px;padding:7px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.18);font-size:13px;color:#e9e7e3}
+.pcap .n{position:absolute;top:22px;right:24px;font-family:Syne;font-weight:800;font-size:15px;color:#6f6b65}
+</style>
+</head>
+<body>
+<main>
+<section class="cinema-scroll" id="cinema" aria-label="V&amp;M Scroll-Geschichte">
+  <div class="stage">
+    <div class="world">
+      <div class="plate" id="P" data-plate="4320x1845" data-fx=".5" data-fy=".5">
+        <div class="grp" id="bgG">
+          <img class="L" src="img/bg.webp" alt="" width="4320" height="1845">
+          <div class="cv" style="left:7.67%;top:34.55%;width:12.19%;height:37.56%"><img src="../assets/video/case-allerhand.jpg" alt="Allerhand Gartencenter - Online-Shop" width="800" height="604" style="object-position:58% 50%"></div>
+          <div class="cv" style="left:45.59%;top:34.55%;width:12.22%;height:37.56%"><img src="../assets/video/case-befamed.jpg" alt="BeFaMed - Website" width="960" height="720"></div>
+          <div class="cv" style="left:83.68%;top:34.55%;width:11.67%;height:37.56%"><img src="../assets/video/case-innova.jpg" alt="Innova Consult - Website" width="960" height="720" style="object-position:50% 50%"></div>
+          <h1 class="word" id="w1" data-word=".9" data-wy=".13">Motivation</h1>
+        </div>
+        <img class="L col" id="colL" src="img/col-l.webp" alt="" style="left:19.12%;top:7.43%;width:10.62%;height:92.57%">
+        <img class="L col" id="colR" src="img/col-r.webp" alt="" style="left:74.31%;top:8.46%;width:10.49%;height:91.54%">
+      </div>
+      <div class="ov" id="fill"></div>
+    </div>
+
+    <div class="intro-scrim" id="introScrim"></div>
+    <section class="intro-copy" id="intro" aria-label="Über V&amp;M">
+      <p>Eine Agentur, die eine breite Palette hochwertiger Dienstleistungen zu angemessenen Preisen anbietet.</p>
+      <div class="hero-tags"><span>Webdesign</span><span>Foto und Video</span><span>Social Media</span></div>
+    </section>
+
+    <article class="pcap r" id="cap1"><span class="n">01 / 03</span><span class="k" id="projekte">Allerhand Gartencenter</span><h3>Digitale Blütezeit für Allerhand</h3><p>Ein benutzerfreundlicher Online-Shop, der das umfangreiche Sortiment digital zugänglich macht und den Kunden ein nahtloses Einkaufserlebnis bietet.</p><span class="tag">Online-Shop</span></article>
+    <article class="pcap r" id="cap2"><span class="n">02 / 03</span><span class="k">BeFaMed</span><h3>Ihr Partner für pro&shy;fessio&shy;nelle Wund&shy;versorgung</h3><span class="tag">Website</span></article>
+    <article class="pcap l" id="cap3"><span class="n">03 / 03</span><span class="k">Innova Consult</span><h3>Bau&shy;beratung, Projekt&shy;management, Projekt&shy;umsetzung</h3><span class="tag">Website</span></article>
+
+    <section class="panel" id="panel2" aria-label="Ihre Intension, unsere Motivation">
+      <span class="kick">Galerie</span>
+      <h2>Ihre Intension, unsere Motivation</h2>
+      <p>Grafikdesign, Webdesign, Webentwicklung, Foto und Video, Social Media und 360-Grad-Marketing aus einer Hand.</p>
+      <dl class="facts"><div><dt>06</dt><dd>Leistungen aus einer Hand</dd></div><div><dt>360°</dt><dd>Marketinglösungen</dd></div></dl>
+    </section>
+
+    <div class="sights-head" id="sHead">Unsere <b>Leistungen</b></div>
+    <section class="sights-slider" id="leistungen" aria-label="Unsere Dienstleistungen"><div class="sights-track"></div></section>
+    <div class="sights-controls" id="controls"><button class="sight-nav" id="prev" aria-label="Vorherige Leistung">&larr;</button><button class="sight-nav" id="next" aria-label="Nächste Leistung">&rarr;</button></div>
+
+    <div class="header-scrim"></div>
+    <header class="site-header" aria-label="Hauptnavigation">
+      <a class="site-logo" href="#cinema" data-s="0"><img src="../assets/img/vm-logo.svg" alt="V&amp;M Werbeagentur" width="120" height="34"></a>
+      <nav class="site-nav" aria-label="Hauptmenü"><a href="#cinema" data-s="0">Intro</a><a href="#leistungen" data-s="9300">Leistungen</a><a href="#projekte" data-s="1950">Projekte</a><a href="#kontakt">Kontakt</a></nav>
+      <a class="header-cta" href="#kontakt">Projekt starten</a>
+    </header>
+  </div>
+</section>
+<section class="kontakt" id="kontakt">
+  <h2>Nehmen Sie Kontakt auf</h2>
+  <p>+49 163 5154355 · info@vm-wa.de</p>
+  <a class="big" href="mailto:info@vm-wa.de">Projekt starten</a>
+</section>
+<footer class="foot"><span>V&amp;M Werbeagentur · Entwurf F «Galerie»</span><a href="../">Alle Entwürfe</a></footer>
+</main>
+<script src="../assets/v11.js"></script>
+<script>
+(function(){
+  const { T, C, X, O, ss, seg, lerp, clamp } = VM, $ = id => document.getElementById(id);
+  const E = {}; ['bgG','colL','colR','w1','fill','intro','introScrim','cap1','cap2','cap3','panel2','sHead','controls'].forEach(k => E[k] = $(k));
+  E.slider = document.querySelector('.sights-slider');
+  // доли пластины: колонны [x, y] и центры холстов
+  const COL = [[E.colL, 0.1912, 0.0743], [E.colR, 0.7431, 0.0846]];
+  const CV = [0.0767 + 0.1219 / 2, 0.4559 + 0.1222 / 2, 0.8368 + 0.1167 / 2], CVY = 0.3455 + 0.3756 / 2;
+  const ZMAX = 1.75;
+  // слово - между колоннами: края букв M и N чуть заходят за колонны (кулисы), но слово читается
+  const COL_IN = [0.1912 + 0.1062 - 0.002, 0.7431 + 0.002];
+  function fitWord(G){
+    const P = G.plates.P, w = E.w1;
+    const gap = (COL_IN[1] - COL_IN[0]) * P.w, target = gap / (1 - 2 * 0.05);
+    w.style.fontSize = '100px';
+    w.style.fontSize = (100 * target / w.scrollWidth) + 'px';
+    w.style.left = ((COL_IN[0] + COL_IN[1]) / 2 * P.w - w.offsetWidth / 2) + 'px';
+  }
+  VM.run({
+    length: 10000,
+    layout: fitWord,
+    update(s, G){
+      const P = G.plates.P, W = G.W, H = G.H, Pw = P.w, Ph = P.h;
+      const hc0 = (W / 2 - P.l) / Pw, vc0 = (H / 2 - P.t) / Ph;
+      // камера: наезд -> вдоль стены от работы к работе -> отъезд
+      const push = ss(450, 1700, s), t12 = ss(2500, 3500, s), t23 = ss(4300, 5300, s), back = ss(6100, 7200, s);
+      const z = 1 + (ZMAX - 1) * (push - back);
+      const hwM = W / (2 * Pw * ZMAX);
+      const X1 = clamp(CV[0], hwM, 1 - hwM), X2 = CV[1], X3 = clamp(CV[2], hwM, 1 - hwM);
+      let cx = lerp(hc0, X1, push); cx = lerp(cx, X2, t12); cx = lerp(cx, X3, t23); cx = lerp(cx, hc0, back);
+      let cy = lerp(vc0, CVY, push); cy = lerp(cy, vc0, back);
+      cx += G.mx * 0.006; cy += G.my * 0.004;
+      const hw = W / (2 * Pw * z), hh = H / (2 * Ph * z);
+      cx = clamp(cx, hw, 1 - hw); cy = clamp(cy, hh, 1 - hh);
+      T(E.bgG, W / 2 - P.l - cx * Pw * z, H / 2 - P.t - cy * Ph * z, z);
+      // колонны ближе к камере: растут быстрее и проходят быстрее стены
+      const zc = 1 + (z - 1) * 1.7, d = 1.5;
+      COL.forEach(([el, x0, y0]) => {
+        const sx = W / 2 + ((x0 - hc0) * zc - (cx - hc0) * z * d) * Pw;
+        const sy = H / 2 + ((y0 - vc0) * zc - (cy - vc0) * z * 1.2) * Ph;
+        T(el, sx - (P.l + x0 * Pw), sy - (P.t + y0 * Ph), zc);
+      });
+      // слово: уходит вверх с наездом, возвращается на отъезде
+      O(E.w1, 1 - seg(s, 650, 1100, 6850, 7150).on);
+      // вступление
+      const ie = ss(140, 900, s);
+      X(E.intro, 0, ie * 80, 1, 1 - ie); O(E.introScrim, 1 - ie);
+      // подписи к работам
+      [[E.cap1, seg(s, 1450, 1750, 2450, 2700)], [E.cap2, seg(s, 3300, 3600, 4250, 4500)], [E.cap3, seg(s, 5100, 5400, 6050, 6300)]].forEach(([el, q]) => {
+        T(el, 0, -el.offsetHeight / 2 + (1 - q.en) * 46 - q.ex * 46, 1, q.on);
+      });
+      // в их тёмный, слоган, услуги
+      O(E.fill, ss(6950, 7550, s));
+      const p2 = seg(s, 7350, 7850, 8450, 8850);
+      C(E.panel2, 0, (1 - p2.en) * 58 - p2.ex * 80, 1, p2.on);
+      const sl = Math.pow(ss(8650, 9450, s), 1.4);
+      E.slider.style.visibility = sl > 0.01 ? 'visible' : 'hidden';
+      E.slider.style.transform = 'translate3d(' + ((1 - sl) * 110).toFixed(3) + 'vw,0,0)';
+      O(E.sHead, ss(8950, 9350, s));
+      const c = ss(9150, 9450, s); O(E.controls, c); E.controls.classList.toggle('is-ready', c > 0.5);
+    }
+  });
+})();
+</script>
+</body>
+</html>

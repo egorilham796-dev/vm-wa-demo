@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V&amp;M Werbeagentur - B Brücke</title>
+<meta name="description" content="Wie Mostar: ein Bogen, das Wort dahinter. Links Ihre Intension, rechts unsere Motivation - die Kamera fährt unter dem Bogen durch zu den Projekten.">
+<link rel="icon" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/v11.css">
+<link rel="preload" as="image" href="img/bg.webp">
+<link rel="preload" as="image" href="img/bridge.webp">
+<style>
+/* Rahmen: Foto im abgerundeten Fenster auf dem dunklen Grund */
+.world{background:#13110F}
+.win{position:absolute;left:14px;right:14px;top:76px;bottom:14px;border-radius:26px;overflow:hidden;background:#1d1b18;transform-origin:50% 50%;will-change:transform}
+.site-header{padding:21px 36px}
+.header-scrim{display:none}
+#bgG,#wordG{transform-origin:52% 56%}
+#bridge{transform-origin:52% 56%}
+#treesL{transform-origin:14% 56%}
+#treesR{transform-origin:91% 56%}
+#w1{color:#13110F}
+#shade{z-index:5;background:rgba(19,17,15,.5)}
+.intro-scrim{height:40vh;bottom:14px;left:14px;right:14px;border-radius:0 0 26px 26px}
+.bank{position:absolute;left:0;top:0;z-index:13;opacity:1}
+/* Projekte: undurchsichtige helle Karten wie die Sehenswürdigkeiten in Mostar */
+.cases-head{position:absolute;z-index:16;left:50%;top:calc(var(--rail-top,190px) - 70px);transform:translate3d(-50%,0,0);font-family:Syne;font-weight:800;text-transform:uppercase;font-size:28px;opacity:0;visibility:hidden;white-space:nowrap}
+.cases-head b{color:var(--lime)}
+.rail{position:absolute;z-index:16;left:0;right:0;top:var(--rail-top,190px);display:flex;justify-content:center;gap:24px;pointer-events:none}
+.pcard{flex:0 0 min(26vw,420px);border-radius:24px;background:var(--paper);color:var(--ink);overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.4);opacity:0;visibility:hidden;will-change:transform,opacity}
+.pcard .ph{aspect-ratio:4/3;background:#ddd}
+.pcard .ph img{width:100%;height:100%;object-fit:cover}
+.pcard .tx{padding:20px 24px 26px}
+.pcard .k{display:block;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:#4a4640;margin-bottom:10px}
+.pcard h3{margin:0;font-family:Syne;font-weight:700;font-size:22px;line-height:1.12}
+</style>
+</head>
+<body>
+<main>
+<section class="cinema-scroll" id="cinema" aria-label="V&amp;M Scroll-Geschichte">
+  <div class="stage">
+    <div class="world">
+      <div class="win" id="win">
+        <div class="plate" id="P" data-plate="2880x1646" data-fx=".5" data-fy=".36">
+          <div class="grp" id="bgG">
+            <img class="L" id="bg" src="img/bg.webp" alt="" width="2880" height="1646">
+            <img class="L" id="inner" src="img/inner.webp" alt="" width="2688" height="1444" style="left:28%;top:33%;width:50%;height:47%">
+            <img class="L" id="bgBlur" src="img/bg-blur.webp" alt="" width="960" height="549" style="opacity:0;visibility:hidden">
+          </div>
+          <div class="grp" id="wordG">
+            <h1 class="word" id="w1" data-word=".9" data-wy=".24">Motivation</h1>
+          </div>
+          <img class="L" id="bridge" src="img/bridge.webp" alt="" width="2880" height="1646">
+          <img class="L" id="treesL" src="img/trees-l.webp" alt="" width="2880" height="1646">
+          <img class="L" id="treesR" src="img/trees-r.webp" alt="" width="2880" height="1646">
+        </div>
+        <div class="ov" id="shade"></div>
+      </div>
+    </div>
+
+    <div class="chip light bank" id="bankL"><i></i>Ihre Intension</div>
+    <div class="chip light bank" id="bankR"><i></i>unsere Motivation</div>
+
+    <div class="intro-scrim" id="introScrim"></div>
+    <section class="intro-copy" id="intro" aria-label="Über V&amp;M">
+      <p>Eine Agentur, die eine breite Palette hochwertiger Dienstleistungen zu angemessenen Preisen anbietet.</p>
+      <div class="hero-tags"><span>Webdesign</span><span>Foto und Video</span><span>Social Media</span></div>
+    </section>
+
+    <section class="panel" id="panel2" aria-label="Ihre Intension, unsere Motivation">
+      <h2 id="p2h">Ihre Intension, unsere Motivation</h2>
+      <p>Grafikdesign, Webdesign, Webentwicklung, Foto und Video, Social Media und 360-Grad-Marketing aus einer Hand.</p>
+      <dl class="facts"><div><dt>06</dt><dd>Leistungen aus einer Hand</dd></div><div><dt>360°</dt><dd>Marketinglösungen</dd></div></dl>
+    </section>
+
+    <div class="cases-head" id="cHead">Unsere <b id="projekte">Projekte</b></div>
+    <div class="rail" id="rail">
+      <article class="pcard"><div class="ph"><img src="../assets/video/case-allerhand.jpg" alt="Allerhand Gartencenter - Online-Shop" width="800" height="604"></div><div class="tx"><span class="k">Allerhand Gartencenter</span><h3>Digitale Blütezeit für Allerhand</h3></div></article>
+      <article class="pcard"><div class="ph"><img src="../assets/video/case-innova.jpg" alt="Innova Consult - Website" width="960" height="720"></div><div class="tx"><span class="k">Innova Consult</span><h3>Bauberatung, Projektmanagement, Projektumsetzung</h3></div></article>
+      <article class="pcard"><div class="ph"><img src="../assets/video/case-befamed.jpg" alt="BeFaMed - Website" width="960" height="720"></div><div class="tx"><span class="k">BeFaMed</span><h3>Ihr Partner für professionelle Wundversorgung</h3></div></article>
+    </div>
+
+    <div class="sights-head" id="sHead">Unsere <b>Leistungen</b></div>
+    <section class="sights-slider light-cards" id="leistungen" aria-label="Unsere Dienstleistungen"><div class="sights-track"></div></section>
+    <div class="sights-controls" id="controls"><button class="sight-nav" id="prev" aria-label="Vorherige Leistung">&larr;</button><button class="sight-nav" id="next" aria-label="Nächste Leistung">&rarr;</button></div>
+
+    <div class="header-scrim"></div>
+    <header class="site-header" aria-label="Hauptnavigation">
+      <a class="site-logo" href="#cinema" data-s="0"><img src="../assets/img/vm-logo.svg" alt="V&amp;M Werbeagentur" width="120" height="34"></a>
+      <nav class="site-nav" aria-label="Hauptmenü"><a href="#cinema" data-s="0">Intro</a><a href="#leistungen" data-s="7300">Leistungen</a><a href="#projekte" data-s="5100">Projekte</a><a href="#kontakt">Kontakt</a></nav>
+      <a class="header-cta" href="#kontakt">Projekt starten</a>
+    </header>
+  </div>
+</section>
+<section class="kontakt" id="kontakt">
+  <h2>Nehmen Sie Kontakt auf</h2>
+  <p>+49 163 5154355 · info@vm-wa.de</p>
+  <a class="big" href="mailto:info@vm-wa.de">Projekt starten</a>
+</section>
+<footer class="foot"><span>V&amp;M Werbeagentur · Entwurf B «Brücke»</span><a href="../">Alle Entwürfe</a></footer>
+</main>
+<script src="../assets/v11.js"></script>
+<script>
+(function(){
+  const { T, X, C, O, ss, seg, lerp } = VM, $ = id => document.getElementById(id);
+  const E = {}; ['win','bgG','bgBlur','wordG','w1','bridge','treesL','treesR','shade','bankL','bankR','intro','introScrim','panel2','p2h','cHead','rail','sHead','controls'].forEach(k => E[k] = $(k));
+  E.slider = document.querySelector('.sights-slider');
+  E.cards = [...document.querySelectorAll('.pcard')];
+  const Lg = {};   // Geometrie aus layout()
+  VM.run({
+    length: 8200,
+    layout(G){
+      const W = G.W, H = G.H, P = G.plates.P, wl = E.win.offsetLeft, wt = E.win.offsetTop;
+      // Fenster öffnet sich auf volle Fläche: Skalierung und Versatz der Fenstermitte
+      Lg.openS = Math.max(H / (H - 90), W / (W - 28)) + 0.006;
+      Lg.openY = H / 2 - (wt + E.win.offsetHeight / 2);
+      // Ufer-Chips: Start an den Ufern im Bild, Ziel - Mitte auf Höhe der Überschrift von Panel 2
+      const bl = E.bankL, br = E.bankR, gap = 10;
+      Lg.lw = bl.offsetWidth; Lg.rw = br.offsetWidth; Lg.ch = bl.offsetHeight;
+      Lg.l0x = wl + P.x(0.13) - Lg.lw / 2; Lg.r0x = wl + P.x(0.87) - Lg.rw / 2;
+      Lg.y0 = wt + P.y(0.47) - Lg.ch / 2;
+      Lg.l1x = W / 2 - gap / 2 - Lg.lw; Lg.r1x = W / 2 + gap / 2;
+      Lg.y1 = H / 2 - E.panel2.offsetHeight / 2 + E.p2h.offsetTop + E.p2h.offsetHeight / 2 - Lg.ch / 2;
+      const hdr = document.querySelector('.site-header');
+      const rt = Math.max(hdr.offsetHeight + 110, (H - E.rail.offsetHeight) / 2 + 30);
+      E.rail.style.setProperty('--rail-top', rt + 'px'); E.cHead.style.setProperty('--rail-top', rt + 'px');
+    },
+    update(s, G){
+      const mx = G.mx, my = G.my, P = G.plates.P;
+      // Kamera fährt auf den Bogen zu und unter ihm durch
+      // Tal und Bogen zoomen gemeinsam (im Hintergrund steckt derselbe Bogen - Parallaxe dazwischen gäbe einen Doppelrand);
+      // Tiefe tragen das Wort und die Bäume. Im Durchgang liegt eine scharfe 4K-Ausschnittsebene (inner.webp).
+      const cam = ss(250, 2650, s);
+      const z = 1 + 2.4 * Math.pow(cam, 1.7);
+      T(E.bgG, -mx * 14, -my * 6, z);
+      T(E.bridge, -mx * 14, -my * 6, z, 1 - ss(2450, 2650, s));
+      T(E.wordG, -mx * 9, -my * 4, 1 + 0.95 * cam);
+      T(E.w1, 0, 0, 1, 1 - ss(1600, 1800, s));
+      const drift = Math.pow(ss(450, 2400, s), 1.3), vw = G.W / 100;
+      T(E.treesL, -drift * 42 * vw - mx * 26, -my * 10, 1 + 0.7 * drift, 1 - ss(2100, 2500, s));
+      T(E.treesR, drift * 42 * vw - mx * 26, -my * 10, 1 + 0.7 * drift, 1 - ss(2100, 2500, s));
+      // Fenster öffnet sich, wenn wir unter dem Bogen sind
+      const k = ss(1500, 2600, s);
+      T(E.win, 0, Lg.openY * k, 1 + (Lg.openS - 1) * k);
+      // Einstieg
+      const ie = ss(150, 800, s);
+      X(E.intro, 0, ie * 80, 1, 1 - ie); O(E.introScrim, 1 - ie);
+      // Ufer kommen zusammen: die Brücke verbindet Intension und Motivation
+      const tr = ss(700, 2000, s), mf = 1 - ss(2200, 2450, s);
+      T(E.bankL, lerp(Lg.l0x, Lg.l1x, tr), lerp(Lg.y0, Lg.y1, tr), 1, mf);
+      T(E.bankR, lerp(Lg.r0x, Lg.r1x, tr), lerp(Lg.y0, Lg.y1, tr), 1, mf);
+      // weiche Kopie statt Live-Blur, Abdunkler für Text
+      const soft = ss(2100, 2700, s);
+      O(E.bgBlur, soft); O(E.shade, soft * 0.42 + ss(4000, 4600, s) * 0.12);
+      // Panel 2
+      const p2 = seg(s, 2300, 2700, 3700, 4100);
+      C(E.panel2, 0, (1 - p2.en) * 40 - p2.ex * 80, 0.96 + 0.04 * p2.en, p2.on);
+      // Projekte: Karten fahren von rechts ein und nach oben aus
+      const cx = ss(5900, 6400, s);
+      O(E.cHead, ss(4300, 4700, s) * (1 - ss(5700, 6000, s)));
+      E.cards.forEach((c, i) => {
+        const en = Math.pow(ss(4000 + i * 140, 4900 + i * 140, s), 1.3);
+        T(c, (1 - en) * 105 * vw - cx * (70 + i * 6) * vw, 0, 1, en * (1 - ss(5950 + i * 60, 6350 + i * 60, s)));
+      });
+      // Leistungen
+      const sl = Math.pow(ss(6300, 7100, s), 1.4);
+      E.slider.style.visibility = sl > 0.01 ? 'visible' : 'hidden';
+      E.slider.style.transform = 'translate3d(' + ((1 - sl) * 110).toFixed(3) + 'vw,0,0)';
+      O(E.sHead, ss(6700, 7000, s));
+      const c = ss(6900, 7200, s); O(E.controls, c); E.controls.classList.toggle('is-ready', c > 0.5);
+    }
+  });
+})();
+</script>
+</body>
+</html>

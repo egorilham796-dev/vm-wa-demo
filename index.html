@@ -83,7 +83,7 @@
 <main class="list" id="list">
   <div class="list__eyebrow">V&amp;M Werbeagentur</div>
   <h1>Design-Varianten für vm-wa.de</h1>
-  <p class="list__lead">V1 bis V8 haben eine Startseite und die Unterseite „Webdesign“, V9 und V10 zeigen die Startseite als Kamerafahrt. Zurück zu dieser Übersicht: Zurück-Taste des Browsers.</p>
+  <p class="list__lead">V1 bis V8 haben eine Startseite und die Unterseite „Webdesign“, V9 bis V16 zeigen die Startseite als Kamerafahrt. V11 bis V16 sind Entwürfe für den Computer; ihre Szenen sind KI-generiert und dienen nur zur Vorschau. Zurück zu dieser Übersicht: Zurück-Taste des Browsers.</p>
   <div id="cards"></div>
   <p class="list__note">Am Desktop erscheint dieselbe Übersicht als Leiste mit Umschalter über der Vorschau.</p>
 </main>
@@ -102,6 +102,12 @@
     { id: 'v8', dir: 'vm-wa-v8', name: 'V8 · Tiefe',   ready: true,  desc: 'Eine Kamera fährt nach vorn durch einen Stapel von Ebenen: die vordere Ebene liest sich, die nächste steht schon dahinter. Der Kristall bleibt als Fluchtpunkt im Bild stehen.' },
     { id: 'v9', dir: 'vm-wa-v9', name: 'V9 · Westerwald', ready: true, noWeb: true, desc: 'Kamerafahrt wie beim Mostar-Vorbild: Nacht über dem Westerwald, das Glasband vor dem Wort, Glasvorhänge öffnen sich zu den Projekten, am Ende die Leistungen als Galerie.' },
     { id: 'v10', dir: 'vm-wa-v10', name: 'V10 · Glasraum', ready: true, noWeb: true, desc: 'Dieselbe Kamerafahrt ohne Landschaft: ein dunkler Raum mit den Glasobjekten von V&M in mehreren Tiefen.' },
+    { id: 'v11', dir: 'vm-wa-v11/tagwerk',   name: 'V11 · Tagwerk',   ready: true, noWeb: true, desc: 'Tag am Anfang, beim Scrollen wird es Nacht: «Intension» geht hinter dem Dorf unter, «Motivation» geht in Ihrem Grün auf. Für den Computer.' },
+    { id: 'v12', dir: 'vm-wa-v11/bruecke',   name: 'V12 · Brücke',    ready: true, noWeb: true, desc: 'Wie Mostar: ein Bogen, das Wort dahinter. Die Kamera fährt unter dem Bogen durch zu Ihren Projekten. Für den Computer.' },
+    { id: 'v13', dir: 'vm-wa-v11/schicht',   name: 'V13 · Schicht für Schicht', ready: true, noWeb: true, desc: 'Die Szene entsteht beim Scrollen: Skizze, Plakat, Raster, Foto, Website. Jede Ebene ist eine Leistung. Für den Computer.' },
+    { id: 'v14', dir: 'vm-wa-v11/werkstatt', name: 'V14 · Werkstatt', ready: true, noWeb: true, desc: 'Nachts in der Werkstatt: die Kamera fährt in den Bildschirm, dort laufen Ihre Projekte. Für den Computer.' },
+    { id: 'v15', dir: 'vm-wa-v11/am-set',    name: 'V15 · Am Set',    ready: true, noWeb: true, desc: 'Ein Shooting-Tag: durch den Sucher, scharfstellen, auslösen. Das Foto wird zur Projektkarte. Für den Computer.' },
+    { id: 'v16', dir: 'vm-wa-v11/galerie',   name: 'V16 · Galerie',   ready: true, noWeb: true, desc: 'Ihre Projekte als Ausstellung: die Kamera geht an der Wand entlang von Werk zu Werk. Für den Computer.' },
   ].filter(v => v.ready);
 
   const PAGES = { start: '', webdesign: 'webdesign.html' };
@@ -169,7 +175,7 @@
   frame.addEventListener('load', () => {
     try {
       const p = frame.contentWindow.location.pathname;
-      const m = p.match(/\/(vm-wa(?:-v\d+)?)\/(webdesign\.html|index\.html)?$/);
+      const m = p.match(/\/(vm-wa(?:-v\d+)?(?:\/[a-z-]+)?)\/(webdesign\.html|index\.html)?$/);
       if (!m) return;
       const v = VARIANTS.find(x => x.dir === m[1]);
       if (!v) return;

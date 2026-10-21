@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V&amp;M Werbeagentur - Sechs Entwürfe</title>
+<link rel="icon" href="assets/img/favicon.png">
+<style>
+@font-face{font-family:Syne;font-weight:800;src:url(assets/font/syne-800-latin.woff2) format('woff2')}
+@font-face{font-family:Poppins;font-weight:400;src:url(assets/font/poppins-400-latin.woff2) format('woff2')}
+@font-face{font-family:Poppins;font-weight:500;src:url(assets/font/poppins-500-latin.woff2) format('woff2')}
+:root{--ink:#13110F;--paper:#F4F4F4;--lime:#D7F908;--mu:#a29e97}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink);color:var(--paper);font-family:Poppins,system-ui,sans-serif}
+main{max-width:1440px;margin:0 auto;padding:44px 36px 80px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:44px}
+header img{height:34px}
+header span{color:var(--mu);font-size:14px}
+h1{font-family:Syne;font-weight:800;text-transform:uppercase;font-size:clamp(34px,4.4vw,64px);line-height:1;margin:0 0 14px}
+.lead{color:#cfccc6;font-size:17px;max-width:720px;margin:0 0 10px}
+h2{font-family:Syne;font-weight:800;text-transform:uppercase;font-size:22px;margin:56px 0 18px;display:flex;align-items:center;gap:14px}
+h2 small{font-family:Poppins;font-weight:400;text-transform:none;font-size:15px;color:var(--mu)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+a.card{display:block;color:inherit;text-decoration:none;border-radius:22px;overflow:hidden;background:#1d1b18;border:1px solid rgba(255,255,255,.07);transition:transform .25s ease,border-color .25s ease}
+a.card:hover{transform:translateY(-4px);border-color:var(--lime)}
+a.card img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+.tx{padding:18px 20px 22px}
+.tx h3{margin:0 0 8px;font-family:Syne;font-weight:800;text-transform:uppercase;font-size:21px;display:flex;align-items:center;gap:10px}
+.tx h3 b{background:var(--lime);color:var(--ink);border-radius:7px;font-size:15px;padding:2px 9px}
+.tx p{margin:0;color:#cfccc6;font-size:15px;line-height:1.42}
+.note{margin-top:56px;color:var(--mu);font-size:14px;border-top:1px solid rgba(255,255,255,.08);padding-top:20px}
+@media (max-width:980px){.grid{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.grid{grid-template-columns:1fr}main{padding:28px 16px 60px}}
+</style>
+</head>
+<body>
+<main>
+  <header><img src="assets/img/vm-logo.svg" alt="V&amp;M Werbeagentur" width="120" height="34"><span>Entwürfe · Oktober 2026</span></header>
+  <h1>Sechs Entwürfe</h1>
+  <p class="lead">Jeder Entwurf ist eine animierte Startseite: einfach öffnen und scrollen. Die Szenen sind KI-generiert und dienen nur zur Vorschau; für die finale Version nehmen wir Ihre Fotos oder echte Orte.</p>
+
+  <h2>Licht und Landschaft <small>A-C · nah an Mostar</small></h2>
+  <div class="grid">
+    <a class="card" href="tagwerk/"><img src="_thumbs/tagwerk.webp" alt="" width="960" height="542"><div class="tx"><h3><b>A</b>Tagwerk</h3><p>Tag am Anfang, beim Scrollen wird es Nacht: «Intension» geht hinter dem Dorf unter, «Motivation» geht in Ihrem Grün auf.</p></div></a>
+    <a class="card" href="bruecke/"><img src="_thumbs/bruecke.webp" alt="" width="960" height="542"><div class="tx"><h3><b>B</b>Brücke</h3><p>Wie Mostar: ein Bogen, das Wort dahinter. Die Kamera fährt unter dem Bogen durch zu Ihren Projekten.</p></div></a>
+    <a class="card" href="schicht/"><img src="_thumbs/schicht.webp" alt="" width="960" height="542"><div class="tx"><h3><b>C</b>Schicht für Schicht</h3><p>Die Szene entsteht beim Scrollen: Skizze, Plakat, Raster, Foto, Website. Jede Ebene ist eine Leistung.</p></div></a>
+  </div>
+
+  <h2>Im Stil Ihrer Website <small>D-F · dunkel, Grün, ohne Natur</small></h2>
+  <div class="grid">
+    <a class="card" href="werkstatt/"><img src="_thumbs/werkstatt.webp" alt="" width="960" height="542"><div class="tx"><h3><b>D</b>Werkstatt</h3><p>Nachts in der Werkstatt: die Kamera fährt in den Bildschirm, dort laufen Ihre Projekte.</p></div></a>
+    <a class="card" href="am-set/"><img src="_thumbs/am-set.webp" alt="" width="960" height="542"><div class="tx"><h3><b>E</b>Am Set</h3><p>Ein Shooting-Tag: durch den Sucher, scharfstellen, auslösen. Das Foto wird zur Projektkarte.</p></div></a>
+    <a class="card" href="galerie/"><img src="_thumbs/galerie.webp" alt="" width="960" height="542"><div class="tx"><h3><b>F</b>Galerie</h3><p>Ihre Projekte als Ausstellung: die Kamera geht an der Wand entlang von Werk zu Werk.</p></div></a>
+  </div>
+
+  <p class="note">Entwürfe für den Computer. Die Version für Smartphone und Tablet folgt für den gewählten Entwurf.</p>
+</main>
+</body>
+</html>

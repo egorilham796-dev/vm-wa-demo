@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V&amp;M Werbeagentur - A Tagwerk</title>
+<meta name="description" content="Tag am Anfang, beim Scrollen wird es Nacht: Ihre Intension geht unter, unsere Motivation geht auf.">
+<link rel="icon" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/v11.css">
+<link rel="preload" as="image" href="img/day-bg.webp">
+<link rel="preload" as="image" href="img/day-fg.webp">
+<style>
+.grp{transform-origin:57% 48%}
+#w1{background:linear-gradient(180deg,#fff 0%,rgba(247,245,240,.9) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+#w2{color:var(--lime)}
+#dusk{z-index:2;background:linear-gradient(180deg,rgba(255,138,64,.55) 0%,rgba(214,96,110,.38) 42%,rgba(38,28,72,.45) 100%)}
+#shade{z-index:3;background:linear-gradient(0deg,rgba(19,17,15,.86) 0%,rgba(19,17,15,.55) 34%,rgba(19,17,15,0) 62%)}
+#fill{z-index:4;background:#13110F}
+#panel2{top:auto;bottom:clamp(40px,8vh,90px);transform:translate3d(-50%,0,0)}
+#panel2 h2{font-size:clamp(1.8rem,2.9vw,2.9rem)}
+#panel2 .facts{margin-top:30px}
+#case3{left:7vw;top:50%;width:min(46vw,760px)}
+#case3 .shot{aspect-ratio:800/604}
+#panel3{left:auto;right:6vw;width:min(36vw,560px);text-align:left}
+#panel3 p{margin-left:0}
+</style>
+</head>
+<body>
+<main>
+<section class="cinema-scroll" id="cinema" aria-label="V&amp;M Scroll-Geschichte">
+  <div class="stage">
+    <div class="world">
+      <div class="plate" id="P" data-plate="2880x1646" data-fx=".58" data-fy=".42">
+        <div class="grp" id="bgG">
+          <img class="L" id="dayBg" src="img/day-bg.webp" alt="" width="2880" height="1646">
+          <img class="L" id="nightBg" src="img/night-bg.webp" alt="" width="2880" height="1646" style="opacity:0;visibility:hidden">
+        </div>
+        <div class="grp" id="wordG">
+          <h1 class="word" id="w1" data-word=".9" data-wy=".30">Intension</h1>
+          <div class="word" id="w2" data-word=".9" data-wy=".295" aria-hidden="true" style="opacity:0;visibility:hidden">Motivation</div>
+        </div>
+        <div class="grp" id="fgG">
+          <img class="L" id="dayFg" src="img/day-fg.webp" alt="" width="2880" height="1646">
+          <img class="L" id="nightFg" src="img/night-fg-dark.webp" alt="" width="2880" height="1646" style="opacity:0;visibility:hidden">
+          <img class="L" id="win1" src="img/win-1.webp" alt="" style="left:32.47%;top:25.27%;width:67.53%;height:29.95%;opacity:0;visibility:hidden">
+          <img class="L" id="win2" src="img/win-2.webp" alt="" style="left:32.47%;top:25.27%;width:67.53%;height:29.95%;opacity:0;visibility:hidden">
+          <img class="L" id="win3" src="img/win-3.webp" alt="" style="left:32.47%;top:25.27%;width:67.53%;height:29.95%;opacity:0;visibility:hidden">
+        </div>
+      </div>
+      <div class="ov" id="dusk"></div>
+      <div class="ov" id="shade"></div>
+      <div class="ov" id="fill"></div>
+    </div>
+
+    <div class="intro-scrim" id="introScrim"></div>
+    <section class="intro-copy" id="intro" aria-label="Über V&amp;M">
+      <p>Eine Agentur, die eine breite Palette hochwertiger Dienstleistungen zu angemessenen Preisen anbietet.</p>
+      <div class="hero-tags"><span>Webdesign</span><span>Foto und Video</span><span>Social Media</span></div>
+    </section>
+
+    <section class="panel" id="panel2" aria-label="Ihre Intension, unsere Motivation">
+      <span class="kick">Vom Tag in die Nacht</span>
+      <h2>Ihre Intension, unsere Motivation</h2>
+      <p>Grafikdesign, Webdesign, Webentwicklung, Foto und Video, Social Media und 360-Grad-Marketing aus einer Hand.</p>
+      <dl class="facts"><div><dt>06</dt><dd>Leistungen aus einer Hand</dd></div><div><dt>360°</dt><dd>Marketinglösungen</dd></div></dl>
+    </section>
+
+    <div class="case" id="case3"><div class="shot"><img src="../assets/video/case-allerhand.jpg" alt="Allerhand Gartencenter - Online-Shop" width="800" height="604"></div></div>
+    <section class="panel" id="panel3" aria-label="Projekt Allerhand">
+      <span class="kick">Projekt</span>
+      <h2 id="projekte">Digitale Blütezeit für Allerhand</h2>
+      <p>Ein benutzerfreundlicher Online-Shop, der das umfangreiche Sortiment digital zugänglich macht und den Kunden ein nahtloses Einkaufserlebnis bietet.</p>
+      <a class="btn" href="#kontakt"><span aria-hidden="true">&#8599;</span><span>Projekt ansehen</span></a>
+    </section>
+
+    <div class="sights-head" id="sHead">Unsere <b>Leistungen</b></div>
+    <section class="sights-slider" id="leistungen" aria-label="Unsere Dienstleistungen"><div class="sights-track"></div></section>
+    <div class="sights-controls" id="controls"><button class="sight-nav" id="prev" aria-label="Vorherige Leistung">&larr;</button><button class="sight-nav" id="next" aria-label="Nächste Leistung">&rarr;</button></div>
+
+    <div class="header-scrim"></div>
+    <header class="site-header" aria-label="Hauptnavigation">
+      <a class="site-logo" href="#cinema" data-s="0"><img src="../assets/img/vm-logo.svg" alt="V&amp;M Werbeagentur" width="120" height="34"></a>
+      <nav class="site-nav" aria-label="Hauptmenü"><a href="#cinema" data-s="0">Intro</a><a href="#leistungen" data-s="7900">Leistungen</a><a href="#projekte" data-s="6450">Projekte</a><a href="#kontakt">Kontakt</a></nav>
+      <a class="header-cta" href="#kontakt">Projekt starten</a>
+    </header>
+  </div>
+</section>
+<section class="kontakt" id="kontakt">
+  <h2>Nehmen Sie Kontakt auf</h2>
+  <p>+49 163 5154355 · info@vm-wa.de</p>
+  <a class="big" href="mailto:info@vm-wa.de">Projekt starten</a>
+</section>
+<footer class="foot"><span>V&amp;M Werbeagentur · Entwurf A «Tagwerk»</span><a href="../">Alle Entwürfe</a></footer>
+</main>
+<script src="../assets/v11.js"></script>
+<script>
+(function(){
+  const { T, X, C, O, ss, seg } = VM, $ = id => document.getElementById(id);
+  const E = {}; ['bgG','wordG','fgG','nightBg','nightFg','win1','win2','win3','w1','w2','dusk','shade','fill','intro','introScrim','panel2','panel3','case3','sHead','controls'].forEach(k => E[k] = $(k));
+  E.slider = document.querySelector('.sights-slider');
+  VM.run({
+    length: 8600,
+    update(s, G){
+      const P = G.plates.P, mx = G.mx, my = G.my;
+      // камера: медленный наезд, передний план быстрее дальнего
+      const cam = ss(0, 5600, s);
+      T(E.bgG, -mx * 8, -my * 4, 1 + 0.07 * cam);
+      T(E.wordG, -mx * 14, -my * 6, 1 + 0.11 * cam);
+      T(E.fgG, -mx * 24, -my * 9, 1 + 0.19 * cam);
+      // день -> вечер -> ночь
+      const night = ss(1150, 2500, s);
+      O(E.nightBg, night); O(E.nightFg, night);
+      O(E.dusk, seg(s, 450, 1250, 1650, 2450).on * 0.5);
+      // окна загораются тремя волнами
+      O(E.win1, ss(2300, 2550, s)); O(E.win2, ss(2500, 2750, s)); O(E.win3, ss(2700, 2950, s));
+      // INTENSION садится за деревню, MOTIVATION встаёт из-за крыш
+      T(E.w1, 0, ss(650, 2050, s) * 0.27 * P.h, 1, 1 - ss(2000, 2150, s));
+      T(E.w2, 0, (1 - ss(2350, 3500, s)) * 0.31 * P.h, 1, ss(2250, 2400, s));
+      // вступление
+      const ie = ss(140, 900, s);
+      X(E.intro, 0, ie * 80, 1, 1 - ie); O(E.introScrim, 1 - ie);
+      // слоган ночью
+      const p2 = seg(s, 3800, 4300, 5000, 5450);
+      O(E.shade, p2.on * 0.95 + ss(5000, 5600, s));
+      X(E.panel2, 0, (1 - p2.en) * 50 - p2.ex * 70, 1, p2.on);
+      // в их тёмный цвет
+      O(E.fill, ss(5300, 6000, s));
+      // кейс
+      const p3 = seg(s, 5900, 6500, 7100, 7500);
+      T(E.case3, 0, -E.case3.offsetHeight / 2 + (1 - p3.en) * 120 - p3.ex * 90, 0.94 + 0.06 * p3.en, p3.on);
+      T(E.panel3, 0, -E.panel3.offsetHeight / 2 + (1 - p3.en) * 60 - p3.ex * 80, 1, ss(6150, 6600, s) * (1 - p3.ex));
+      // услуги
+      const sl = Math.pow(ss(7200, 8000, s), 1.4);
+      E.slider.style.visibility = sl > 0.01 ? 'visible' : 'hidden';
+      E.slider.style.transform = 'translate3d(' + ((1 - sl) * 110).toFixed(3) + 'vw,0,0)';
+      O(E.sHead, ss(7500, 7900, s));
+      const c = ss(7700, 8000, s); O(E.controls, c); E.controls.classList.toggle('is-ready', c > 0.5);
+    }
+  });
+})();
+</script>
+</body>
+</html>
