@@ -580,7 +580,7 @@ function frame(sN){
 
   // проезд
   O(E.vid, vOp); O(E.vidShade, vOp * ss(6750, 7000, sN) * (1 - ss(7300, 7480, sN)));
-  if (!G.warm && sN > 3000) { G.warm = 1; let k = 0; const c = document.createElement('canvas').getContext('2d'); c.canvas.width = 64; c.canvas.height = 36; (function w(){ for (let n = 0; n < 4 && k < VF; n++, k++) if (VFR[k] && VFR[k].complete) c.drawImage(VFR[k], 0, 0, 64, 36); if (k < VF) requestAnimationFrame(w); })(); }
+  if (!G.warm && sN > 3000) { G.warm = 1; let k = 0; const c = document.createElement('canvas').getContext('2d'); c.canvas.width = 64; c.canvas.height = 36; (function w(){ for (let n = 0; n < 4 && k < VF; n++, k++) if (VFR[k] && VFR[k].complete && VFR[k].naturalWidth) c.drawImage(VFR[k], 0, 0, 64, 36); if (k < VF) requestAnimationFrame(w); })(); }
   if (vOp > 0) { const fi = Math.round(clamp((sN - 6250) / (7380 - 6250)) * (VF - 1)); if (fi !== G.vfi || G.vdirty) drawVid(fi); }
   // частицы
   let ps = pState(s);
@@ -635,7 +635,7 @@ function drawVid(i){
   vcx.drawImage(im, (G.W * d - cw) / 2, (G.H * d - ch) / 2, cw, ch);
   G.vfi = k === i ? i : -1; G.vdirty = false;
 }
-function loadVid(){ for (let i = 0; i < VF; i++) { const im = new Image(); im.decoding = 'async'; im.src = '../vm-wa-v17/proba-video/f/' + String(i + 1).padStart(3, '0') + '.jpg'; VFR[i] = im; im.decode().catch(() => {}); } }
+function loadVid(){ for (let i = 0; i < VF; i++) { const im = new Image(); im.decoding = 'async'; im.onerror = () => { if (!im._r) { im._r = 1; im.src += '?r=1'; } }; im.src = '../vm-wa-v17/proba-video/f/' + String(i + 1).padStart(3, '0') + '.jpg'; VFR[i] = im; im.decode().catch(() => {}); } }
 window.V18 = { jump(y){ scrollTo(0, section.offsetTop + y); target = smooth = dist(); mx = my = tMX = tMY = 0; frame(smooth); return smooth; }, len: LEN, frame: () => frame(smooth) };
 
 Promise.all([load('../vm-wa-v17/img/scene-s.webp'), load('../vm-wa-v17/img/depth.png'), document.fonts.load('800 100px Syne'), document.fonts.load('700 20px Syne'), document.fonts.load('400 16px Poppins')]).then(([img, dep]) => {
