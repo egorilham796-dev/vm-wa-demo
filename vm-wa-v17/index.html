@@ -35,8 +35,8 @@ img,video,canvas{display:block}
 #screen .glass{position:absolute;inset:0;background:linear-gradient(115deg,rgba(255,255,255,.08) 0%,rgba(255,255,255,0) 38%,rgba(255,255,255,0) 70%,rgba(255,255,255,.04) 100%)}
 #glow{width:1000px;height:600px;background:radial-gradient(50% 50% at 50% 30%,rgba(120,170,255,.22) 0%,rgba(120,170,255,0) 100%)}
 
-#sketch{width:500px;height:190px}
-#sketch svg{position:absolute;left:0;top:50px;width:500px;height:92px;overflow:visible}
+#sketch{width:420px;height:162px}
+#sketch svg{position:absolute;left:0;top:0;width:420px;height:162px;overflow:visible;mix-blend-mode:multiply}
 #poster{width:300px;height:400px;perspective:700px;perspective-origin:50% 0%}
 #poster .pc{position:absolute;inset:0;transform-origin:50% 100%;background:var(--lime);border-radius:6px;box-shadow:0 30px 60px rgba(0,0,0,.45);display:flex;flex-direction:column;justify-content:space-between;padding:26px 24px;color:var(--ink);will-change:transform;backface-visibility:hidden}
 #poster .pc svg{width:100%;height:auto}
@@ -124,7 +124,7 @@ img,video,canvas{display:block}
     <div class="ov" id="ov" aria-hidden="true">
       <div class="anc" id="glow"></div>
       <div class="anc" id="screen"><video id="v0" src="../vm-wa-v11/assets/video/case-innova.mp4" poster="../vm-wa-v11/assets/video/case-innova.jpg" muted loop playsinline preload="auto"></video><div class="glass"></div></div>
-      <div class="anc" id="sketch"><svg viewBox="197 -6 420 162" preserveAspectRatio="none"><path id="sk1" fill="none" stroke="#3a3833" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><path id="sk2" fill="#D7F908" opacity="0"/></svg></div>
+      <div class="anc" id="sketch"><svg viewBox="197 -6 420 162"><defs><mask id="skM" maskUnits="userSpaceOnUse" x="0" y="-200" width="900" height="900"><rect x="0" y="-200" width="900" height="900" fill="#fff"/><polygon points="140,52 196,66 575,410 540,478 488,474 147,124" fill="#000"/></mask></defs><g mask="url(#skM)"><path id="sk2" fill="#D7F908" opacity="0"/><path id="sk1" fill="none" stroke="#2b2925" stroke-width="4.2" stroke-opacity=".85" stroke-linecap="round" stroke-linejoin="round"/></g></svg></div>
       <div class="anc" id="poster"><div class="pc" id="pc"><small>V&amp;M · Grafikdesign</small><svg viewBox="190 -4 434 160"><path id="pl" fill="#13110F"/></svg><b>Ihre<br>Marke.</b></div></div>
       <div class="anc" id="iris"><svg viewBox="-100 -100 200 200"><defs><clipPath id="irisC"><circle r="99"/></clipPath></defs><g clip-path="url(#irisC)"><path id="irisP" fill="#050505" fill-rule="evenodd"/><g id="irisL" stroke="rgba(255,255,255,.14)" stroke-width="1"></g></g><circle r="99" fill="none" stroke="rgba(0,0,0,.6)" stroke-width="3"/></svg></div>
       <div class="anc" id="print"><div class="ph"></div><span class="cap">Aufnahme 001</span></div>
@@ -220,6 +220,8 @@ function buildKF(){
   ];
   const m = Math.min(1, G.W / (G.H * A));
   if (m < 0.98) KF = KF.map(k => (k[3] > 1.01 && k[3] !== ZS && !k[5]) ? [k[0], k[1], k[2], Math.max(1.35, k[3] * m), k[4]] : k);
+  // узкий экран: станция блокнота сдвигается вправо, чтобы логотип на правой странице (u до .64) остался в кадре
+  if (m < 0.98) { const hw = 0.5 * G.W / (Math.max(1.35, 2.4 * m) * cw), nx = Math.max(.48, .655 - hw); KF.forEach(k => { if (k[0] === 2750 || k[0] === 3750) k[1] = nx; }); }
 }
 function camAt(s){
   let i = 0; while (i < KF.length - 2 && s > KF[i + 1][0]) i++;
@@ -409,7 +411,9 @@ const railA = [...E.rail.querySelectorAll('a')];
 fetch('../vm-wa-v11/assets/img/vm-logo.svg').then(r => r.text()).then(t => {
   const m = t.match(/<path d="([^"]+)"/); if (!m) return;
   E.sk1.setAttribute('d', m[1]); E.sk2.setAttribute('d', m[1]); E.pl.setAttribute('d', m[1]);
-  G.skLen = E.sk1.getTotalLength(); E.sk1.style.strokeDasharray = G.skLen; E.sk1.style.strokeDashoffset = G.skLen; E.sk1._d = null;
+  // контуры по отдельности: пунктир в браузере начинается заново на каждом контуре, поэтому одна линия рисовала все части разом
+  G.sk = m[1].split(/(?=M)/).filter(Boolean).map((d, i) => { const p = i ? E.sk1.parentNode.appendChild(E.sk1.cloneNode()) : E.sk1; if (i) p.removeAttribute('id'); p.setAttribute('d', d); const L = p.getTotalLength(); p.style.strokeDasharray = f2(L) + ' ' + f2(L + 2); p.style.strokeDashoffset = f2(L); p._d = null; return { p, L }; });
+  G.skLen = G.sk.reduce((a, q) => a + q.L, 0);
 }).catch(() => {});
 // диафрагма: 6 лепестков, отверстие - шестиугольник радиуса r
 function iris(r){
@@ -447,6 +451,15 @@ function anchor(el, u, v, uw, d, baseW, extra){
   const [x, y, g] = proj(u, v, d), k = uw * C.r.w * g / baseW;
   TR(el, 'translate3d(' + f2(x) + 'px,' + f2(y) + 'px,0) scale(' + f4(k) + ')' + (extra || ''));
   return { x, y, k };
+}
+// элемент w x h px натягивается на четырёхугольник картинки: углы [u,v,d] по часовой от верхнего левого (плоскость бумаги)
+const SKQ = [[.57916, .82762, .69], [.63182, .82964, .706], [.64004, .85357, .769], [.58363, .85228, .773]];
+function onQuad(el, Q, w, h){
+  const p = Q.map(q => proj(q[0], q[1], q[2])), [x0, y0] = p[0], [x1, y1] = p[1], [x2, y2] = p[2], [x3, y3] = p[3];
+  const dx1 = x1 - x2, dx2 = x3 - x2, dy1 = y1 - y2, dy2 = y3 - y2, sx = x0 - x1 + x2 - x3, sy = y0 - y1 + y2 - y3, den = dx1 * dy2 - dx2 * dy1;
+  const g = (sx * dy2 - dx2 * sy) / den, hh = (dx1 * sy - sx * dy1) / den;
+  const m = [(x1 - x0 + g * x1) / w, (y1 - y0 + g * y1) / w, 0, g / w, (x3 - x0 + hh * x3) / h, (y3 - y0 + hh * y3) / h, 0, hh / h, 0, 0, 1, 0, x0, y0, 0, 1];
+  TR(el, 'matrix3d(' + m.map(n => (+n).toFixed(7)).join(',') + ')');
 }
 const playing = new Set();
 function play(v, on){ if (!v) return; if (on && !playing.has(v)) { playing.add(v); v.play().catch(() => {}); } else if (!on && playing.has(v)) { playing.delete(v); v.pause(); } }
@@ -496,9 +509,9 @@ function frame(s){
   // блокнот: логотип рисуется карандашом, заливается и встаёт плакатом
   const skA = ss(2550, 2800, s);
   if (skA > 0 || s > 2400) {
-    anchor(E.sketch, .546, .826, .092, .83, 500); O(E.sketch, skA);
+    onQuad(E.sketch, SKQ, 420, 162); O(E.sketch, skA);
     const dr = ss(2800, 3350, s);
-    if (G.skLen) { const v = f2(G.skLen * (1 - dr)); if (E.sk1._d !== v) { E.sk1.style.strokeDashoffset = v; E.sk1._d = v; } }
+    if (G.skLen) { let t = G.skLen * dr; for (const q of G.sk) { const v = f2(q.L - Math.min(q.L, Math.max(0, t))); t -= q.L; if (q.p._d !== v) { q.p.style.strokeDashoffset = v; q.p._d = v; } } }
     O(E.sk2, ss(3300, 3480, s) * 0.95);
     const lift = ss(3420, 3760, s);
     const pb = anchor(E.poster, .563, .79, .062, .86, 300, '');
