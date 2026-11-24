@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V&amp;M Werbeagentur - V17 Eine Einstellung</title>
+<meta name="description" content="Eine Werkstatt, ein Bild, eine Kamerafahrt: Skizze, Foto, Website, Social Media - alles entsteht in derselben Szene.">
+<link rel="icon" href="../vm-wa-v11/assets/img/favicon.png">
+<link rel="preload" as="image" href="img/scene-s.webp">
+<link rel="preload" as="image" href="img/depth.png">
+<style>
+@font-face{font-family:Syne;font-weight:800;font-display:swap;src:url(../vm-wa-v11/assets/font/syne-800-latin.woff2) format('woff2')}
+@font-face{font-family:Syne;font-weight:700;font-display:swap;src:url(../vm-wa-v11/assets/font/syne-700-latin.woff2) format('woff2')}
+@font-face{font-family:Poppins;font-weight:400;font-display:swap;src:url(../vm-wa-v11/assets/font/poppins-400-latin.woff2) format('woff2')}
+@font-face{font-family:Poppins;font-weight:500;font-display:swap;src:url(../vm-wa-v11/assets/font/poppins-500-latin.woff2) format('woff2')}
+:root{--ink:#13110F;--paper:#F4F4F4;--lime:#D7F908;--mu:#9A968F}
+*{box-sizing:border-box}
+html,body{margin:0;background:#13110F;color:var(--paper);font-family:Poppins,system-ui,-apple-system,"Segoe UI",sans-serif}
+body{overflow-x:clip}
+img,video,canvas{display:block}
+
+.cine{position:relative}
+.stage{position:sticky;top:0;height:100vh;height:100lvh;min-height:560px;overflow:hidden;isolation:isolate;background:#13110F}
+#gl,#px{position:absolute;inset:0;width:100%;height:100%}
+#gl{z-index:1}
+#px{z-index:6;pointer-events:none}
+.fallback{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+
+/* слой объектов, привязанных к картинке: позиция и масштаб считаются каждый кадр */
+.ov{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.anc{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform,opacity;visibility:hidden}
+
+#screen{width:1000px;height:627px;background:#050505;border-radius:3px;overflow:hidden}
+#screen video{position:absolute;left:1.2%;top:1.6%;width:97.6%;height:96.8%;object-fit:cover;will-change:opacity}
+#screen .glass{position:absolute;inset:0;background:linear-gradient(115deg,rgba(255,255,255,.08) 0%,rgba(255,255,255,0) 38%,rgba(255,255,255,0) 70%,rgba(255,255,255,.04) 100%)}
+#glow{width:1000px;height:600px;background:radial-gradient(50% 50% at 50% 30%,rgba(120,170,255,.22) 0%,rgba(120,170,255,0) 100%)}
+
+#sketch{width:500px;height:190px}
+#sketch svg{position:absolute;left:0;top:50px;width:500px;height:92px;overflow:visible}
+#poster{width:300px;height:400px;perspective:700px;perspective-origin:50% 0%}
+#poster .pc{position:absolute;inset:0;transform-origin:50% 100%;background:var(--lime);border-radius:6px;box-shadow:0 30px 60px rgba(0,0,0,.45);display:flex;flex-direction:column;justify-content:space-between;padding:26px 24px;color:var(--ink);will-change:transform;backface-visibility:hidden}
+#poster .pc svg{width:100%;height:auto}
+#poster .pc b{font-family:Syne;font-weight:800;font-size:34px;line-height:.95;text-transform:uppercase}
+#poster .pc small{font-size:14px;font-weight:500;letter-spacing:.08em;text-transform:uppercase}
+
+#iris{width:200px;height:200px}
+#iris svg{width:200px;height:200px;overflow:visible}
+#print{width:400px;height:470px;background:#f2efe8;padding:18px 18px 70px;border-radius:4px;box-shadow:0 40px 80px rgba(0,0,0,.55)}
+#print .ph{width:100%;height:100%;background:#000 url(img/scene-s.webp) no-repeat;background-size:2000px auto;background-position:-1420px -150px;filter:none}
+#print .cap{position:absolute;left:20px;bottom:20px;font-family:Syne;font-weight:700;font-size:20px;color:#13110F}
+
+.chip{display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 20px;border-radius:999px;background:rgba(19,17,15,.72);border:1px solid rgba(215,249,8,.55);color:#F7F5F0;font-size:17px;font-weight:500;white-space:nowrap;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.chip i{width:10px;height:10px;border-radius:50%;background:var(--lime);box-shadow:0 0 14px var(--lime)}
+.chip.lime{background:var(--lime);color:var(--ink);border-color:var(--lime)}
+.chip.lime i{background:var(--ink);box-shadow:none}
+
+#cut{position:absolute;inset:0;z-index:8;background:#13110F;opacity:0;pointer-events:none;transition:opacity .2s ease}
+#flash{position:absolute;inset:0;z-index:7;background:#fff;opacity:0;visibility:hidden;pointer-events:none;will-change:opacity}
+
+/* туннель кейсов: карточки вылетают из экрана навстречу */
+#tunnel{position:absolute;inset:0;z-index:3;perspective:1000px;perspective-origin:50% 50%;pointer-events:none;visibility:hidden}
+.tc{position:absolute;left:50%;top:50%;width:min(44vw,760px);aspect-ratio:4/3;margin-left:calc(min(44vw,760px) / -2);margin-top:calc(min(44vw,760px) * -.375);will-change:transform,opacity;visibility:hidden}
+.tc .m{position:absolute;inset:0;border-radius:18px;overflow:hidden;background:#000;box-shadow:0 50px 120px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06)}
+.tc img{width:100%;height:100%;object-fit:cover}
+.tc .lab{position:absolute;top:100%;left:0;margin-top:22px;width:120%}
+.tc .lab span{display:block;color:var(--lime);font-size:13px;font-weight:500;letter-spacing:.14em;text-transform:uppercase}
+.tc .lab h3{margin:10px 0 0;font-family:Syne;font-weight:800;text-transform:uppercase;font-size:clamp(20px,1.7vw,30px);line-height:1.05}
+
+/* тексты станций */
+.card{position:absolute;z-index:5;left:max(24px,6vw);top:48vh;width:min(440px,34vw);will-change:transform,opacity;visibility:hidden;opacity:0}
+.card .k{display:block;color:var(--lime);font-size:13px;font-weight:500;letter-spacing:.14em;text-transform:uppercase}
+.card h2{margin:12px 0 0;font-family:Syne;font-weight:800;text-transform:uppercase;font-size:clamp(1.5rem,2.2vw,2.3rem);line-height:1.04}
+.card p{margin:16px 0 0;color:#dcd9d3;font-size:1.02rem;line-height:1.5;text-shadow:0 1px 14px rgba(0,0,0,.8)}
+.card a{display:inline-flex;align-items:center;gap:8px;margin-top:18px;color:var(--paper);font-weight:500;text-decoration:none;border-bottom:1px solid rgba(215,249,8,.7);padding-bottom:3px;pointer-events:auto}
+.card a:hover{color:var(--lime)}
+
+.below{position:absolute;z-index:5;left:50%;display:flex;align-items:flex-end;justify-content:space-between;gap:40px;will-change:transform,opacity}
+.below h1,.below .h{margin:0;font-family:Syne;font-weight:800;text-transform:uppercase;font-size:clamp(20px,2vw,30px);line-height:1.02}
+.below p{margin:0;max-width:430px;color:#cfccc6;font-size:15px;line-height:1.45;text-align:right}
+.below .cta{display:inline-flex;align-items:center;min-height:50px;padding:0 28px;border-radius:999px;background:var(--lime);color:var(--ink);font-weight:500;text-decoration:none;pointer-events:auto}
+.hint{position:absolute;z-index:5;left:50%;bottom:18px;transform:translateX(-50%);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#8d8983}
+
+/* шапка */
+.site-header{position:absolute;z-index:9;top:0;left:0;right:0;display:grid;grid-template-columns:minmax(180px,1fr) auto minmax(180px,1fr);align-items:center;gap:32px;padding:24px 36px}
+.site-logo img{height:32px;width:auto}
+.site-nav{display:flex;justify-content:center;gap:clamp(20px,2.2vw,40px)}
+.site-nav a{color:rgba(244,244,244,.94);font-size:15px;text-decoration:none;text-shadow:0 1px 12px rgba(0,0,0,.6)}
+.site-nav a:hover{color:var(--lime)}
+.header-cta{justify-self:end;font-weight:500;font-size:15px;background:var(--lime);color:var(--ink);border-radius:999px;padding:12px 22px;text-decoration:none}
+.header-scrim{position:absolute;z-index:8;top:0;left:0;right:0;height:140px;pointer-events:none;background:linear-gradient(180deg,rgba(19,17,15,.7) 0%,rgba(19,17,15,0) 100%)}
+
+/* шкала станций справа */
+.rail{position:absolute;z-index:9;right:28px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:14px;align-items:flex-end}
+.rail a{display:flex;align-items:center;gap:10px;color:#8d8983;font-size:12px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;pointer-events:auto}
+.rail a i{width:7px;height:7px;border-radius:50%;background:#5d5a55;transition:background .3s,transform .3s}
+.rail a.on{color:#F4F4F4}
+.rail a.on i{background:var(--lime);transform:scale(1.5)}
+
+.kontakt{position:relative;padding:130px 24px 120px;text-align:center;background:#13110F}
+.kontakt h2{font-family:Syne;font-weight:800;text-transform:uppercase;font-size:clamp(28px,4.6vw,64px);line-height:1.05;margin:0 0 22px}
+.kontakt p{color:#cfccc7;margin:0 0 28px;font-size:1.05rem}
+.kontakt a.big{display:inline-flex;min-height:52px;align-items:center;padding:0 30px;border-radius:999px;background:var(--lime);color:var(--ink);font-weight:500;text-decoration:none}
+.foot{padding:22px 36px;display:flex;justify-content:space-between;color:#7d7973;font-size:13px;border-top:1px solid rgba(255,255,255,.07)}
+.foot a{color:#9a968f}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+@media (max-width:820px){
+  .site-nav,.rail{display:none}
+  .site-header{grid-template-columns:1fr auto;padding:18px 20px}
+  .card{top:calc(17% + 24px);bottom:auto;width:calc(100vw - 48px)}
+  .below{flex-direction:column;align-items:flex-start;gap:14px}
+  .below p{text-align:left}
+  .tc{width:80vw;margin-left:-40vw;margin-top:-30vw}
+  .card p{font-size:.95rem}
+}
+</style>
+</head>
+<body>
+<main>
+<section class="cine" id="cine" aria-label="V&amp;M - eine Kamerafahrt durch die Werkstatt">
+  <div class="stage" id="stage">
+    <canvas id="gl" aria-hidden="true"></canvas>
+
+    <div class="ov" id="ov" aria-hidden="true">
+      <div class="anc" id="glow"></div>
+      <div class="anc" id="screen"><video id="v0" src="../vm-wa-v11/assets/video/case-innova.mp4" poster="../vm-wa-v11/assets/video/case-innova.jpg" muted loop playsinline preload="auto"></video><div class="glass"></div></div>
+      <div class="anc" id="sketch"><svg viewBox="197 -6 420 162" preserveAspectRatio="none"><path id="sk1" fill="none" stroke="#3a3833" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><path id="sk2" fill="#D7F908" opacity="0"/></svg></div>
+      <div class="anc" id="poster"><div class="pc" id="pc"><small>V&amp;M · Grafikdesign</small><svg viewBox="190 -4 434 160"><path id="pl" fill="#13110F"/></svg><b>Ihre<br>Marke.</b></div></div>
+      <div class="anc" id="iris"><svg viewBox="-100 -100 200 200"><defs><clipPath id="irisC"><circle r="99"/></clipPath></defs><g clip-path="url(#irisC)"><path id="irisP" fill="#050505" fill-rule="evenodd"/><g id="irisL" stroke="rgba(255,255,255,.14)" stroke-width="1"></g></g><circle r="99" fill="none" stroke="rgba(0,0,0,.6)" stroke-width="3"/></svg></div>
+      <div class="anc" id="print"><div class="ph"></div><span class="cap">Aufnahme 001</span></div>
+      <div class="anc chip" id="c1"><i></i>Instagram Werbung</div>
+      <div class="anc chip" id="c2"><i></i>Meta Business Suite</div>
+      <div class="anc chip lime" id="c3"><i></i>Facebook &amp; Google Ads</div>
+      <div class="anc chip" id="c4"><i></i>Content &amp; Reels</div>
+      <div class="anc chip" id="c5"><i></i>SEO</div>
+      <div class="anc chip lime" id="c6"><i></i>Influencer Marketing</div>
+      <div class="anc chip" id="c7"><i></i>Strategie</div>
+      <div class="anc chip" id="c8"><i></i>Sichtbarkeit im Netz</div>
+    </div>
+
+    <div id="tunnel" aria-label="Projekte">
+      <article class="tc"><div class="m"><img src="../vm-wa-v11/assets/video/case-innova.jpg" alt="" decoding="async"></div><div class="lab"><span>Projekt 01 · Innova Consult</span><h3>Bauberatung, Projekt&shy;management, Projekt&shy;umsetzung</h3></div></article>
+      <article class="tc"><div class="m"><img src="../vm-wa-v11/assets/video/case-allerhand.jpg" alt="" decoding="async"></div><div class="lab"><span>Projekt 02 · Allerhand Gartencenter</span><h3>Digitale Blütezeit für Allerhand</h3></div></article>
+      <article class="tc"><div class="m"><img src="../vm-wa-v11/assets/video/case-befamed.jpg" alt="" decoding="async"></div><div class="lab"><span>Projekt 03 · BeFaMed</span><h3>Ihr Partner für professionelle Wundversorgung</h3></div></article>
+    </div>
+
+    <section class="card" id="k1"><span class="k">Leistung 01 · Skizze</span><h2 id="leistungen">Grafikdesign</h2><p>Grafikdesign ist essenziell für eine erfolgreiche Online-Präsenz, denn es zieht Kunden an und stärkt die Markenidentität.</p><a href="https://vm-wa.de/grafikdesign/" target="_blank" rel="noopener">Mehr erfahren &#8599;</a></section>
+    <section class="card" id="k2"><span class="k">Leistung 04 · Auslösen</span><h2>Foto und Video</h2><p>Ein Business-Fotoshooting hebt die Marke hervor und schafft Vertrauen. Hochwertige Bilder tragen Ihre Botschaft auf Webseiten, in Marketingmaterialien und in sozialen Medien.</p></section>
+    <section class="card" id="k3"><span class="k">Leistung 02 · 03 · Bildschirm</span><h2 id="projekte">Webdesign und Web&shy;entwicklung</h2><p>Ein professionelles Webdesign mit WordPress bietet unzählige Möglichkeiten. Von der Landingpage bis zur komplexen Webanwendung, zu transparenten Preisen.</p><a href="https://vm-wa.de/webdesign/" target="_blank" rel="noopener">Mehr erfahren &#8599;</a></section>
+    <section class="card" id="k4"><span class="k">Leistung 05 · Fenster</span><h2>Soziale Netzwerke</h2><p>Gezielte Instagram Werbung, Meta Business Suite, Facebook und Google Ads.</p><a href="https://vm-wa.de/soziale-netzwerke/" target="_blank" rel="noopener">Mehr erfahren &#8599;</a></section>
+    <section class="card" id="k5"><span class="k">Leistung 06 · Rundblick</span><h2>360-Grad-Marketing</h2><p>Lösungen, die alle Aspekte des modernen Marketings abdecken, von SEO bis Influencer Marketing. Maßgeschneiderte Strategien für Ihre Sichtbarkeit im Netz.</p></section>
+
+    <div class="below" id="introB"><h1>Ihre Intension,<br>unsere Motivation</h1><p>Eine Agentur, die eine breite Palette hochwertiger Dienstleistungen zu angemessenen Preisen anbietet.</p></div>
+    <div class="below" id="outroB"><div class="h">Alles aus einer Hand.<br>In einer Werkstatt.</div><a class="cta" href="#kontakt">Projekt starten</a></div>
+    <div class="hint" id="hint">Scrollen</div>
+
+    <div id="flash"></div>
+    <div id="cut" aria-hidden="true"></div>
+    <canvas id="px" aria-hidden="true"></canvas>
+
+    <div class="header-scrim"></div>
+    <header class="site-header" aria-label="Hauptnavigation">
+      <a class="site-logo" href="#cine" data-s="0"><img src="../vm-wa-v11/assets/img/vm-logo.svg" alt="V&amp;M Werbeagentur" width="120" height="34"></a>
+      <nav class="site-nav" aria-label="Hauptmenü"><a href="#cine" data-s="0">Intro</a><a href="#leistungen" data-s="3300">Leistungen</a><a href="#projekte" data-s="7800">Projekte</a><a href="#kontakt">Kontakt</a></nav>
+      <a class="header-cta" href="#kontakt">Projekt starten</a>
+    </header>
+    <nav class="rail" id="rail" aria-label="Stationen">
+      <a href="#cine" data-s="3300"><span>Skizze</span><i></i></a>
+      <a href="#cine" data-s="5000"><span>Foto</span><i></i></a>
+      <a href="#cine" data-s="6400"><span>Web</span><i></i></a>
+      <a href="#cine" data-s="7800"><span>Projekte</span><i></i></a>
+      <a href="#cine" data-s="9900"><span>Social</span><i></i></a>
+      <a href="#cine" data-s="11100"><span>360°</span><i></i></a>
+    </nav>
+  </div>
+</section>
+<section class="kontakt" id="kontakt">
+  <h2>Nehmen Sie Kontakt auf</h2>
+  <p>+49 163 5154355 · info@vm-wa.de</p>
+  <a class="big" href="mailto:info@vm-wa.de">Projekt starten</a>
+</section>
+<footer class="foot"><span>V&amp;M Werbeagentur · Entwurf V17 «Eine Einstellung» · Szene KI-generiert</span><a href="../vm-wa-v11/">Alle Entwürfe</a></footer>
+</main>
+
+<script>
+(function(){
+'use strict';
+/* V17 «Eine Einstellung»: вся страница - одна картинка мастерской (5376x3072) и карта глубины к ней.
+   Камера ездит по картинке без склеек; объём при движении - смещение по карте глубины в шейдере.
+   Каждый кадр: два прохода WebGL + transform/opacity у элементов. Без живого blur, без переменных на корне. */
+const A = 5376 / 3072, LEN = 13000;
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const ss = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+const lerp = (a, b, t) => a + (b - a) * t;
+const bump = t => Math.sin(Math.PI * clamp(t));
+const f2 = n => (+n).toFixed(2), f4 = n => (+n).toFixed(4);
+const $ = id => document.getElementById(id);
+function O(el, o){ o = clamp(o); const v = f4(o); if (el._o !== v) { el.style.opacity = v; el._o = v; } const vis = o > 0.002 ? 'visible' : 'hidden'; if (el._v !== vis) { el.style.visibility = vis; el._v = vis; } }
+function TR(el, s){ if (el._t !== s) { el.style.transform = s; el._t = s; } }
+
+const section = $('cine'), stage = $('stage');
+section.style.height = (CSS.supports('height', '100lvh') ? 'calc(100lvh + ' : 'calc(100vh + ') + LEN + 'px)';
+const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+const G = { W: innerWidth, H: innerHeight, dpr: Math.min(2, devicePixelRatio || 1), gdpr: Math.min(1.5, devicePixelRatio || 1), touch: matchMedia('(pointer: coarse)').matches };
+
+/* ---------- камера: ключевые точки (прокрутка px, центр u/v, зум, фокус по глубине) ---------- */
+let KF = [];
+function buildKF(){
+  const cw = Math.max(G.W, G.H * A) * 1.04;
+  const ZS = Math.max(G.W / (0.299 * cw), G.H * A / (0.3281 * cw)) * 1.03;   // экран монитора на всё окно
+  KF = [
+    [0, .5, .5, 1, .55], [1900, .5, .5, 1, .55],
+    [2750, .48, .86, 2.4, .83], [3750, .48, .86, 2.4, .83],          // блокнот
+    [4450, .242, .79, 3.0, .80], [5500, .242, .79, 3.0, .80],       // фотоаппарат
+    [6150, .462, .46, 1.9, .557], [6700, .462, .46, 1.9, .557],     // монитор
+    [7300, .523, .462, ZS, .557], [9000, .523, .462, ZS, .557],     // внутри экрана
+    [9650, .74, .3, 2.2, .25], [10250, .74, .3, 2.2, .25],          // окно, город
+    [11000, .3, .3, 2.0, .25], [11250, .3, .3, 2.0, .25],           // поворот налево
+    [11950, .5, .5, 1, .55], [LEN, .5, .5, 1, .55]
+  ];
+  const m = Math.min(1, G.W / (G.H * A));
+  if (m < 0.98) KF = KF.map(k => (k[3] > 1.01 && k[3] !== ZS && !k[5]) ? [k[0], k[1], k[2], Math.max(1.35, k[3] * m), k[4]] : k);
+}
+function camAt(s){
+  let i = 0; while (i < KF.length - 2 && s > KF[i + 1][0]) i++;
+  const a = KF[i], b = KF[i + 1], t = ss(a[0], b[0], s), raw = clamp((s - a[0]) / (b[0] - a[0]));
+  const cx = lerp(a[1], b[1], t), cy = lerp(a[2], b[2], t), f = lerp(a[4], b[4], t);
+  let z = Math.exp(lerp(Math.log(a[3]), Math.log(b[3]), t));
+  const dx = (b[1] - a[1]) * A, dy = b[2] - a[2], tr = Math.hypot(dx, dy);
+  const arc = bump(raw) * Math.min(1, tr * 3);
+  if (Math.min(a[3], b[3]) > 1.2) z *= 1 - 0.3 * arc;                  // между станциями камера чуть отъезжает
+  const amp = 28 * arc, nx = tr ? dx / tr : 0, ny = tr ? dy / tr : 0;
+  const zd = Math.log(b[3] / a[3]);
+  return { cx, cy, z, f, tx: -nx * amp, ty: -ny * amp * 0.6, dz: 0.09 * bump(raw) * Math.sign(zd) * Math.min(1, Math.abs(zd)) };
+}
+
+/* ---------- WebGL ---------- */
+const cv = $('gl'), pcv = $('px');
+const gl = cv.getContext('webgl2', { antialias: false, alpha: false, premultipliedAlpha: false });
+const pg = pcv.getContext('webgl2', { antialias: false, alpha: true, premultipliedAlpha: true });
+if (!gl || !pg) {
+  const im = new Image(); im.src = 'img/scene-s.webp'; im.className = 'fallback'; im.alt = ''; stage.prepend(im);
+  return;
+}
+
+const PAR = `
+uniform sampler2D uDep; uniform vec2 uRes; uniform float uDpr; uniform vec4 uRect; uniform vec2 uO; uniform float uDz; uniform float uF; uniform vec2 uC;
+vec2 cssPx(){ return vec2(gl_FragCoord.x, uRes.y * uDpr - gl_FragCoord.y) / uDpr; }
+vec2 unpar(vec2 s, out float d){
+  if (abs(uO.x) + abs(uO.y) + abs(uDz) < 1e-6) { d = texture(uDep, clamp(s, 0., 1.)).r; return s; }
+  vec2 q = s, pq = s; float pdf = -1.;
+  for (int j = 0; j <= 14; j++) {
+    float L = 1. - float(j) / 14., k = L - uF;
+    q = (s - uO * k + uC * uDz * k) / (1. + uDz * k);
+    float df = texture(uDep, clamp(q, 0., 1.)).r - L;
+    if (df >= 0.) { if (j > 0) q = mix(q, pq, df / (df - pdf)); break; }
+    pq = q; pdf = df;
+  }
+  d = texture(uDep, clamp(q, 0., 1.)).r; return q;
+}`;
+const VS_QUAD = `#version 300 es
+in vec2 aP; void main(){ gl_Position = vec4(aP, 0., 1.); }`;
+const FS_SCENE = `#version 300 es
+precision highp float;
+uniform sampler2D uImg, uWord;
+uniform float uRad, uWA, uWD, uScrim, uDim, uMob; uniform vec4 uWR;
+${PAR}
+out vec4 o;
+void main(){
+  vec2 p = cssPx();
+  vec2 s = (p - uRect.xy) / uRect.zw;
+  vec3 bg = vec3(19., 17., 15.) / 255.;
+  vec2 hw = uRect.zw * .5, cc = uRect.xy + hw, dd = abs(p - cc) - hw + uRad;
+  float sd = length(max(dd, 0.)) + min(max(dd.x, dd.y), 0.) - uRad;
+  float m = 1. - smoothstep(-.6, .6, sd);
+  float d; vec2 q = unpar(s, d);
+  vec3 col = texture(uImg, clamp(q, 0., 1.)).rgb;
+  if (uWA > .001) {
+    float kw = uWD - uF;
+    vec2 wq = (s - uO * kw + uC * uDz * kw) / (1. + uDz * kw);
+    vec2 wu = (wq - uWR.xy) / uWR.zw;
+    if (wu.x >= 0. && wu.y >= 0. && wu.x <= 1. && wu.y <= 1.) {
+      float a = texture(uWord, wu).a;
+      float vis = 1. - smoothstep(uWD - .012, uWD + .012, d);
+      vec3 wc = mix(vec3(1.), vec3(.95, .94, .9), wu.y);
+      col = mix(col, wc, a * vis * uWA);
+    }
+  }
+  float g = uMob > .5 ? 1. - smoothstep(.05, .62, p.y / uRes.y) : 1. - smoothstep(.0, .55, p.x / uRes.x);
+  col *= 1. - uScrim * .66 * g;
+  col *= uDim;
+  o = vec4(mix(bg, col, m), 1.);
+}`;
+const VS_PTS = `#version 300 es
+in vec2 aA; in vec2 aB; in vec4 aR;
+uniform vec2 uRes; uniform float uMix, uScat, uT, uDpr, uSize, uAlpha, uRise;
+out float vA; out float vD;
+void main(){
+  float m = clamp((uMix - aR.x * .4) / .6, 0., 1.); m = m * m * (3. - 2. * m);
+  vec2 p = mix(aA, aB, m);
+  float ang = aR.y * 6.2832 + uT * (.5 + aR.z * 1.4);
+  float r = uScat * (.2 + aR.w) * uRes.y * .42;
+  p += vec2(cos(ang), sin(ang * 1.3)) * r;
+  p.y -= uRise * (.3 + aR.z) * uRes.y * .5;
+  vec2 ndc = p / uRes * 2. - 1.; ndc.y = -ndc.y;
+  gl_Position = vec4(ndc, 0., 1.);
+  vD = mix(.94, .15 + aR.z * .8, uScat);
+  gl_PointSize = uSize * uDpr * (.7 + aR.w * .6) * (1. + uScat * aR.z * 1.3);
+  vA = uAlpha * (.8 + .2 * aR.x) * (1. - uScat * .45);
+}`;
+const FS_PTS = `#version 300 es
+precision highp float;
+in float vA; in float vD;
+uniform float uTest; uniform vec3 uCol;
+${PAR}
+out vec4 o;
+void main(){
+  vec2 pc = gl_PointCoord - .5; float r = length(pc); if (r > .5) discard;
+  float a = vA * smoothstep(.5, .2, r);
+  if (uTest > .5) { vec2 s = (cssPx() - uRect.xy) / uRect.zw; float d; unpar(s, d); a *= 1. - smoothstep(vD - .01, vD + .02, d); }
+  o = vec4(uCol * a, a);
+}`;
+
+function prog(c, vs, fs){
+  const mk = (t, src) => { const s = c.createShader(t); c.shaderSource(s, src); c.compileShader(s); if (!c.getShaderParameter(s, c.COMPILE_STATUS)) throw new Error(c.getShaderInfoLog(s)); return s; };
+  const p = c.createProgram(); c.attachShader(p, mk(c.VERTEX_SHADER, vs)); c.attachShader(p, mk(c.FRAGMENT_SHADER, fs)); c.linkProgram(p);
+  if (!c.getProgramParameter(p, c.LINK_STATUS)) throw new Error(c.getProgramInfoLog(p));
+  const u = {}; const n = c.getProgramParameter(p, c.ACTIVE_UNIFORMS);
+  for (let i = 0; i < n; i++) { const nm = c.getActiveUniform(p, i).name; u[nm] = c.getUniformLocation(p, nm); }
+  return { p, u };
+}
+function tex(c, src, mip){
+  const t = c.createTexture(); c.bindTexture(c.TEXTURE_2D, t);
+  c.pixelStorei(c.UNPACK_FLIP_Y_WEBGL, false);
+  c.texImage2D(c.TEXTURE_2D, 0, c.RGBA, c.RGBA, c.UNSIGNED_BYTE, src);
+  c.texParameteri(c.TEXTURE_2D, c.TEXTURE_WRAP_S, c.CLAMP_TO_EDGE); c.texParameteri(c.TEXTURE_2D, c.TEXTURE_WRAP_T, c.CLAMP_TO_EDGE);
+  if (mip) { c.generateMipmap(c.TEXTURE_2D); c.texParameteri(c.TEXTURE_2D, c.TEXTURE_MIN_FILTER, c.LINEAR_MIPMAP_LINEAR); }
+  else c.texParameteri(c.TEXTURE_2D, c.TEXTURE_MIN_FILTER, c.LINEAR);
+  c.texParameteri(c.TEXTURE_2D, c.TEXTURE_MAG_FILTER, c.LINEAR);
+  return t;
+}
+const load = src => new Promise((ok, no) => { const im = new Image(); im.decoding = 'async'; im.onload = () => ok(im); im.onerror = no; im.src = src; });
+
+const SP = prog(gl, VS_QUAD, FS_SCENE), PP = prog(pg, VS_PTS, FS_PTS);
+const quad = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, quad); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+const aP = gl.getAttribLocation(SP.p, 'aP'); gl.enableVertexAttribArray(aP); gl.vertexAttribPointer(aP, 2, gl.FLOAT, false, 0, 0);
+let T = {}, ready = false;
+
+/* слово MOTIVATION - текстура для шейдера */
+const wc = document.createElement('canvas');
+function buildWord(){
+  const c = wc.getContext('2d'), fs = 300; c.font = '800 ' + fs + 'px Syne';
+  const w = Math.ceil(c.measureText('MOTIVATION').width) + 20, h = Math.ceil(fs * 0.86) + 10;
+  wc.width = w; wc.height = h; c.font = '800 ' + fs + 'px Syne'; c.fillStyle = '#fff'; c.textBaseline = 'alphabetic';
+  c.fillText('MOTIVATION', 10, h - 6 - fs * 0.03);
+  G.wordAsp = h / w;
+  if (T.word) gl.deleteTexture(T.word); T.word = tex(gl, wc, true);
+}
+
+/* частицы: формы заголовков станций */
+const N = Math.min(innerWidth, innerHeight) < 820 ? 5000 : 9000, SH = ['', 'GRAFIK', 'FOTO', 'WEB', 'SOCIAL', '360°'];
+let shapeBufs = [], rBuf = null;
+const rnd = (() => { let s = 7; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
+const RA = new Float32Array(N * 4); for (let i = 0; i < N * 4; i++) RA[i] = rnd();
+function buildShapes(){
+  const W = G.W, H = G.H, c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d', { willReadFrequently: true });
+  shapeBufs.forEach(b => pg.deleteBuffer(b)); shapeBufs = [];
+  const mob = W < 820;
+  SH.forEach((word, si) => {
+    const arr = new Float32Array(N * 2);
+    if (!word) { for (let i = 0; i < N; i++) { arr[i * 2] = RA[i * 4 + 1] * W; arr[i * 2 + 1] = RA[i * 4 + 2] * H; } }
+    else {
+      x.clearRect(0, 0, W, H);
+      let fs = 200; x.font = '800 ' + fs + 'px Syne';
+      const maxW = mob ? W * 0.86 : Math.min(W * 0.4, 640), maxH = H * 0.17;
+      fs = Math.min(fs * maxW / x.measureText(word).width, maxH / 0.78); x.font = '800 ' + fs + 'px Syne';
+      x.fillStyle = '#fff'; x.textBaseline = 'alphabetic';
+      const left = mob ? 24 : Math.max(24, W * 0.06), base = mob ? H * 0.17 : H * 0.42;
+      x.fillText(word, left - fs * 0.04, base);
+      const d = x.getImageData(0, 0, W, H).data, pts = [];
+      for (let yy = 0; yy < H; yy += 2) for (let xx = 0; xx < W; xx += 2) if (d[(yy * W + xx) * 4 + 3] > 140) pts.push(xx, yy);
+      const n = pts.length / 2;
+      for (let i = 0; i < N; i++) { const j = Math.floor(RA[i * 4 + 3] * n) % n; arr[i * 2] = pts[j * 2] + (RA[i * 4] - .5) * 1.6; arr[i * 2 + 1] = pts[j * 2 + 1] + (RA[i * 4 + 1] - .5) * 1.6; }
+    }
+    const b = pg.createBuffer(); pg.bindBuffer(pg.ARRAY_BUFFER, b); pg.bufferData(pg.ARRAY_BUFFER, arr, pg.STATIC_DRAW); shapeBufs.push(b);
+  });
+  if (!rBuf) { rBuf = pg.createBuffer(); pg.bindBuffer(pg.ARRAY_BUFFER, rBuf); pg.bufferData(pg.ARRAY_BUFFER, RA, pg.STATIC_DRAW); }
+}
+const PSEG = [[2300, 2800, 0, 1], [3800, 4350, 1, 2], [5550, 6100, 2, 3], [6750, 7250, 3, 0], [9100, 9600, 0, 4], [10350, 10950, 4, 5], [11300, 11800, 5, 0]];
+function pState(s){
+  let a = 0, b = 0, m = 0, scat = 1;
+  for (const [s0, s1, fr, to] of PSEG) {
+    if (s < s0) break;
+    const t = clamp((s - s0) / (s1 - s0)); a = fr; b = to; m = t;
+    scat = fr === 0 ? 1 - ss(.2, 1, t) : to === 0 ? ss(0, .8, t) : bump(t) * 0.9;
+  }
+  return { a, b, m, scat };
+}
+
+/* ---------- DOM ---------- */
+const E = {}; ['glow', 'screen', 'v0', 'sketch', 'sk1', 'sk2', 'poster', 'pc', 'pl', 'iris', 'irisP', 'irisL', 'print', 'flash', 'tunnel', 'introB', 'outroB', 'hint', 'k1', 'k2', 'k3', 'k4', 'k5', 'rail'].forEach(k => E[k] = $(k));
+const chips = [1, 2, 3, 4, 5, 6, 7, 8].map(i => $('c' + i));
+const CH = [[.69, .17], [.8, .12], [.84, .25], [.69, .3], [.27, .12], [.39, .16], [.27, .24], [.42, .245]];   // u,v верхнего левого угла
+const tcs = [...document.querySelectorAll('.tc')].map(el => ({ el, v: null, lab: el.querySelector('.lab') }));
+tcs.forEach(c => { const im = c.el.querySelector('img'); if (im && im.decode) im.decode().catch(() => {}); });
+const railA = [...E.rail.querySelectorAll('a')];
+// логотип: обводка карандашом и заливка
+fetch('../vm-wa-v11/assets/img/vm-logo.svg').then(r => r.text()).then(t => {
+  const m = t.match(/<path d="([^"]+)"/); if (!m) return;
+  E.sk1.setAttribute('d', m[1]); E.sk2.setAttribute('d', m[1]); E.pl.setAttribute('d', m[1]);
+  G.skLen = E.sk1.getTotalLength(); E.sk1.style.strokeDasharray = G.skLen; E.sk1.style.strokeDashoffset = G.skLen; E.sk1._d = null;
+}).catch(() => {});
+// диафрагма: 6 лепестков, отверстие - шестиугольник радиуса r
+function iris(r){
+  const R = 100, n = 6, rot = (1 - r / 92) * 0.9;
+  let hex = '';
+  for (let i = 0; i < n; i++) { const a = rot + i * Math.PI * 2 / n; hex += (i ? 'L' : 'M') + f2(Math.cos(a) * r) + ' ' + f2(Math.sin(a) * r); }
+  E.irisP.setAttribute('d', `M${-R} 0a${R} ${R} 0 1 0 ${2 * R} 0a${R} ${R} 0 1 0 ${-2 * R} 0Z` + hex + 'Z');
+  let l = '';
+  for (let i = 0; i < n; i++) { const a = rot + i * Math.PI * 2 / n, x0 = Math.cos(a) * r, y0 = Math.sin(a) * r, a2 = a + Math.PI / 2 + 0.25; l += `<line x1="${f2(x0)}" y1="${f2(y0)}" x2="${f2(x0 + Math.cos(a2) * R * 1.2)}" y2="${f2(y0 + Math.sin(a2) * R * 1.2)}"/>`; }
+  E.irisL.innerHTML = l;
+}
+
+/* ---------- раскладка ---------- */
+function layout(){
+  G.W = innerWidth; G.H = stage.clientHeight; G.dpr = Math.min(2, devicePixelRatio || 1); G.gdpr = Math.min(1.5, G.dpr);
+  [[cv, gl, G.gdpr], [pcv, pg, G.dpr]].forEach(([c, x, d]) => { c.width = Math.round(G.W * d); c.height = Math.round(G.H * d); x.viewport(0, 0, c.width, c.height); });
+  const mob = G.W < 820, top = mob ? 80 : 96, room = mob ? 230 : 150;
+  const fw = Math.min(G.W * (mob ? 0.9 : 0.84), (G.H - top - room) * A), fh = fw / A;
+  G.frame = { x: (G.W - fw) / 2, y: top + Math.max(0, (G.H - top - room - fh) / 2), w: fw, h: fh };
+  [E.introB, E.outroB].forEach(el => { el.style.width = fw + 'px'; el.style.top = (G.frame.y + fh + (mob ? 22 : 30)) + 'px'; });
+  buildKF();
+  if (document.fonts.check('800 40px Syne')) buildShapes();
+  E.tunnel.style.perspective = Math.round(G.W * 0.75) + 'px';
+}
+
+/* ---------- кадр ---------- */
+let target = 0, smooth = 0, init = false, raf = false, tMX = 0, tMY = 0, mx = 0, my = 0;
+const C = { r: { x: 0, y: 0, w: 1, h: 1 }, o: [0, 0], dz: 0, f: .55, c: [.5, .5] };
+function proj(u, v, d){
+  const k = d - C.f, g = 1 + C.dz * k;
+  return [C.r.x + (u * g + C.o[0] * k - C.c[0] * C.dz * k) * C.r.w, C.r.y + (v * g + C.o[1] * k - C.c[1] * C.dz * k) * C.r.h, g];
+}
+// элемент шириной baseW px привязан верхним левым углом к точке картинки (u,v), ширина uw в долях ширины картинки
+function anchor(el, u, v, uw, d, baseW, extra){
+  const [x, y, g] = proj(u, v, d), k = uw * C.r.w * g / baseW;
+  TR(el, 'translate3d(' + f2(x) + 'px,' + f2(y) + 'px,0) scale(' + f4(k) + ')' + (extra || ''));
+  return { x, y, k };
+}
+const playing = new Set();
+function play(v, on){ if (!v) return; if (on && !playing.has(v)) { playing.add(v); v.play().catch(() => {}); } else if (!on && playing.has(v)) { playing.delete(v); v.pause(); } }
+function card(el, a, b, s){ const en = ss(a, a + 260, s), ex = ss(b - 220, b, s), on = en * (1 - ex); TR(el, 'translate3d(0,' + f2((1 - en) * 36 - ex * 30) + 'px,0)'); O(el, on); return on; }
+
+function frame(s){
+  const W = G.W, H = G.H;
+  // рамка -> во весь экран -> обратно в рамку
+  const F = clamp(1 - ss(0, 1000, s) + ss(12000, 12800, s));
+  const cam = camAt(s);
+  const cw = Math.max(W, H * A) * 1.04, w = cw * cam.z, h = w / A;
+  const cr = { x: clamp(W / 2 - cam.cx * w, W - w, 0), y: clamp(H / 2 - cam.cy * h, H - h, 0), w, h };
+  const fr = G.frame, e = 1 - F;
+  C.r = { x: lerp(fr.x, cr.x, e), y: lerp(fr.y, cr.y, e), w: lerp(fr.w, cr.w, e), h: lerp(fr.h, cr.h, e) };
+  const mxp = -mx * (10 + 6 * F), myp = -my * (6 + 4 * F);
+  C.o = [(cam.tx + mxp) / C.r.w, (cam.ty + myp) / C.r.h];
+  C.dz = cam.dz + 0.07 * bump(ss(0, 1000, s)) - 0.07 * bump(ss(12000, 12800, s));
+  C.f = cam.f; C.c = [(W / 2 - C.r.x) / C.r.w, (H / 2 - C.r.y) / C.r.h];
+
+  // слово: встаёт из-за монитора, пролетает сквозь комнату, в конце возвращается
+  const rise = ss(150, 1000, s), fly = clamp((s - 1100) / 800), back = ss(12050, 12800, s);
+  let wA, wD = .36, wcy, wsc = 1;
+  if (s < 1950) { wA = rise * (1 - ss(.62, 1, fly)); wD = lerp(.36, 1.12, Math.pow(fly, 1.2)); wcy = lerp(.47, .25, rise); wsc = 1 + 1.9 * Math.pow(fly, 1.6); }
+  else { wA = back; wcy = lerp(.47, .25, back); }
+  const ww = Math.min(.62, 0.9 * W / C.r.w) * wsc, wh = ww * A * G.wordAsp, wcx = lerp(.523, C.c[0], fly < 1 && s < 1950 ? ss(0, 1, fly) * .6 : 0), wcy2 = lerp(wcy, C.c[1], s < 1950 ? ss(0, 1, fly) * .5 : 0);
+  const scrim = Math.max(card(E.k1, 2800, 3800, s), card(E.k2, 4450, 5500, s), card(E.k3, 6100, 6750, s), card(E.k4, 9600, 10300, s), card(E.k5, 10950, 11380, s), ss(2300, 2800, s) * (1 - ss(11300, 11700, s)) * 0.7);
+  const tun = ss(7250, 7500, s) * (1 - ss(8900, 9150, s));
+
+  gl.useProgram(SP.p); const u = SP.u;
+  gl.uniform2f(u.uRes, W, H); gl.uniform1f(u.uDpr, G.gdpr);
+  gl.uniform4f(u.uRect, C.r.x, C.r.y, C.r.w, C.r.h); gl.uniform2f(u.uO, C.o[0], C.o[1]); gl.uniform1f(u.uDz, C.dz); gl.uniform1f(u.uF, C.f); gl.uniform2f(u.uC, C.c[0], C.c[1]);
+  gl.uniform1f(u.uRad, 22 * F); gl.uniform1f(u.uWA, wA); gl.uniform1f(u.uWD, wD); gl.uniform4f(u.uWR, wcx - ww / 2, wcy2 - wh / 2, ww, wh);
+  gl.uniform1f(u.uScrim, scrim); gl.uniform1f(u.uMob, W < 820 ? 1 : 0); gl.uniform1f(u.uDim, 1 - tun * 0.8);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, T.img); gl.uniform1i(u.uImg, 0);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, T.dep); gl.uniform1i(u.uDep, 1);
+  gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, T.word); gl.uniform1i(u.uWord, 2);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+  // экран монитора и свечение
+  const scrOn = ss(200, 700, s);
+  anchor(E.glow, .29, .24, .47, .5, 1000); O(E.glow, scrOn * (1 - tun) * 0.9 * (1 - ss(1150, 1330, s) + ss(1850, 2100, s)));
+  anchor(E.screen, .3743, .2977, .299, .557, 1000);
+  O(E.screen, 1 - ss(1150, 1330, s) + ss(1850, 2100, s)); const webOn = ss(5600, 6100, s) * (1 - ss(9250, 9650, s)), dimM = W < 820 ? lerp(.28, 1, webOn) : 1;
+  O(E.v0, dimM * scrOn * (1 - tun * 0.88) * (1 - 0.8 * ss(9250, 9650, s) * (1 - ss(11300, 11800, s))));
+  play(E.v0, scrOn > 0.01 && (s < 2300 || (s > 5600 && s < 7350) || (s > 8950 && s < 9700) || s > 11300));
+
+  // блокнот: логотип рисуется карандашом, заливается и встаёт плакатом
+  const skA = ss(2550, 2800, s);
+  if (skA > 0 || s > 2400) {
+    anchor(E.sketch, .546, .826, .092, .83, 500); O(E.sketch, skA);
+    const dr = ss(2800, 3350, s);
+    if (G.skLen) { const v = f2(G.skLen * (1 - dr)); if (E.sk1._d !== v) { E.sk1.style.strokeDashoffset = v; E.sk1._d = v; } }
+    O(E.sk2, ss(3300, 3480, s) * 0.95);
+    const lift = ss(3420, 3760, s);
+    const pb = anchor(E.poster, .563, .79, .062, .86, 300, '');
+    O(E.poster, ss(3420, 3500, s));
+    TR(E.pc, 'rotateX(' + f2(84 * (1 - lift)) + 'deg) translateZ(0)');
+  } else { O(E.sketch, 0); O(E.poster, 0); }
+
+  // фотоаппарат: диафрагма закрывается, вспышка, снимок ложится на стол
+  const irA = ss(4350, 4550, s) * (1 - ss(5150, 5300, s));
+  if (irA > 0) { anchor(E.iris, .326 - .024, .814 - .024 * A, .048, .8, 200); O(E.iris, irA); const cl = ss(4550, 4850, s) - ss(4950, 5150, s); const r = lerp(92, 3, cl); if (E.iris._r !== r.toFixed(1)) { iris(r); E.iris._r = r.toFixed(1); } }
+  else O(E.iris, 0);
+  O(E.flash, bump(ss(4840, 5150, s)) * (s < 5000 ? 1 : 1) * 0.92);
+  const prA = ss(4900, 4960, s);
+  if (prA > 0) {
+    const land = ss(5000, 5480, s);
+    const [x1, y1, g1] = proj(.352, .835, .9), k1 = .05 * C.r.w * g1 / 400;
+    const k0 = Math.min(H * 0.62 / 470, W * 0.42 / 400), x0 = W / 2 - 200 * k0, y0 = H / 2 - 235 * k0;
+    const kk = lerp(k0, k1, land), xx = lerp(x0, x1, land), yy = lerp(y0, y1, land), rot = lerp(-2, 9, land);
+    TR(E.print, 'translate3d(' + f2(xx) + 'px,' + f2(yy) + 'px,0) scale(' + f4(kk) + ') rotate(' + f2(rot) + 'deg)'); O(E.print, prA);
+  } else O(E.print, 0);
+
+  // окно: метки соцсетей поднимаются над городом, потом метки 360°
+  chips.forEach((el, i) => {
+    const t0 = i < 4 ? 9500 + i * 150 : 10750 + (i - 4) * 140, t1 = i < 4 ? 10700 : 11500;
+    const on = ss(t0, t0 + 300, s) * (1 - ss(t1, t1 + 300, s));
+    if (on > 0) { const up = ss(t0, t1 + 300, s) * 0.05; anchor(el, CH[i][0], CH[i][1] + (W < 820 ? .24 : 0) - up, .085, .22, 260); O(el, on); } else O(el, 0);
+  });
+
+  // туннель кейсов
+  if (tun > 0 || (s > 7200 && s < 9200)) {
+    O(E.tunnel, 1);
+    const p = clamp((s - 7350) / 1650), Z = p * 4300;
+    tcs.forEach((c, i) => {
+      const z = -2300 - i * 1350 + Z;
+      const x = (i % 2 ? 1 : -1) * W * (W < 820 ? 0.04 : 0.2), ry = (i % 2 ? -1 : 1) * 12;
+      const op = ss(-2700, -1900, z) * (1 - ss(0, 450, z)) * tun;
+      TR(c.el, 'translate3d(' + f2(x) + 'px,' + f2(i % 2 ? -H * 0.04 : H * 0.02) + 'px,' + f2(z) + 'px) rotateY(' + f2(ry) + 'deg)');
+      O(c.el, op); play(c.v, op > 0.35);
+      const lo = W < 820 ? ss(-1250, -850, z) : 1; if (c.lab._o !== lo.toFixed(2)) { c.lab.style.opacity = lo.toFixed(2); c.lab._o = lo.toFixed(2); }
+    });
+  } else { O(E.tunnel, 0); tcs.forEach(c => { O(c.el, 0); play(c.v, false); }); }
+
+  // тексты под рамкой
+  const ie = ss(0, 380, s); TR(E.introB, 'translate3d(-50%,' + f2(ie * 40) + 'px,0)'); O(E.introB, 1 - ie); O(E.hint, 1 - ss(0, 200, s));
+  const oe = ss(12450, 12850, s); TR(E.outroB, 'translate3d(-50%,' + f2((1 - oe) * 30) + 'px,0)'); O(E.outroB, oe);
+  const st = [3300, 5000, 6400, 7800, 9900, 11100], act = s < 2600 || s > 11800 ? -1 : st.reduce((b, x, i) => Math.abs(s - x) < Math.abs(s - st[b]) ? i : b, 0);
+  railA.forEach((a, i) => { const on = i === act; if (a._on !== on) { a.classList.toggle('on', on); a._on = on; } });
+  O(E.rail, ss(2300, 2700, s) * (1 - ss(11600, 11900, s)));
+
+  // частицы
+  const ps = pState(s), pa = ss(1800, 2300, s) * (1 - ss(11650, 12000, s));
+  pg.clearColor(0, 0, 0, 0); pg.clear(pg.COLOR_BUFFER_BIT);
+  if (pa > 0.002 && shapeBufs.length) {
+    pg.useProgram(PP.p); const q = PP.u;
+    pg.enable(pg.BLEND); pg.blendFunc(pg.ONE, pg.ONE_MINUS_SRC_ALPHA);
+    const bind = (name, buf, n) => { const l = pg.getAttribLocation(PP.p, name); pg.bindBuffer(pg.ARRAY_BUFFER, buf); pg.enableVertexAttribArray(l); pg.vertexAttribPointer(l, n, pg.FLOAT, false, 0, 0); };
+    bind('aA', shapeBufs[ps.a], 2); bind('aB', shapeBufs[ps.b], 2); bind('aR', rBuf, 4);
+    pg.uniform2f(q.uRes, W, H); pg.uniform1f(q.uDpr, G.dpr); pg.uniform1f(q.uMix, ps.m); pg.uniform1f(q.uScat, ps.scat); pg.uniform1f(q.uT, s * 0.0016);
+    pg.uniform1f(q.uSize, W < 820 ? 1.8 : 2.5); pg.uniform1f(q.uAlpha, pa); pg.uniform1f(q.uRise, 0);
+    pg.uniform4f(q.uRect, C.r.x, C.r.y, C.r.w, C.r.h); pg.uniform2f(q.uO, C.o[0], C.o[1]); pg.uniform1f(q.uDz, C.dz); pg.uniform1f(q.uF, C.f); pg.uniform2f(q.uC, C.c[0], C.c[1]);
+    pg.uniform1f(q.uTest, tun > 0.5 ? 0 : 1); pg.uniform3f(q.uCol, 0.843, 0.976, 0.031);
+    pg.activeTexture(pg.TEXTURE0); pg.bindTexture(pg.TEXTURE_2D, T.pdep); pg.uniform1i(q.uDep, 0);
+    pg.drawArrays(pg.POINTS, 0, N);
+  }
+}
+
+const dist = () => clamp(-section.getBoundingClientRect().top, 0, section.offsetHeight - stage.clientHeight);
+function update(){
+  raf = false; if (!ready) return;
+  target = dist();
+  if (!init || reduce.matches) { smooth = target; init = true; } else smooth = lerp(smooth, target, G.touch ? 0.24 : 0.12);
+  if (Math.abs(smooth - target) < 0.1) smooth = target;
+  mx = lerp(mx, tMX, 0.08); my = lerp(my, tMY, 0.08);
+  if (reduce.matches) { mx = my = 0; }
+  frame(smooth);
+  if (Math.abs(smooth - target) > 0.1 || Math.abs(mx - tMX) > 0.0006 || Math.abs(my - tMY) > 0.0006) tick();
+}
+function tick(){ if (!raf) { raf = true; requestAnimationFrame(update); } }
+
+addEventListener('scroll', tick, { passive: true });
+let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { layout(); tick(); }, 80); });
+addEventListener('pointermove', e => { if (e.pointerType === 'touch') return; tMX = e.clientX / innerWidth - 0.5; tMY = e.clientY / innerHeight - 0.5; tick(); }, { passive: true });
+const cut = $('cut');
+document.addEventListener('click', e => { const a = e.target.closest('[data-s]'); if (!a) return; e.preventDefault(); go(section.offsetTop + (+a.dataset.s)); });
+function go(y){
+  if (Math.abs(y - scrollY) < 900) { scrollTo({ top: y, behavior: 'smooth' }); return; }
+  cut.style.opacity = '1';
+  setTimeout(() => { scrollTo({ top: y, behavior: 'instant' }); target = smooth = dist(); frame(smooth); requestAnimationFrame(() => requestAnimationFrame(() => { cut.style.opacity = '0'; })); }, 200);
+}
+
+// для проверок: мгновенно в точку без сглаживания
+window.V17 = { jump(y){ scrollTo(0, section.offsetTop + y); target = smooth = dist(); mx = my = tMX = tMY = 0; frame(smooth); return smooth; }, len: LEN, frame: () => frame(smooth) };
+
+Promise.all([load('img/scene-s.webp'), load('img/depth.png'), document.fonts.load('800 100px Syne'), document.fonts.load('700 20px Syne'), document.fonts.load('400 16px Poppins')]).then(([img, dep]) => {
+  T.img = tex(gl, img, true); T.dep = tex(gl, dep, false); T.pdep = tex(pg, dep, false);
+  buildWord(); layout(); buildShapes(); iris(92);
+  ready = true; init = false; tick();
+  setTimeout(() => document.querySelectorAll('video').forEach((v, i) => setTimeout(() => { v.preload = 'auto'; v.play().then(() => { if (!playing.has(v)) v.pause(); }).catch(() => {}); }, 300 * i)), 600); document.documentElement.dataset.ready = '1';
+  const maxT = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+  const lite = Math.min(innerWidth, innerHeight) < 820 || (navigator.deviceMemory && navigator.deviceMemory <= 4) || maxT < 5376;
+  load(lite ? 'img/scene-m.webp' : 'img/scene.webp').then(big => { const t = tex(gl, big, true); gl.deleteTexture(T.img); T.img = t; document.documentElement.dataset.hi = '1'; frame(smooth); }).catch(() => {});
+  const yq = +new URLSearchParams(location.search).get('y'); if (yq) setTimeout(() => window.V17.jump(yq), 300);
+});
+})();
+</script>
+</body>
+</html>

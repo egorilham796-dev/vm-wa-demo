@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V&amp;M - Probe Kamerafahrt</title>
+<style>
+@font-face{font-family:Syne;font-weight:800;font-display:swap;src:url(../../vm-wa-v11/assets/font/syne-800-latin.woff2) format('woff2')}
+@font-face{font-family:Poppins;font-weight:400;font-display:swap;src:url(../../vm-wa-v11/assets/font/poppins-400-latin.woff2) format('woff2')}
+:root{--lime:#D7F908;--ink:#13110F}
+html,body{margin:0;background:#13110F;color:#F4F4F4;font-family:Poppins,system-ui,sans-serif}
+.cine{position:relative;height:calc(100vh + 4200px)}
+.stage{position:sticky;top:0;height:100vh;overflow:hidden}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.t{position:absolute;left:max(24px,6vw);bottom:12vh;max-width:min(560px,80vw);opacity:0;will-change:transform,opacity}
+.t span{display:block;color:var(--lime);font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+.t h2{margin:12px 0 0;font-family:Syne;font-weight:800;text-transform:uppercase;font-size:clamp(28px,3.6vw,56px);line-height:1}
+.t p{margin:14px 0 0;color:#d6d3cd;line-height:1.5;text-shadow:0 1px 14px rgba(0,0,0,.8)}
+.scrim{position:absolute;inset:0;background:linear-gradient(0deg,rgba(19,17,15,.75) 0%,rgba(19,17,15,0) 45%);pointer-events:none}
+.load{position:absolute;right:24px;top:20px;font-size:12px;letter-spacing:.14em;color:#8d8983;text-transform:uppercase}
+.note{padding:80px 24px;text-align:center;color:#9a968f}
+.note a{color:var(--lime)}
+</style>
+</head>
+<body>
+<section class="cine" id="cine">
+  <div class="stage">
+    <canvas id="c"></canvas>
+    <div class="scrim"></div>
+    <div class="t" id="t1"><span>V&amp;M Werbeagentur</span><h2>Ihre Intension,<br>unsere Motivation</h2></div>
+    <div class="t" id="t2"><span>Leistung 01 · 04</span><h2>Skizze, Foto, Film</h2><p>Alles entsteht am selben Tisch.</p></div>
+    <div class="t" id="t3"><span>Leistung 02 · 03</span><h2>Ihre Website</h2><p>Webdesign und Webentwicklung aus einer Hand.</p></div>
+    <div class="load" id="ld">0 / 121</div>
+  </div>
+</section>
+<p class="note">Probe: echte Kamerafahrt (KI-Video, 5 s, 121 Bilder), beim Scrollen Bild für Bild abgespielt. <a href="../">Zurück zu V17</a></p>
+<script>
+(function(){
+  const N = 121, LEN = 4200, cv = document.getElementById('c'), cx = cv.getContext('2d'), sec = document.getElementById('cine');
+  const frames = new Array(N); let loaded = 0, target = 0, smooth = 0, raf = false, last = -1;
+  const ss = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  for (let i = 0; i < N; i++) { const im = new Image(); im.decoding = 'async'; im.onload = () => { loaded++; document.getElementById('ld').textContent = loaded === N ? '' : loaded + ' / ' + N; if (i === 0 || loaded === N) tick(); }; im.src = 'f/' + String(i + 1).padStart(3, '0') + '.jpg'; frames[i] = im; }
+  function size(){ const d = Math.min(2, devicePixelRatio || 1); cv.width = innerWidth * d; cv.height = innerHeight * d; last = -1; tick(); }
+  function draw(i){
+    let k = i; while (k > 0 && !frames[k].complete) k--;
+    const im = frames[k]; if (!im.complete || !im.naturalWidth) return false;
+    const W = cv.width, H = cv.height, s = Math.max(W / im.naturalWidth, H / im.naturalHeight), w = im.naturalWidth * s, h = im.naturalHeight * s;
+    cx.drawImage(im, (W - w) / 2, (H - h) / 2, w, h);
+    return k === i;
+  }
+  function txt(el, a, b, p){ const on = ss(a, a + .08, p) * (1 - ss(b - .08, b, p)); el.style.opacity = on.toFixed(3); el.style.transform = 'translate3d(0,' + ((1 - on) * 24).toFixed(1) + 'px,0)'; }
+  function update(){
+    raf = false;
+    target = Math.min(LEN, Math.max(0, -sec.getBoundingClientRect().top));
+    smooth += (target - smooth) * 0.14; if (Math.abs(target - smooth) < 0.5) smooth = target;
+    const p = smooth / LEN, i = Math.round(p * (N - 1));
+    if (i !== last && draw(i)) last = i;
+    txt(t1, -1, .3, p); txt(t2, .33, .66, p); txt(t3, .7, 2, p);
+    if (smooth !== target) tick();
+  }
+  function tick(){ if (!raf) { raf = true; requestAnimationFrame(update); } }
+  const t1 = document.getElementById('t1'), t2 = document.getElementById('t2'), t3 = document.getElementById('t3');
+  addEventListener('scroll', tick, { passive: true }); addEventListener('resize', size); size();
+})();
+</script>
+</body>
+</html>
